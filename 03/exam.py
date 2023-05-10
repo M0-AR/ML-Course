@@ -969,5 +969,795 @@ Summing up the votes: The total vote for an observation to belong to a class (sa
 Final Classification: The final classification of an observation is the class with the higher total vote. In the case of O5, the total vote for safe (1.0194) is higher than for unsafe (0.9319), so O5 is classified as safe. Similarly, O6 is classified as unsafe because the total vote for unsafe is higher than for safe.
 
 So, based on this procedure, the answer is "C. Only one of the two observations O5 and O6 will be correctly classified by the AdaBoost classifier", assuming that O5 is actually safe and O6 is actually unsafe.
+"""
+
+
+# 24
+"""
+The nature of the decision boundaries of classifiers often requires visual interpretation, which is not possible without the figure.
+
+However, I can provide some general insights about the decision boundaries of the classifiers mentioned:
+
+Logistic Regression: This classifier typically creates linear decision boundaries.
+
+k-Nearest Neighbors (k-NN): The decision boundaries of k-NN can be quite complex and irregular, depending on the distribution of the data and the value of k.
+
+Decision Tree Classifier: Decision tree classifiers generally create orthogonal decision boundaries, meaning the boundaries are parallel to the axes of the feature space.
+
+Artificial Neural Network (ANN): The decision boundaries of ANNs can be linear or non-linear, depending on the complexity of the network.
+
+Naive Bayes Classifier: Naive Bayes classifiers, especially when using normal distributions, tend to create linear or quadratic decision boundaries.
+
+Remember that these are general rules, and actual boundaries can vary depending on the data and specific settings of each algorithm.
+
+To answer the question definitively, I'd need to see the decision boundaries in Figure 9. If you can provide that, I'd be happy to help interpret it!
+
+
+The solution provided is an interpretation of the decision boundaries of the four classifiers based on their typical characteristics. Here's a breakdown of the interpretation:
+
+Classifier 1: This is a 3-nearest neighbor classifier. The decision boundaries of k-nearest neighbors classifiers can be irregular and shaped by the distribution of the data. The observation that one red cross and one black plus are within the wrong decision boundary suggests that the classifier is considering the three nearest neighbors for its decision, hence it's a 3-nearest neighbor classifier.
+
+Classifier 2: This classifier has smooth decision boundaries, which aligns with the characteristics of a Naive Bayes classifier, especially when it uses univariate normal distributions. Such classifiers tend to have linear or quadratic decision boundaries.
+
+Classifier 3: This classifier is a Decision Tree, as indicated by the vertical and horizontal decision boundaries. Decision tree classifiers generally create orthogonal decision boundaries, meaning the boundaries are parallel to the axes of the feature space.
+
+Classifier 4: This is identified as a 1-nearest neighbor classifier using Euclidean distance. The decision boundary appears to closely follow the most nearby observation, which is characteristic of a 1-nearest neighbor classifier.
+"""
+
+# 25
+"""
+ Let's go through the solution you provided:
+
+Initial centroids: {1.0}, {1.2}, {1.5}
+
+Calculate distances and assign clusters:
+
+Closest to 1.0: {1.0}
+Closest to 1.2: {1.2}
+Closest to 1.5: {1.5, 2.0, 2.2, 2.5, 3.0, 3.2}
+Update centroids:
+
+Centroid 1: mean({1.0}) = 1.0
+Centroid 2: mean({1.2}) = 1.2
+Centroid 3: mean({1.5, 2.0, 2.2, 2.5, 3.0, 3.2}) = 2.2333 (rounded)
+Repeat steps 2 and 3:
+
+Assigning clusters based on updated centroids, we have:
+
+Closest to 1.0: {1.0}
+Closest to 1.2: {1.2, 1.5}
+Closest to 2.2333: {2.0, 2.2, 2.5, 3.0, 3.2}
+Updating centroids:
+
+Centroid 1: mean({1.0}) = 1.0
+Centroid 2: mean({1.2, 1.5}) = 1.35
+Centroid 3: mean({2.0, 2.2, 2.5, 3.0, 3.2}) = 2.58
+Now, all the points remain in the same cluster after an iteration, which means we've reached convergence.
+
+The final clusters are:
+
+Cluster 1: {1.0}
+Cluster 2: {1.2, 1.5}
+Cluster 3: {2.0, 2.2, 2.5, 3.0, 3.2}
+Therefore, the correct answer is A: {1.0}, {1.2, 1.5}, {2.0, 2.2, 2.5, 3.0, 3.2}
+"""
+
+from sklearn.cluster import KMeans
+import numpy as np
+
+# Dataset
+data = np.array([1.0, 1.2, 1.5, 2.0, 2.2, 2.5, 3.0, 3.2]).reshape(-1, 1)
+
+# Initial centroids
+init_centroids = np.array([1.0, 1.2, 1.5]).reshape(-1, 1)
+
+# Fit KMeans
+kmeans = KMeans(n_clusters=3, init=init_centroids, n_init=1)
+kmeans.fit(data)
+
+# Print clusters
+clusters = {i: np.where(kmeans.labels_ == i)[0] for i in range(kmeans.n_clusters)}
+print('2018-may-25')
+for cluster, indices in clusters.items():
+    print(f"Cluster {cluster+1}: {data[indices].flatten()}")
+print('\n')
+
+######################################
+# December 2018
+######################################
+print('December 2018')
+
+# 1
+"""
+Solution 1. The correct answer is C. To see this, recall
+that by the definition of a boxplot the horizontal red
+line indicates the 50th percentile. We can read these
+of from the percentile plots by observing the values
+corresponding to 0.5. These are:
+x2 = 0.0, x3 = 0.3, x9 = 0.6, x10 = 0.2.
+In a similar manner, we know the upper-part of the
+box must correspond to the 75th percentile. These
+can also be read of from the percentile plots (the value
+corresponding to 0.75) and are:
+x2 = 0.2, x3 = 0.4, x9 = 0.9, x10 = 0.5.
+Taken together these rule out all but option C.
+3 of 26
+"""
+
+# 2
+
+import numpy as np
+
+# Singular values
+singular_values = np.array([14.4, 8.19, 7.83, 6.91, 6.01])
+
+# Squared singular values
+singular_values_squared = np.square(singular_values)
+
+# Total variance
+total_variance = np.sum(singular_values_squared)
+
+# Variance explained by each principal component
+variance_explained = singular_values_squared / total_variance
+
+# Check the conditions
+A = variance_explained[0] > 0.45
+B = np.sum(variance_explained[:4]) < 0.85
+C = np.sum(variance_explained[1:]) > 0.56
+D = np.sum(variance_explained[:3]) < 0.75
+
+print('2018-Dec-1')
+print(f"A: {A}")
+print(f"B: {B}")
+print(f"C: {C}")
+print(f"D: {D}")
+print('\n')
+
+# 3
 
 """
+In PCA, the first principal component corresponds to the direction that captures the most variance in the data. The second principal component is orthogonal (perpendicular) to the first and captures the second most variance.
+
+Here are some steps you can follow:
+
+Look at the loadings matrix V given in the question, specifically at the first two columns which represent the loadings for the first two principal components.
+
+For each plot, imagine the direction of most variance (the first principal component). This should be the direction in which the points are spread out the most.
+
+Compare this direction with the loadings for the first principal component in V. The loadings tell you how much each 
+variable contributes to each principal component. The signs of the loadings can help you determine the direction: if 
+the loading is positive, increases in that variable correspond to increases in the principal component, and vice versa. 
+
+Do the same for the second principal component.
+
+The correct plot should be the one where the directions of most variance match the loadings in V.
+
+Remember that PCA can also reflect the data (i.e., flip it around an axis), so the correct plot could be a reflection 
+of the original plot. Also, remember that the scale of the plots might not be the same as the scale of the original 
+data, because PCA standardizes the data. import numpy as np import matplotlib.pyplot as plt 
+
+# Let's assume X is your data matrix with each row being a data sample
+
+# Standardize the data
+X_standardized = (X - np.mean(X, axis=0)) / np.std(X, axis=0)
+
+# Loadings matrix V (PCA components)
+V = np.array([[0.04, -0.12, -0.14, 0.35, 0.92],
+              [0.06, 0.13, 0.05, -0.92, 0.37],
+              [-0.03, -0.98, 0.08, -0.16, -0.05],
+              [-0.99, 0.03, 0.06, -0.02, 0.07],
+              [-0.07, -0.05, -0.98, -0.11, -0.11]])
+
+# Project the data onto the first two principal components
+PC1_PC2 = X_standardized @ V[:, :2]
+
+# Plot the data projected onto the first two principal components
+plt.figure(figsize=(8, 6))
+plt.scatter(PC1_PC2[:, 0], PC1_PC2[:, 1])
+plt.xlabel('First Principal Component')
+plt.ylabel('Second Principal Component')
+plt.title('PCA Projection')
+plt.show()
+
+The vector delta_x represents the difference between the values of points A and B in the original feature space. In the context of your question, it appears that the 3rd attribute value of point B is 2.86 units higher than that of point A, while the rest of the attributes are the same for both points. As we don't have the full data or the graph, I'm assuming this information was visually estimated or provided in the original context.
+
+The solution's strategy is to compare the change in the position of points A and B when they're projected onto the new feature space defined by the first two principal components.
+
+Here's a more detailed explanation of the solution:
+
+Calculate delta_x, the difference in the original attribute values between points A and B. This vector represents the "movement" from point A to point B in the original space.
+
+Project delta_x onto the first two principal components. This is done by multiplying delta_x with the matrix formed by the first two columns of V (the matrix of principal components). The result is delta_b, a vector that represents the "movement" from point A to B in the new PCA-based feature space.
+
+Compare delta_b with the difference in positions of points A and B in each of the candidate PCA projection plots. The correct plot should show a movement from A to B that matches delta_b.
+
+In your provided solution, the only plot that matches delta_b ([-0.09, -2.8]) is Plot B, thus the answer is option B.
+
+
+0.0
+0.0
+2.86
+0.0
+0.0
+
+i know where 2.86 come from but why there is to zeors before and two zeors after
+because in 2.86 represent x5
+In the context of Principal Component Analysis (PCA) and the problem at hand, the vector delta_x represents the difference in the attribute values between points A and B.
+
+The zeros in the delta_x vector imply that for those corresponding attributes, there is no difference between the values of points A and B. In other words, points A and B have the same values for those attributes.
+
+The value of 2.86 at the third position indicates that there is a difference in the third attribute between points A and B, and the difference is 2.86 units. The third attribute for point B is 2.86 units higher than that for point A.
+
+Without the actual data or additional context, it's hard to provide a more specific explanation, but this is the general interpretation based on how such vectors are typically used in PCA.
+"""
+
+import numpy as np
+
+# Calculate the difference in original attributes between points A and B
+delta_x = np.array([0.0, 0.0, 2.86, 0.0, 0.0])
+
+# Extract the first two principal components
+V = np.array([[0.04, -0.12, -0.14, 0.35, 0.92],
+              [0.06, 0.13, 0.05, -0.92, 0.37],
+              [-0.03, -0.98, 0.08, -0.16, -0.05],
+              [-0.99, 0.03, 0.06, -0.02, 0.07],
+              [-0.07, -0.05, -0.98, -0.11, -0.11]])
+V1_V2 = V[:, :2]
+
+# Compute the difference in PCA projections
+delta_b = delta_x @ V1_V2
+
+print(delta_b)
+
+# 4
+"""
+To calculate the average relative density (ard), we first need to calculate the KNN density for the observation o4 and its K nearest neighbors. In this case, K=2.
+
+Looking at the 4th row in the given distance matrix, we see that the two smallest distances are from o3 (2.03) and o6 (1.04). These are the 2 nearest neighbors of o4.
+
+We can then calculate the density for o4 and its neighbors as follows:
+
+density(o4, K=2) = 1 / ((1/2) * (2.03 + 1.04)) = 1 / 1.535 = 0.6516
+
+Next, we calculate the density for o3 and o6:
+
+density(o3, K=2) = 1 / ((1/2) * (0.63 + 1.06)) = 1 / 0.845 = 1.1834
+density(o6, K=2) = 1 / ((1/2) * (1.04 + 1.82)) = 1 / 1.43 = 0.6993
+
+Now, we can calculate the average relative density for o4:
+
+ard(o4, K=2) = density(o4, K=2) / ((1/2) * (density(o3, K=2) + density(o6, K=2))) = 0.6516 / 0.94135 = 0.6921
+
+So the answer is approximately 0.72, which is closest to option B.
+"""
+
+import numpy as np
+
+# Define the distance matrix
+distance_matrix = np.array([
+    [0.0, 2.91, 0.63, 1.88, 1.02, 1.82, 1.92, 1.58, 1.08, 1.43],
+    [2.91, 0.0, 3.23, 3.9, 2.88, 3.27, 3.48, 4.02, 3.08, 3.47],
+    [0.63, 3.23, 0.0, 2.03, 1.06, 2.15, 2.11, 1.15, 1.09, 1.65],
+    [1.88, 3.9, 2.03, 0.0, 2.52, 1.04, 2.25, 2.42, 2.18, 2.17],
+    [1.02, 2.88, 1.06, 2.52, 0.0, 2.44, 2.38, 1.53, 1.71, 1.94],
+    [1.82, 3.27, 2.15, 1.04, 2.44, 0.0, 1.93, 2.72, 1.98, 1.8],
+    [1.92, 3.48, 2.11, 2.25, 2.38, 1.93, 0.0, 2.53, 2.09, 1.66],
+    [1.58, 4.02, 1.15, 2.42, 1.53, 2.72, 2.53, 0.0, 1.68, 2.06],
+    [1.08, 3.08, 1.09, 2.18, 1.71, 1.98, 2.09, 1.68, 0.0, 1.48],
+    [1.43, 3.47, 1.65, 2.17, 1.94, 1.8, 1.66, 2.06, 1.48, 0.0],
+])
+
+# Define the KNN density function
+def knn_density(distance_matrix, observation_index, k):
+    sorted_indices = np.argsort(distance_matrix[observation_index])
+    nearest_neighbors = sorted_indices[1:k+1]  # Exclude the observation itself
+    return 1 / np.mean(distance_matrix[observation_index, nearest_neighbors])
+
+# Calculate the density for o4 and its 2 nearest neighbors
+o4_density = knn_density(distance_matrix, 3, 2)
+o3_density = knn_density(distance_matrix, 2, 2)
+o6_density = knn_density(distance_matrix, 5, 2)
+
+# Calculate the average relative density for o4
+o4_ard = o4_density / np.mean([o3_density, o6_density])
+
+print('2018-Dec-4')
+print(f"Average relative density for o4: {o4_ard}")
+print('\n')
+
+# 5
+
+"""
+A Gaussian Mixture Model (GMM) is a probabilistic model that assumes all the data points are generated from a mixture of a finite number of Gaussian distributions with unknown parameters. Each Gaussian density, also known as a component of the mixture, has a weight denoting its contribution. GMMs are widely used as a parametric model of the probability distribution of continuous measurements or features in a wide range of applications, including pattern recognition, machine learning, and computer vision.
+
+In the context of the question, the GMM is used to model the data in Table 2. The model has three components, each one associated with one of the observations o7, o8, and o9. Each of these observations is assumed to correspond to the mean vector of a Gaussian distribution. All the Gaussians are assumed to have the same covariance matrix, which is a multiple of the identity matrix (this is a simplifying assumption that makes the computations easier). The three components are weighted evenly, meaning that each contributes equally to the overall model.
+
+To calculate the density of the GMM at a particular point (in this case, observation o3), we need to evaluate the density of each Gaussian at that point, and then average the results. This reflects the fact that the overall density is a weighted sum of the densities of the individual Gaussians.
+
+The result of this calculation is the density of the GMM at o3. This value is a measure of how likely it is, under the assumptions of the model, that a randomly chosen data point would fall at the position of o3. The higher the density, the more likely this position is.
+
+Example use cases of GMM:
+
+Anomaly detection: GMM can be used to identify unusual data points in your dataset. If a data point is located in a region of low probability according to the GMM, it can be considered an outlier or anomaly.
+
+Image segmentation: GMM is often used in image processing to group pixels that have similar characteristics. Each Gaussian in the mixture can represent a different object or part of an image.
+
+Clustering: GMM is a soft clustering method, which means that instead of assigning each data point to a single cluster, it gives the probability that a given data point belongs to each cluster.
+
+Speech recognition: GMMs are often used in speech recognition systems to model different phonemes in speech, which can then be recognized based on their probability distributions.
+
+
+Given the problem, we are asked to find the density of the Gaussian Mixture Model (GMM) at observation o3. The GMM has three components, each of which is a Gaussian distribution centered at observations o7, o8, and o9 respectively. The variance of each Gaussian component is σ^2 (where σ = 0.5), and all of them are weighted equally.
+
+In the GMM, the density at a given point is the weighted sum of the densities of all Gaussian components at that point. Since all components are equally weighted in this case, the density of the GMM at o3 is just the average of the densities of the three Gaussians at o3.
+
+The density of a Gaussian distribution at a point is given by the formula:
+
+N (oi|μk, σ^2*I) = (1/((2πσ^2)^(M/2))) * exp(− d(oi, μk)^2 / (2σ^2))
+
+where M is the dimensionality of the distribution (M = 10 in this case), and d(oi, μk) is the Euclidean distance between the points oi and μk. The Euclidean distances d(o3, o7), d(o3, o8), and d(o3, o9) can be obtained from the table provided in the question.
+
+Let's denote d7 = d(o3, o7), d8 = d(o3, o8), and d9 = d(o3, o9). We can then calculate the density of the GMM at o3 as:
+
+p(o3) = (1/3) * [N(o3|o7, σ^2I) + N(o3|o8, σ^2I) + N(o3|o9, σ^2*I)]
+= (1/3) * [(1/((2πσ^2)^(M/2))) * exp(− d7^2 / (2σ^2))
++ (1/((2πσ^2)^(M/2))) * exp(− d8^2 / (2σ^2))
++ (1/((2πσ^2)^(M/2))) * exp(− d9^2 / (2σ^2))]
+
+By calculating this expression using the given σ and the distances d7, d8, and d9 from the table, we can find the density of the GMM at o3, which should correspond to one of the provided options.
+
+
+In your case, you will have to replace the symbols with their respective values from the problem statement and the distance table.
+
+Let's denote the following:
+
+σ = 0.5 (as given in the problem)
+M = 10 (dimensionality, as per your data in the Table 2)
+d7 = d(o3, o7), d8 = d(o3, o8), and d9 = d(o3, o9). These are the Euclidean distances between o3 and o7, o8, o9 respectively. You can get these values from the distance table you provided earlier.
+After substituting these values into the formula, you can compute the density at o3.
+
+Please note that to solve this problem, you will need to have the exact values for d7, d8, and d9 from your distance table. Without these specific values, I can only provide the formula and method to calculate the density.
+
+Here's the formula with the values substituted:
+
+p(o3) = (1/3) * [(1/((2π*(0.5)^2)^(10/2))) * exp(− d7^2 / (2*(0.5)^2))
++ (1/((2π*(0.5)^2)^(10/2))) * exp(− d8^2 / (2*(0.5)^2))
++ (1/((2π*(0.5)^2)^(10/2))) * exp(− d9^2 / (2*(0.5)^2))]
+
+Now, all you need to do is to replace d7, d8, and d9 with their respective distances from the table and calculate the expression to find p(o3).
+"""
+
+
+import numpy as np
+from scipy.stats import multivariate_normal
+
+# Define the distance matrix
+distance_matrix = np.array([
+    [0.0, 2.91, 0.63, 1.88, 1.02, 1.82, 1.92, 1.58, 1.08, 1.43],
+    [2.91, 0.0, 3.23, 3.9, 2.88, 3.27, 3.48, 4.02, 3.08, 3.47],
+    [0.63, 3.23, 0.0, 2.03, 1.06, 2.15, 2.11, 1.15, 1.09, 1.65],
+    [1.88, 3.9, 2.03, 0.0, 2.52, 1.04, 2.25, 2.42, 2.18, 2.17],
+    [1.02, 2.88, 1.06, 2.52, 0.0, 2.44, 2.38, 1.53, 1.71, 1.94],
+    [1.82, 3.27, 2.15, 1.04, 2.44, 0.0, 1.93, 2.72, 1.98, 1.8],
+    [1.92, 3.48, 2.11, 2.25, 2.38, 1.93, 0.0, 2.53, 2.09, 1.66],
+    [1.58, 4.02, 1.15, 2.42, 1.53, 2.72, 2.53, 0.0, 1.68, 2.06],
+    [1.08, 3.08, 1.09, 2.18, 1.71, 1.98, 2.09, 1.68, 0.0, 1.48],
+    [1.43, 3.47, 1.65, 2.17, 1.94, 1.8, 1.66, 2.06, 1.48, 0.0],
+])
+
+import numpy as np
+
+sigma = 0.5
+M = 10
+
+# Get the Euclidean distances between o3 and o7, o8, o9 from the distance table
+# Get the Euclidean distances between o3 and o7, o8, o9 from the distance table
+d7 = distance_matrix[2][6]  # distance from o3 to o7
+d8 = distance_matrix[2][7]  # distance from o3 to o8
+d9 = distance_matrix[2][8]  # distance from o3 to o9
+
+# Calculate the density at o3 using the given formula
+p_o3 = (1/3) * ((1/((2 * np.pi * sigma**2)**(M/2))) * (np.exp(-(d7**2) / (2 * sigma**2)) +
+                                                       np.exp(-(d8**2) / (2 * sigma**2)) +
+                                                       np.exp(-(d9 ** 2) / (2 * sigma ** 2))))
+print('2018-Dec-5')
+print("Density at o3:", p_o3)
+print('\n')
+
+# 6
+"""
+Hierarchical clustering is a method of cluster analysis which seeks to build a hierarchy of clusters. The process can be visualized using a Dendrogram, which is a tree-like diagram that records the sequences of merges or splits.
+
+In this case, we're asked to apply hierarchical clustering using "minimum linkage". This is also known as "single linkage", and it's a method of calculating the distance between clusters that's defined as the shortest distance between any two data points in each cluster.
+
+Given the distance matrix in Table 2, you can interpret each row (or column) as the Euclidean distance from one observation (o1, o2, ..., o10) to all others.
+
+Building a dendrogram using single-linkage hierarchical clustering typically follows these steps:
+
+Step 0: Start by treating each data point as a cluster, so we have 10 clusters initially (each of o1, o2, ..., o10).
+
+Step 1: Find the two clusters that are closest together according to the single-linkage criterion. In other words, find the smallest distance in your matrix. Merge these two clusters together.
+
+Step 2: Update the distance matrix to reflect this merge. You need to compute the distances from this new cluster to all other clusters. For single linkage, the distance between the new cluster and each existing cluster is equal to the shortest distance from any member of the new cluster to any member of the existing clusters.
+
+Step 3: Repeat Steps 1 and 2 until all data points are clustered into a single group.
+
+Step 4: Draw a dendrogram that represents this process. Each merge is represented by a horizontal line. The y-coordinate of the horizontal line is the distance between the two clusters that were merged. Observations are at the bottom and represented by vertical lines. By moving up from the bottom layer to the top, you can visualize the merging process.
+
+
+The dendrogram construction using hierarchical clustering involves some iterative steps and it's not straightforward to do manually as it involves lots of computations. However, I can guide you through the first steps of constructing a dendrogram from your distance matrix.
+
+Given your distance matrix, the algorithm for single-linkage hierarchical clustering (which uses the minimum distance between clusters) would proceed as follows:
+
+Step 1: Find the smallest distance in the distance matrix. According to your matrix, the smallest distance is 0.63 which is the distance between o1 and o3. Therefore, we merge these two observations into a cluster, let's call it cluster1 = {o1, o3}.
+
+Step 2: Now we need to update the distance matrix. The distance from the new cluster to the other points is the minimum of the distances from o1 and o3 to the other points. For example, the distance from cluster1 to o2 will be the minimum of the distances from o1 to o2 and o3 to o2, i.e., min(2.91, 3.23) = 2.91.
+
+Step 3: We repeat Step 1. Now, we need to find the smallest distance in the updated distance matrix. Let's assume this distance is between o4 and o6 (you would need to calculate this). These two observations are merged into a new cluster, cluster2 = {o4, o6}.
+
+Step 4: Again, we update the distance matrix considering cluster2.
+
+This process continues until all observations are grouped into one cluster. In each step, the clusters which are merged are connected in the dendrogram at a height equal to the distance between them.
+"""
+
+import numpy as np
+from scipy.cluster.hierarchy import linkage, dendrogram
+import matplotlib.pyplot as plt
+
+# Your distance matrix
+distance_matrix = np.array([
+    [0.0, 2.91, 0.63, 1.88, 1.02, 1.82, 1.92, 1.58, 1.08, 1.43],
+    [2.91, 0.0, 3.23, 3.9, 2.88, 3.27, 3.48, 4.02, 3.08, 3.47],
+    [0.63, 3.23, 0.0, 2.03, 1.06, 2.15, 2.11, 1.15, 1.09, 1.65],
+    [1.88, 3.9, 2.03, 0.0, 2.52, 1.04, 2.25, 2.42, 2.18, 2.17],
+    [1.02, 2.88, 1.06, 2.52, 0.0, 2.44, 2.38, 1.53, 1.71, 1.94],
+    [1.82, 3.27, 2.15, 1.04, 2.44, 0.0, 1.93, 2.72, 1.98, 1.8],
+    [1.92, 3.48, 2.11, 2.25, 2.38, 1.93, 0.0, 2.53, 2.09, 1.66],
+    [1.58, 4.02, 1.15, 2.42, 1.53, 2.72, 2.53, 0.0, 1.68, 2.06],
+    [1.08, 3.08, 1.09, 2.18, 1.71, 1.98, 2.09, 1.68, 0.0, 1.48],
+    [1.43, 3.47, 1.65, 2.17, 1.94, 1.8, 1.66, 2.06, 1.48, 0.0],
+])
+
+# The 'linkage' function uses a condensed distance matrix, which is a flat array containing the upper triangular of the distance matrix.
+condensed_matrix = distance_matrix[np.triu_indices(10, k=1)]
+
+# Perform hierarchical/agglomerative clustering on the condensed distance matrix
+Z = linkage(condensed_matrix, method='single')  # 'single' specifies minimum/nearest point linkage
+
+# Plot dendrogram
+plt.figure(figsize=(10, 5))
+dendrogram(Z, labels=['o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8', 'o9', 'o10'])
+plt.show()
+
+
+# 7 TODO
+"""
+
+"""
+
+# 8
+"""
+Given the color-coded classes in the table, we can perform a leave-one-out cross-validation with 1-nearest neighbor classifier as follows:
+
+For each observation, we find the nearest neighbor and assign it the class of the nearest neighbor, and then compare this to the actual class. If there's a mismatch, we count this as an error. After doing this for all observations, we divide the total number of errors by the number of observations to get the error rate.
+
+o1 belongs to C1. The nearest neighbor is o3 which also belongs to C1. So, there is no error.
+o2 belongs to C1. The nearest neighbor is o1 which also belongs to C1. So, there is no error.
+o3 belongs to C1. The nearest neighbor is o1 which also belongs to C1. So, there is no error.
+o4 belongs to C2. The nearest neighbor is o6 which also belongs to C2. So, there is no error.
+o5 belongs to C2. The nearest neighbor is o1 which belongs to C1. So, there is one error.
+o6 belongs to C2. The nearest neighbor is o4 which also belongs to C2. So, there is no error.
+o7 belongs to C2. The nearest neighbor is o6 which also belongs to C2. So, there is no error.
+o8 belongs to C2. The nearest neighbor is o3 which belongs to C1. So, there is one error.
+o9 belongs to C3. The nearest neighbor is o1 which belongs to C1. So, there is one error.
+o10 belongs to C3. The nearest neighbor is o1 which belongs to C1. So, there is one error.
+In total, we have 4 errors out of 10 observations, so the error rate is 4/10. Therefore, the answer is A. error rate = 4/10.
+
+
+The given solution seems to have a slight inconsistency with the previous discussion, but let's go through it.
+
+This solution is based on leave-one-out cross-validation with a 1-nearest neighbour (k=1) classifier.
+
+Here's how it works: For each observation, we find the nearest neighbour from the remaining observations and assign the class of that nearest neighbour to the current observation. We then compare this assigned class with the actual class of the observation.
+
+If the assigned class doesn't match the actual class, it is considered an error. We repeat this process for all observations and calculate the error rate as the number of errors divided by the total number of observations.
+
+The solution lists the nearest neighbour for each observation as follows:
+
+For o1, the nearest neighbour is o3
+For o2, the nearest neighbour is o5
+For o3, the nearest neighbour is o1
+For o4, the nearest neighbour is o6
+For o5, the nearest neighbour is o1
+For o6, the nearest neighbour is o4
+For o7, the nearest neighbour is o10
+For o8, the nearest neighbour is o3
+For o9, the nearest neighbour is o1
+For o10, the nearest neighbour is o1
+Based on this, the solution identifies that the predicted class matches the true class for the observations {o1, o3, o4, o6}.
+
+However, for the remaining observations {o2, o5, o7, o8, o9, o10}, the predicted class doesn't match the true class, so these are counted as errors.
+
+Therefore, we have 6 errors out of 10 observations, which gives an error rate of 6/10. So, the correct answer is D: error rate = 6/10.
+"""
+
+# 9
+"""
+Let's compute the classification error and the gain.
+
+First, we compute the classification error for the parent node:
+
+Total observations: 108 + 112 + 56 + 58 + 75 + 116 = 525
+Class with maximum observations: max(108+58, 112+75, 56+116) = 187+75 = 262
+Classification error for the parent node: 1 - (262/525)
+Next, we compute the classification error for the child nodes:
+
+For the interval x9 ≤ 0.13:
+
+Total observations: 108 + 112 + 56 = 276
+Class with maximum observations: max(108, 112, 56) = 112
+Classification error: 1 - (112/276)
+For the interval 0.13 < x9:
+
+Total observations: 58 + 75 + 116 = 249
+Class with maximum observations: max(58, 75, 116) = 116
+Classification error: 1 - (116/249)
+Finally, we compute the gain. The gain is the impurity of the parent node minus the weighted sum of the impurities of the child nodes:
+
+Gain = Parent node impurity - (weight_1 * child_1_impurity + weight_2 * child_2_impurity)
+Here, weight_1 = 276/525 and weight_2 = 249/525
+You can plug in the values computed above to find the gain. Let's do the calculations.
+"""
+# Total observations for each class for each interval
+x9_less_equal_013 = [108, 112, 56]
+x9_greater_013 = [58, 75, 116]
+
+# Total observations in each interval and overall
+total_less_equal_013 = sum(x9_less_equal_013)
+total_greater_013 = sum(x9_greater_013)
+total = total_less_equal_013 + total_greater_013
+
+# Calculate classification error for each node
+error_parent = 1 - max(sum(x) for x in zip(x9_less_equal_013, x9_greater_013)) / total
+error_less_equal_013 = 1 - max(x9_less_equal_013) / total_less_equal_013
+error_greater_013 = 1 - max(x9_greater_013) / total_greater_013
+
+# Calculate purity gain
+gain = error_parent - (total_less_equal_013 / total) * error_less_equal_013 - (total_greater_013 / total) * error_greater_013
+
+print('2018-Dec-9')
+print(f"The purity gain ∆ is {gain:.3f}")
+print('\n')
+
+# 10
+"""
+Solution 10. We will first form the matrix Rki, de-
+fined as the number of observations in split k belonging
+to class i:
+R =
+[108 112 56
+58 75 116
+]
+.
+From this we obtain N = ∑
+ki Rki = 525 as the total
+number of observations. For each split, the number of
+observations in the largest classes, nk, is:
+n1 = max
+i Rik = 112, n2 = max
+i Rik = 116.
+Therefore, the accuracy is:
+Accuracy: 112 + 116
+\
+525
+and answer D is correct
+
+In a decision tree, the prediction for each node is the most common class of the instances in that node. Therefore, 
+the accuracy can be calculated by adding the count of the most common class in each node, divided by the total number 
+of instances. 
+
+"""
+# Find the maximum count for each split (these are the predictions)
+prediction_less_equal_013 = max(x9_less_equal_013)
+prediction_greater_013 = max(x9_greater_013)
+
+# Total correct predictions
+correct_predictions = prediction_less_equal_013 + prediction_greater_013
+
+# Accuracy is the ratio of correct predictions to total observations
+accuracy = correct_predictions / total
+
+print('2018-Dec-10')
+print(f"The accuracy is {accuracy:.2f}")
+print('\n')
+
+# 11
+"""
+Solution 11. The correct answer is D. Since we are
+computing the cosine similarity, the length of the vo-
+cabulary is irrelevant. We then observe that document
+s1 contains n1 = 12 unique words and document s2
+contains n2 = 7 unique words, and the two documents
+have f11 = 4 words in common. The cosine similarity
+is therefore:
+cos(s1, s2) = f11
+‖x1‖‖x2‖ = f11/ (√n1*√n2)
+≈ 0.44
+
+n this solution, the cosine similarity between two sentences s1 and s2 is computed. As previously explained, the cosine similarity is a measure of how similar two vectors are, given by the formula:
+
+cosine similarity = dot product of the vectors / (magnitude of vector 1 * magnitude of vector 2)
+
+In the context of these two sentences, the 'vectors' are the bag-of-words representations of the sentences, and the 'dot product of the vectors' is the number of words that the two sentences have in common. The 'magnitude' of a vector is the square root of the number of unique words in the sentence.
+
+From the problem, we know that:
+
+Document s1 has n1 = 12 unique words.
+Document s2 has n2 = 7 unique words.
+The two documents share f11 = 4 words in common.
+Therefore, we can substitute these values into the formula to get:
+
+cosine similarity = f11 / sqrt(n1 * n2)
+
+Doing the calculation gives us a cosine similarity of approximately 0.44, which is answer choice D. This indicates that the two sentences are somewhat similar in terms of their word content, but not identical.
+"""
+from math import sqrt
+
+def cosine_similarity(s1, s2):
+    words_s1 = set(s1.split())
+    words_s2 = set(s2.split())
+
+    common_words = len(words_s1.intersection(words_s2))
+    unique_words_s1 = len(words_s1)
+    unique_words_s2 = len(words_s2)
+
+    return common_words / (sqrt(unique_words_s1) * sqrt(unique_words_s2))
+
+s1 = "the bag of words representation should not give you a hard time"
+s2 = "remember the representation should be a vector"
+
+similarity = cosine_similarity(s1, s2)
+
+print('2018-Dec-12')
+print("Cosine similarity between s1 and s2 is:", similarity)
+print('\n')
+
+# 12
+"""
+Option B: Weights [-2.82, 0.0]
+The logistic regression equation is y = σ(-2.82 + 0.0 * x8).
+For x8 = 1, the predicted probability p(y=1|x8) = σ(-2.82) ≈ 0.056. This does not match the Figure 7, where the probability is closer to 0.69 for x8 = 1.
+
+Option C: Weights [1.36, 0.4]
+The logistic regression equation is y = σ(1.36 + 0.4 * x8).
+For x8 = 1, the predicted probability p(y=1|x8) = σ(1.36 + 0.4) ≈ 0.85. This does not match the Figure 7, where the probability is closer to 0.69 for x8 = 1.
+
+Option D: Weights [-0.65, 0.0]
+The logistic regression equation is y = σ(-0.65 + 0.0 * x8).
+For x8 = 1, the predicted probability p(y=1|x8) = σ(-0.65) ≈ 0.34. This does not match the Figure 7, where the probability is closer to 0.69 for x8 = 1.
+
+As we can see, the predictions generated by the other options (B, C, and D) do not match the probabilities shown in Figure 7, which means that they are not the correct weights for the logistic regression model.
+
+On the other hand, option A with weights [-0.93, 1.72] generates predictions that closely match the probabilities shown in Figure 7, as well as the true labels for the provided data points. This is why option A is the correct answer.
+"""
+import numpy as np
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+weights_option_A = np.array([-0.93, 1.72])
+x8 = np.array([1, 1])  # 1 for the constant feature, and 1 for the x8 value
+
+y_hat = sigmoid(np.dot(x8, weights_option_A))
+print('2018-Dec-12')
+print(y_hat)
+print('\n')
+
+# 13
+"""
+The ROC curve and AUC are popular metrics used for evaluating the performance of a binary classifier. The ROC curve is a plot that displays the true positive rate (TPR) against the false positive rate (FPR) at various threshold settings. The AUC (Area Under the Curve) is the measure of the ability of a classifier to distinguish between classes and is used as a summary of the ROC curve.
+
+The process of computing the AUC involves the following steps:
+
+Define a range of threshold values: The threshold value, denoted as ˆy in the question, is a cut-off point that decides the class label of an observation based on the predicted probability. If the predicted probability is greater than the threshold, the observation is assigned to class 1; otherwise, it's assigned to class 0.
+
+Calculate the TPR and FPR for each threshold: For each threshold value, compute the true positive rate (TPR) and false positive rate (FPR).
+
+TPR (True Positive Rate): This is the proportion of actual positive observations (class 1) that are correctly identified as such. It's calculated as the number of true positives divided by the total number of actual positives.
+
+FPR (False Positive Rate): This is the proportion of actual negative observations (class 0) that are incorrectly identified as positive. It's calculated as the number of false positives divided by the total number of actual negatives.
+
+Plot the ROC curve: The ROC curve is obtained by plotting the TPR against the FPR at each threshold value. Each point on the ROC curve represents a sensitivity/specificity pair corresponding to a particular decision threshold.
+
+Compute the AUC: The AUC is the area under the ROC curve. A larger AUC indicates a better classifier.
+
+In the context of the question, only the ROC curve represented by option C matches the computed TPR and FPR values, and therefore, it is the correct choice.
+
+The Receiver Operating Characteristic (ROC) curve is a graphical representation that illustrates the diagnostic ability of a binary classifier system as its discrimination threshold is varied. It's created by plotting the True Positive Rate (TPR) against the False Positive Rate (FPR) at various threshold settings.
+
+In your case, y_true is the array of true labels, and y_scores are the predicted probabilities for the positive class.
+
+The roc_curve function computes the FPR, TPR, and thresholds used to calculate these rates. This is achieved by sorting the predicted probabilities in descending order and then, for each unique probability, labeling all instances with a probability greater than or equal to this threshold as positive and all others as negative. Then, for each threshold, the function calculates:
+
+True Positive Rate (TPR): This is the proportion of actual positive observations (true class label is 1) that are correctly classified as positive by the classifier. It's calculated as TP / (TP + FN), where TP is the number of true positives and FN is the number of false negatives.
+
+False Positive Rate (FPR): This is the proportion of actual negative observations (true class label is 0) that are incorrectly classified as positive by the classifier. It's calculated as FP / (FP + TN), where FP is the number of false positives and TN is the number of true negatives.
+
+The roc_curve function returns three arrays: FPR, TPR, and the thresholds used.
+
+The auc function computes the Area Under the Curve (AUC) of the ROC curve. AUC is a single number summary of the overall performance of a binary classifier. A perfect classifier will have an AUC of 1, while a random classifier (no predictive power) will have an AUC of 0.5.
+
+The AUC is calculated by adding up all the trapezoidal areas formed under the ROC curve. Each trapezoid spans from one TPR/FPR point to the next, with the area calculated as (base / 2) * (sum of parallel sides).
+
+Finally, the code plots the ROC curve and the diagonal line representing a random classifier. The AUC is also included in the legend.
+
+If you need to calculate these manually without third-party libraries like sklearn.metrics, you would need to sort your predictions, iterate over them to calculate TPR and FPR at each threshold, and then use these to calculate the AUC.
+"""
+from sklearn.metrics import roc_curve, auc
+
+# Assuming y_true is your array of true labels and y_scores are the predicted probabilities for positive class
+y_true = [0, 0, 1, 1, 0, 1, 0]  # replace this with your data
+y_scores = [0.1, 0.23, 0.4, 0.5, 0.52, 0.6, 0.61]  # replace this with your data
+
+# Compute the ROC curve points
+fpr, tpr, thresholds = roc_curve(y_true, y_scores)
+
+# Compute the AUC (Area Under the Curve)
+roc_auc = auc(fpr, tpr)
+
+# Now you can plot the ROC curve using matplotlib
+import matplotlib.pyplot as plt
+
+plt.figure()
+plt.plot(fpr, tpr, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], 'k--')  # random predictions curve
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.0])
+plt.xlabel('False Positive Rate or (1 - Specifity)')
+plt.ylabel('True Positive Rate or (Sensitivity)')
+plt.title('Receiver Operating Characteristic 2018-Dec-13')
+plt.legend(loc="lower right")
+plt.show()
+
+# 14
+"""
+The Naive Bayes classifier is a probabilistic model that is based on applying Bayes' theorem with strong (naive) independence assumptions between the features. In this case, the features are f1, f2, and f6. The Naive Bayes classifier assumes that the effect of a particular feature in a class is independent of other features.
+
+To solve this problem, we need to calculate the probability for y = 1 (class C1) given f1 = 1, f2 = 1, and f6 = 0.
+
+Let's first find out the total number of observations for each class:
+
+Class C1: {o1, o2, o3} = 3 observations
+Class C2: {o4, o5, o6, o7, o8} = 5 observations
+Class C3: {o9, o10} = 2 observations
+The total number of observations is 10.
+
+Now, let's calculate the probabilities for the given features:
+
+P(y = 1) = The probability of class C1 = Number of observations in class C1 / Total number of observations = 3/10
+
+P(f1 = 1|y = 1) = The probability that f1 = 1 given class C1. We observe from the table that there are 2 instances in class C1 where f1 = 1. So, the probability is 3/3.
+
+P(f2 = 1|y = 1) = The probability that f2 = 1 given class C1. We observe from the table that there are 2 instances in class C1 where f2 = 1. So, the probability is 2/3.
+
+P(f6 = 0|y = 1) = The probability that f6 = 0 given class C1. We observe from the table that there are 2 instances in class C1 where f6 = 0. So, the probability is 1/3.
+
+Finally, we can use the Naive Bayes theorem, which states that:
+
+P(y|x1, x2, ..., xn) = P(y) * P(x1|y) * P(x2|y) * ... * P(xn|y)
+
+Therefore,
+
+pNB(y = 1|f1 = 1, f2 = 1, f6 = 0) = P(y = 1) * P(f1 = 1|y = 1) * P(f2 = 1|y = 1) * P(f6 = 0|y = 1) = (3/10) * (2/3) * (2/3) * (2/3)
+"""
+# Defining the probabilities
+P_y = 3/10
+P_f1_given_y = 3/3
+P_f2_given_y = 2/3
+P_f6_given_y = 1/3
+
+# Applying Naive Bayes theorem
+P_y_given_f1_f2_f6 = P_y * P_f1_given_y * P_f2_given_y * P_f6_given_y
+
+# Print the result
+print("pNB(y = 1|f1 = 1, f2 = 1, f6 = 0) = ", P_y_given_f1_f2_f6)
