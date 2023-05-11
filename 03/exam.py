@@ -1749,15 +1749,286 @@ P(y|x1, x2, ..., xn) = P(y) * P(x1|y) * P(x2|y) * ... * P(xn|y)
 Therefore,
 
 pNB(y = 1|f1 = 1, f2 = 1, f6 = 0) = P(y = 1) * P(f1 = 1|y = 1) * P(f2 = 1|y = 1) * P(f6 = 0|y = 1) = (3/10) * (2/3) * (2/3) * (2/3)
+
+
+You are indeed correct. The Naive Bayes probability should be calculated as:
+
+pNB(y = 1|f1 = 1, f2 = 1, f6 = 0) = [p(f1 = 1|y = 1)p(f2 = 1|y = 1)p(f6 = 0|y = 1)p(y = 1)] / [∑(for j=1 to 3) p(f1 = 1|y = j)p(f2 = 1|y = j)p(f6 = 0|y = j)p(y = j)]
+
+Substituting the values:
+
+pNB(y = 1|f1 = 1, f2 = 1, f6 = 0) = [(1)(2/3)(1/3)(3/10)] / [(1)(2/3)(1/3)(3/10) + (1)(1)(2/5)(2/5) + (0)(0)(1/2)(1/5)]
+
+Solving this gives:
+
+pNB(y = 1|f1 = 1, f2 = 1, f6 = 0) = 5/11
+
+So, the correct answer is indeed:
+
+C. pNB(y = 1|f1 = 1, f2 = 1, f6 = 0) = 5/11
 """
-# Defining the probabilities
-P_y = 3/10
-P_f1_given_y = 3/3
-P_f2_given_y = 2/3
-P_f6_given_y = 1/3
+# Given values
+p_f1_y1 = 1
+p_f2_y1 = 2/3
+p_f6_y1 = 1/3
+p_y1 = 3/10
 
-# Applying Naive Bayes theorem
-P_y_given_f1_f2_f6 = P_y * P_f1_given_y * P_f2_given_y * P_f6_given_y
+p_f1_y2 = 2/5
+p_f2_y2 = 1
+p_f6_y2 = 2/5
+p_y2 = 5/10
 
-# Print the result
-print("pNB(y = 1|f1 = 1, f2 = 1, f6 = 0) = ", P_y_given_f1_f2_f6)
+p_f1_y3 = 1/2
+p_f2_y3 = 0/1
+p_f6_y3 = 0/1
+p_y3 = 1/5
+
+# Calculate numerator
+numerator = p_f1_y1 * p_f2_y1 * p_f6_y1 * p_y1
+
+# Calculate denominator
+denominator = ((p_f1_y1 * p_f2_y1 * p_f6_y1 * p_y1) +
+               (p_f1_y2 * p_f2_y2 * p_f6_y2 * p_y2) +
+               (p_f1_y3 * p_f2_y3 * p_f6_y3 * p_y3))
+
+# Calculate Naive Bayes probability
+pNB_y1_f1_f2_f6 = numerator / denominator
+
+print('2018-Dec-12')
+print(f"The Naive Bayes probability is {pNB_y1_f1_f2_f6}")
+print('\n')
+
+# 15
+"""
+In this problem, an itemset is a set of features (f1, f2, ..., f10) and support is defined as the proportion of the total transactions (o1, o2, ..., o10) in which an itemset appears.
+
+If the support is greater than 0.55, it means that the itemset appears in more than 55% of the transactions.
+
+The question asks us to find all itemsets that have a support greater than 0.55.
+
+Let's manually count the support for each feature:
+
+f1 appears in 6 out of 10 transactions, so its support is 0.6.
+f2 appears in 6 out of 10 transactions, so its support is 0.6.
+f3 appears in 4 out of 10 transactions, so its support is 0.4.
+f4 appears in 4 out of 10 transactions, so its support is 0.4.
+f5 appears in 1 out of 10 transactions, so its support is 0.1.
+f6 appears in 6 out of 10 transactions, so its support is 0.6.
+f7 appears in 5 out of 10 transactions, so its support is 0.5.
+f8 appears in 4 out of 10 transactions, so its support is 0.4.
+f9 appears in 6 out of 10 transactions, so its support is 0.6.
+f10 appears in 4 out of 10 transactions, so its support is 0.4.
+Based on these calculations, only f2, f6, and f1 have support greater than 0.55. B
+
+"""
+
+# 16
+"""
+In this context, support is defined as the proportion of transactions in which an itemset appears.
+
+The itemset {f1, f3, f8, f9} ∪ {f2, f6, f7} represents the union of the features {f1, f3, f8, f9} and {f2, f6, f7}, which is {f1, f2, f3, f6, f7, f8, f9}.
+
+To find the support of this itemset, we would need to count how many transactions (out of the total of 10 transactions) contain all of these features.
+
+According to the solution you provided, this itemset appears in 1 out of 10 transactions, so its support is 1/10.
+The confidence of a rule {X} -> {Y} is indeed calculated as support({X} ∪ {Y}) / support({X}).
+
+In this case, the rule is {f1, f3, f8, f9} -> {f2, f6, f7}.
+
+According to the solution, the support for both {f1, f3, f8, f9} and {f1, f3, f8, f9} ∪ {f2, f6, f7} is 1/10.
+
+If we plug these values into the formula, we get:
+
+confidence = support({f1, f3, f8, f9} ∪ {f2, f6, f7}) / support({f1, f3, f8, f9}) = (1/10) / (1/10) = 1
+
+This means that every time {f1, f3, f8, f9} appears in a transaction, {f2, f6, f7} also appears. Hence, the confidence of the rule {f1, f3, f8, f9} -> {f2, f6, f7} is indeed 1. Therefore, answer B is correct.
+"""
+
+# 17
+"""
+However, I can explain the general process described in the solution:
+
+Define a decision tree: This is a tree-like model of decisions where each internal node represents a "test" on an attribute, each branch represents the outcome of the test, and leaf nodes represent class labels. The topmost node in a tree is the root node.
+
+Check the condition assigned to the node: Starting from the root of the tree, you would evaluate the condition assigned to that node. If the condition for the node is met (i.e., the condition is true for your observation), you proceed along the 'true' branch. If not, you proceed along the 'false' branch.
+
+Proceed along the true or false leg of the tree: Continue this process, evaluating conditions and moving along the branches of the tree, until you reach a leaf node. The class label at the leaf node is the predicted class for your observation.
+
+Look at decision boundaries: By plotting the decision boundaries that result from the decision tree's rules, you can visualize how the tree is classifying the data based on the two features, x7 and x9. Each region separated by the boundaries corresponds to a class label.
+
+The solution you provided indicates that after applying this process to each of the options, the option that correctly matches the decision boundaries for the features x7 and x9 in the decision tree is option C.
+"""
+
+# 18
+"""
+The Apriori algorithm is used for mining frequent itemsets for boolean association rules. It operates on two major principles:
+
+If an itemset is frequent, then all of its subsets are frequent.
+If an itemset is infrequent, then its supersets are also infrequent.
+These two principles are known as the Apriori property.
+
+In the question, we are at iteration k=3, and we have a set of frequent 2-itemsets (L2). Now, we want to generate the set of candidate 3-itemsets (C'3) and then prune some of them based on the Apriori property to get C3.
+
+If any 2-item subset of a 3-itemset in C'3 is not in L2, we remove that 3-itemset from C'3 to form C3. This is because of the second principle: if a 2-itemset (subset) is not frequent (not in L2), then its 3-itemset (superset) cannot be frequent.
+
+So, when the question asks for the itemsets that the Apriori algorithm does not have to evaluate the support of, it's asking for the 3-itemsets that are in C'3 but not in C3. These are the 3-itemsets that have at least one 2-item subset not in L2.
+
+Looking at the options again:
+
+A. {f2, f3, f4} - All of its 2-item subsets are in L2, so it's not pruned.
+B. {f1, f2, f6} - One of its 2-item subsets, {f1, f2}, is not in L2, so it's pruned.
+C. {f2, f3, f6} - All of its 2-item subsets are in L2, so it's not pruned.
+D. {f1, f3, f4} - Two of its 2-item subsets, {f1, f3} and {f1, f4}, are not in L2, so it's pruned.
+
+So, the itemsets that we don’t have to compute the support of (i.e., the pruned itemsets) are {f1, f2, f6} and {f1, f3, f4}.
+
+So, the answer is D: the Apriori algorithm would not need to evaluate the support of {f1, f3, f4}.
+"""
+import itertools
+
+# Given L2 (2-itemsets)
+L2 = [
+    {1, 2},
+    {1, 6},
+    {2, 3},
+    {2, 4},
+    {2, 6},
+    {3, 4},
+    {3, 6}
+]
+
+# Options for 3-itemsets
+options = [
+    {2, 3, 4},
+    {1, 2, 6},
+    {2, 3, 6},
+    {1, 3, 4}
+]
+
+print('2018-Dec-12')
+# Check if any 2-item subset of a 3-itemset is not in L2
+for i, itemset in enumerate(options, start=1):
+    subsets = list(itertools.combinations(itemset, 2))
+    if any(set(subset) not in L2 for subset in subsets):
+        print(f"Option {chr(64 + i)}: {itemset} does not need to be evaluated.")
+print('\n')
+
+
+# 20
+"""
+The question is asking us to find the probability that a given observation was written by copyist 1 (y=1), given that x2=1 and x10=0. This can be denoted as P(y=1|x2=1, x10=0).
+
+In the problem, we are given:
+
+The prior probabilities of each copyist, denoted as P(y=1), P(y=2), and P(y=3).
+The conditional probabilities of observing certain values of x2 and x10 given the copyist, denoted as P(x2, x10|y).
+We want to find P(y=1|x2=1, x10=0), which according to Bayes' theorem, is calculated as:
+
+P(y=1|x2=1, x10=0) = P(x2=1, x10=0|y=1) * P(y=1) / P(x2=1, x10=0)
+
+Now, we know from the given table that P(x2=1, x10=0|y=1) is 0.25 and P(y=1) is 0.316. We just need to calculate P(x2=1, x10=0).
+
+P(x2=1, x10=0) is the total probability of x2=1 and x10=0, which can be found by adding the probabilities of these events for each copyist:
+
+P(x2=1, x10=0) = P(x2=1, x10=0|y=1) * P(y=1) + P(x2=1, x10=0|y=2) * P(y=2) + P(x2=1, x10=0|y=3) * P(y=3)
+
+Substituting the given values:
+
+P(x2=1, x10=0) = 0.25 * 0.316 + 0.2 * 0.356 + 0.35 * 0.328 = 0.079 + 0.0712 + 0.1148 = 0.265
+
+Now we can calculate P(y=1|x2=1, x10=0):
+
+P(y=1|x2=1, x10=0) = (0.25 * 0.316) / 0.265 = 0.079 / 0.265 = 0.298
+
+So, the probability that an observation was written by copyist 1 given that x2=1 and x10=0 is 0.298. This corresponds to option D.
+"""
+
+# 21 TODO
+"""
+The AdaBoost algorithm is a machine learning method that combines multiple "weak classifiers" into a single "strong classifier". Each weak classifier (in this case, there are 4 of them) makes a prediction for each data point, and these predictions are combined to make a final prediction. The way these predictions are combined is by assigning a weight to each weak classifier's prediction. These weights are denoted by α in your dataset.
+
+In this case, we're trying to predict the class (either 1 or 2) of two test data points (ytest1 and ytest2). For each test point, we calculate a sum of the weights α of the classifiers that predict each class (1 or 2).
+
+For ytest1, the sum of the weights of the classifiers that predict class 1 (F1(ytest1)) is -0.51, and the sum of the weights of the classifiers that predict class 2 (F2(ytest1)) is 0.039. Since F2(ytest1) is larger, we predict that ytest1 belongs to class 2.
+
+For ytest2, the sum of the weights of the classifiers that predict class 1 (F1(ytest2)) is -0.185, and the sum of the weights of the classifiers that predict class 2 (F2(ytest2)) is -0.286. Since F1(ytest2) is larger, we predict that ytest2 belongs to class 1.
+
+So, the final prediction of the AdaBoost classifier is that ytest1 belongs to class 2 and ytest2 belongs to class 1, which corresponds to option B: [ytest1, ytest2] = [2, 1].
+"""
+
+# 26
+"""
+The decision boundary for a k-nearest neighbors (KNN) classifier with K=1 is determined by the distance measure used. The p-norm is given by
+
+dp(x, y) = ( ∑ |xj - yj|^p )^(1/p)
+
+where p ≥ 1. The shape of the decision boundary changes as p changes:
+
+p = 1 corresponds to the Manhattan distance (L1 norm). The decision boundary in this case forms a diamond shape (because we are moving in horizontal and vertical steps).
+p = 2 corresponds to the Euclidean distance (L2 norm). The decision boundary in this case forms a circle (or an ellipse in higher dimensions).
+p = ∞ corresponds to the Chebyshev distance (L∞ norm). The decision boundary in this case forms a square (because we are taking the maximum difference along any coordinate axis).
+For other values of p, the shape of the decision boundary will be somewhere between these three. In the case of p = 4, the decision boundary will be closer to a square than a circle.
+Without the actual figure, it's impossible to give an exact answer. However, you should look for these patterns in the decision boundaries to match them with the p-norms. If you want to match the classifiers to the p-norms, look for the diamond (p = 1), circle (p = 2), square (p = ∞), and a shape between a square and a circle (p = 4).
+
+
+
+This problem is about understanding how different norms (p = 1, 2, 4, ∞) affect the decision boundaries of a k-nearest neighbors (KNN) classifier.
+
+A decision boundary is the hypersurface that partitions the underlying vector space into two sets, one for each class. The location of a point (vector) relative to the decision boundary decides the class of that point when using the classifier.
+
+In a KNN classifier with K=1, the decision boundary is determined by the distance measure used.
+
+The solution explains how the decision boundaries change for different p-norms. Here's the summary:
+
+p = 1 (Manhattan distance): The decision boundary is a straight line at a 45-degree angle to the coordinate system.
+
+p = 2 (Euclidean distance): The decision boundary is a straight line passing through (0, 0) and perpendicular to the vector (x, y).
+
+p = ∞ (Chebyshev distance): When the condition d+x < y is satisfied, the horizontal line h = 0 is part of the decision boundary. This boundary looks like a square.
+
+p = 4: The decision boundary for this case is not explicitly calculated in the solution but is inferred to be a crossover between the p = 2 and p = ∞ cases.
+
+After understanding the shapes of the decision boundaries induced by these norms, you should be able to match the norms with the classifiers based on the shapes of their decision boundaries, which should be presented in a figure in your material.
+
+According to the given solution, option C is correct, meaning:
+
+KNN classifier 1 corresponds to p = 4
+KNN classifier 2 corresponds to p = 1
+KNN classifier 3 corresponds to p = 2
+KNN classifier 4 corresponds to p = ∞
+"""
+
+# 27
+"""
+The k-means algorithm iteratively partitions the data into clusters and then updates the cluster centers (means) until convergence. In this case, you are given the initial partitions:
+
+    {0.1, 0.3}
+    {0.5, 1.0}
+    {2.2, 3.0, 4.1}
+    {4.4, 4.7}
+
+The next step of the k-means algorithm is to calculate the means of these clusters:
+
+    Mean of {0.1, 0.3} is 0.2
+    Mean of {0.5, 1.0} is 0.75
+    Mean of {2.2, 3.0, 4.1} is 3.1
+    Mean of {4.4, 4.7} is 4.55
+
+Then, we reassign each observation to the cluster with the nearest mean:
+
+    0.1 and 0.3 are closest to 0.2, so they stay in the first cluster.
+    0.5 and 1.0 are closest to 0.75, so they stay in the second cluster.
+    2.2 is closest to 0.75, so it moves to the second cluster.
+    3.0 is closest to 3.1, so it stays in the third cluster.
+    4.1 is closest to 4.55, so it moves to the fourth cluster.
+    4.4 and 4.7 are closest to 4.55, so they stay in the fourth cluster.
+
+This gives us the new clusters:
+
+    {0.1, 0.3}
+    {0.5, 1.0, 2.2}
+    {3.0}
+    {4.1, 4.4, 4.7}
+    
+The process is repeated until the clusters no longer change. In this case, the next iteration will not change the clusters, so the algorithm has converged. This result corresponds to option B.
+"""
