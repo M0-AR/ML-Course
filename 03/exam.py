@@ -2224,3 +2224,223 @@ This gives us the new clusters:
     
 The process is repeated until the clusters no longer change. In this case, the next iteration will not change the clusters, so the algorithm has converged. This result corresponds to option B.
 """
+
+######################################
+# May 2019
+######################################
+print('May 2019')
+
+# 3
+"""
+The Principal Component Analysis (PCA) is a technique used for dimensionality reduction or feature extraction. It transforms the data into a new coordinate system such that the greatest variance by some projection of the data comes to lie on the first coordinate (called the first principal component), the second greatest variance on the second coordinate, and so on.
+
+In the singular value decomposition (SVD) of the data matrix, the V matrix contains the principal components of the data, and the S matrix contains the singular values, which are related to the amount of variance each principal component explains. The elements of the V matrix (also known as the loadings of the principal components) give the weights of the original variables for each principal component.
+
+Looking at the problem, each row of matrix V corresponds to one of the features (museums, parks, beaches, theaters, and religious institutions, respectively), and each column corresponds to a principal component. The elements of each column represent how much each feature contributes to that principal component.
+
+Let's look at the options:
+
+A. An observation with a low value of museums, and a high value of religious will typically have a negative value of the projection onto principal component number 1.
+
+The first principal component (PC1) is associated with high weights for museums (0.94) and negatively for religious 
+institutions (-0.33). Thus, an observation with low museums (which would reduce the contribution to PC1) and high 
+religious (which would also reduce the contribution, because of the negative weight) would indeed tend to have a 
+lower (negative) value for PC1. Hence, option A is correct. 
+
+B. An observation with a low value of museums, and a low value of religious will typically have a positive value of the projection onto principal component number 3.
+
+The third principal component (PC3) has positive weights for both museums (0.32) and religious institutions (0.94). Therefore, an observation with low values for both these features would tend to have a lower value for PC3, not a higher one. So, option B is not correct.
+
+C. An observation with a low value of museums, and a high value of religious will typically have a positive value of the projection onto principal component number 1.
+
+This is essentially the opposite of option A, and as explained there, an observation with these characteristics would tend to have a lower value for PC1, not a higher one. So, option C is not correct.
+
+D. An observation with a high value of parks will typically have a positive value of the projection onto principal component number 5.
+
+The fifth principal component (PC5) has a negative weight for parks (-1.0), which means that a high value for parks would actually reduce the value of PC5, not increase it. So, option D is not correct.
+
+Therefore, the correct answer is A. An observation with a low value of museums, and a high value of religious will typically have a negative value of the projection onto principal component number 1.
+"""
+
+# 4
+"""
+Let's calculate the average relative density (ARD) for observation o7 using your provided data.
+
+The K = 2 neighborhood of o7 and density are given as:
+
+scss
+Copy code
+NX\7 (x7) = {o6, o4}, densityX\7 (x7) = 0.513
+We have also the K = 2 neighborhoods and densities for each element in the neighborhood of o7:
+
+scss
+Copy code
+NX\6 (x6) = {o7, o1}, densityX\6 (x6) = 0.571
+NX\4 (x4) = {o1, o6}, densityX\4 (x4) = 0.667
+The formula for ARD is:
+
+mathematica
+Copy code
+ard_X (xi, K) = density_X\i (xi, K) / (1/K * Σ_{xj ∈ N_X\i (xi,K)} density_X\j (xj , K))
+Using this, we can calculate the ARD for o7:
+
+scss
+Copy code
+ard_X (o7, 2) = density_X\7 (o7, 2) / (1/2 * (density_X\6 (o6, 2) + density_X\4 (o4, 2)))
+                       = 0.513 / (1/2 * (0.571 + 0.667))
+                       = 0.513 / (0.619)
+                       = 0.83
+So, the average relative density for observation o7 for K = 2 nearest neighbors is approximately 0.83, which corresponds to option D.
+"""
+# Step 1: Identify the 2 nearest neighbors of o7
+neighbors_o7 = ['o6', 'o4']
+distances_o7 = [1.7, 2.2]
+
+# Step 2: Calculate the KNN density of o7
+density_o7 = 1 / (sum(distances_o7) / len(distances_o7))
+
+# Step 3: Calculate the KNN densities of the 2 nearest neighbors (o6 and o10)
+neighbors_o6 = [1.7, 1.8]
+neighbors_o10 = [0.9, 2.1]
+
+density_o6 = 1 / (sum(neighbors_o6) / len(neighbors_o6))
+density_o4 = 1 / (sum(neighbors_o10) / len(neighbors_o10))
+
+# Step 4: Calculate the average relative density (ARD) of o7
+ard_o7 = density_o7 / ((density_o6 + density_o4) / 2)
+
+print('2019-may-04') # TODO the result not correct
+print(f'The average relative density for observation o7 for K = 2 nearest neighbors is {ard_o7:.2f}')
+print('\n')
+
+# 5
+"""
+Solution 5.
+The correct answer is C. To see this, recall that
+leave-one-out cross-validation means we train a total
+of N = 10 models, each model being tested on a single
+observation and trained on the remaining such that
+each observation is used for testing exactly once.
+The model considered is KNN classifier with k = 3.
+To figure out the error for a particular observation i
+(i.e. the test set for this fold), we train a model on the
+other observations and predict on observation i. To do
+that, simply find the observation different than i closest
+to i according to Table 2 and predict i as belonging to
+it’s class. Concretely, we find: N (o1, k) = {o4, o6, o2},
+N (o2, k) = {o1, o4, o5}, N (o3, k) = {o9, o10, o7},
+N (o4, k) = {o1, o6, o7}, N (o5, k) = {o2, o4, o1},
+N (o6, k) = {o7, o1, o4}, N (o7, k) = {o6, o4, o1},
+N (o8, k) = {o4, o1, o5}, N (o9, k) = {o3, o10, o7}, and
+N (o10, k) = {o3, o9, o7}.
+The error is then found by observing how often
+the class label of the observation in the neighborhood
+agrees with the true class label. We find this happens
+for observations
+{o6, o7, o9, o10}
+and the remaining observations are therefore erro-
+neously classified, in other words, the classification er-
+ror is 6/10 .
+explain to me above sotlution 
+
+Leave-one-out cross-validation: This is a technique where you train your model on all data points except one, and then test the model on the left-out data point. You do this for each data point, so if you have N data points, you train N models. Each data point gets a turn as the test set.
+
+k-nearest neighbor classifier (k=3): This is a type of model where the class of an observation is predicted based on the classes of its nearest neighbors. k is the number of neighbors you look at. In this case, you're looking at the 3 nearest neighbors.
+
+Prediction for each observation: You predict the class of an observation by looking at its 3 nearest neighbors (excluding the observation itself). You then predict the class of the observation to be the most common class among these neighbors.
+
+Calculating the error: After predicting the class for each observation, you then compare the predicted class to the true class. If they don't match, then that's an error. You count the number of errors, and then divide by the total number of observations (N=10) to get the error rate.
+
+To be more concrete, let's take a look at the first prediction: N(o1, k) = {o4, o6, o2}. This means that the three nearest neighbors to o1 are o4, o6, and o2. According to the class labels given in the problem, o4 belongs to C2, o6 belongs to C3, and o2 belongs to C1. If we consider the nearest observation from the tied classes, o4 is the nearest one, so we predict o1 to be class C2. However, the true class of o1 is C1, so this is an error.
+
+You do this for every observation, and then calculate the error rate as the number of errors divided by the total number of observations. From your example, you found that observations {o6, o7, o9, o10} were correctly classified, so the remaining 6 observations were misclassified, leading to an error rate of 6/10 or 0.6.
+
+Understanding the Data:
+
+The table you provided contains the distances between pairs of observations (o1 to o10).
+There are three classes C1, C2, and C3. The observations {o1, o2} belong to class C1, the observations {o3, o4, o5} belong to class C2, and the observations {o6, o7, o8, o9, o10} belong to class C3.
+Leave-One-Out Cross Validation (LOOCV) and k-Nearest Neighbors (KNN):
+
+In LOOCV, for each observation, we create a model where that observation is left out of the training data and then used as the test data. For our problem, we have 10 observations, so we would create 10 models.
+In each of these models, we apply a 3-nearest neighbors (k=3) classifier. This means that to predict the class of the left-out observation, we look at the three observations closest to it (based on the distances in the table), and assign it the class that is most common among those three.
+Making Predictions:
+
+For each observation, we need to find its three nearest neighbors. We ignore the distance to itself (which is 0), and look for the three smallest distances. For example, the three nearest neighbors to o1 are o4, o6, and o2.
+We then look at the classes of these three neighbors. For o1, o4 is in class C2, o6 is in class C3, and o2 is in class C1. The nearest observation from the tied classes is o4, so we predict o1 to be in class C2.
+Calculating the Error Rate:
+
+After making predictions for all the observations, we compare the predicted classes to the actual classes.
+If the predicted class doesn't match the actual class, that's an error. We count up all the errors. For example, o1 was predicted to be in class C2, but it's actually in class C1, so that's an error.
+We find that the observations {o6, o7, o9, o10} are correctly classified, and the rest are not, so we have 6 errors out of 10 observations.
+The error rate is the number of errors divided by the total number of observations, so our error rate is 6/10 = 0.6.
+That's it! This is a pretty straightforward application of LOOCV and KNN, once you understand how those methods work.
+"""
+
+# 6
+"""
+From the data provided, we can derive the clustering assignments as follows:
+
+Ground-truth clustering Z (color indicated):
+
+C1 (black): {o1, o2}
+C2 (red): {o3, o4, o5}
+C3 (blue): {o6, o7, o8, o9, o10}
+Clustering Q (derived from dendrogram):
+
+{10}
+{1, 2, 4, 5, 6, 7}
+{3, 8, 9}
+To create the counting matrix, we compare the clusters of Z and Q. For each element, we mark the intersection of the cluster from Z and the cluster from Q. Let's denote the clusters in Z as Z1, Z2, Z3 and the clusters in Q as Q1, Q2, Q3. The counting matrix would look like this:
+
+Copy code
+| Q1 | Q2 | Q3 |
+Z1 | | | |
+Z2 | | | |
+Z3 | | | |
+
+Now, we fill in the counts. For example, for the first cell, we're looking for the number of elements that are in both Z1 and Q1.
+
+After doing this for all cells, we obtain the counting matrix:
+
+Copy code
+| Q1 | Q2 | Q3 |
+Z1 | 0 | 2 | 0 |
+Z2 | 0 | 2 | 1 |
+Z3 | 1 | 2 | 2 |
+
+This matrix tells us how many elements from each cluster in Z are in each cluster in Q. For example, the cell (Z1, Q2) tells us that there are 2 elements that are in Z1 (ground truth cluster 1) and also in Q2 (cluster 2 from the dendrogram).
+
+
+The solution is using the Jaccard similarity to measure the similarity between the ground-truth clustering Z and the clustering Q obtained by cutting the dendrogram.
+
+The first step is to define the clusters in Z and Q. Here, Z is the clustering corresponding to the colors in Table 2, and Q is the clustering obtained from the dendrogram as {10}, {1, 2, 4, 5, 6, 7}, {3, 8, 9}.
+
+Next, a counting matrix 'n' is created based on these clusters. Each cell in the matrix represents the number of pairs of points that are in the same cluster in both Z and Q.
+
+The counting matrix is given as:
+
+n =
+
+
+0 2 0
+0 2 1
+1 2 2
+
+
+
+Next, we calculate the quantities S and D.
+
+S is the sum of the diagonal elements of the counting matrix n. It represents the number of pairs that are in the same cluster in both Z and Q.
+
+S = 0 + 2 + 2 = 4
+
+D represents the number of pairs that are in the same cluster in Z but in different clusters in Q. It's calculated by summing up the squares of each row in the counting matrix, subtracting the square of the diagonal element, and adding these quantities for all rows.
+
+D = ((0+2+0)^2 - 0^2) + ((0+2+1)^2 - 2^2) + ((1+2+2)^2 - 2^2) = 17
+
+Finally, we calculate the Jaccard similarity between the two clusters Z and Q, which is given by the formula:
+
+J[Z, Q] = S / (0.5 * N*(N-1) - D)
+
+Where N is the total number of points. However, without knowing N, we cannot compute the final Jaccard similarity. The provided data does not include this information.
+"""
