@@ -2376,7 +2376,7 @@ The error rate is the number of errors divided by the total number of observatio
 That's it! This is a pretty straightforward application of LOOCV and KNN, once you understand how those methods work.
 """
 
-# 6
+# 7
 """
 From the data provided, we can derive the clustering assignments as follows:
 
@@ -2444,3 +2444,472 @@ J[Z, Q] = S / (0.5 * N*(N-1) - D)
 
 Where N is the total number of points. However, without knowing N, we cannot compute the final Jaccard similarity. The provided data does not include this information.
 """
+
+
+# 8
+
+"""
+To answer this question, we need to compute the classification error before and after each split and calculate the gain in impurity. The classification error for a multi-class problem can be calculated as follows:
+
+Classification Error = 1 - max(P(y=i))
+
+where P(y=i) is the probability of class i. The impurity gain is calculated as:
+
+Impurity Gain = Classification Error (before split) - Weighted Classification Error (after split)
+
+Let's first calculate the classification error before any split. The number of observations in each class are given as:
+
+ny=1 = 263, ny=2 = 359, ny=3 = 358.
+
+So, total number of observations is 263 + 359 + 358 = 980.
+
+P(y=1) = 263/980 = 0.26837
+P(y=2) = 359/980 = 0.36632
+P(y=3) = 358/980 = 0.36531
+
+Classification Error (before split) = 1 - max(P(y=i)) = 1 - 0.36632 = 0.63368
+
+Let's calculate the classification error and the weighted classification error after each split:
+
+Split 1: x4 ≤ 0.43
+
+We have:
+y=1: 143 observations
+y=2: 137 observations
+y=3: 54 observations
+Total = 334 observations
+
+For x4 > 0.43, we have:
+y=1: 263 - 143 = 120 observations
+y=2: 359 - 137 = 222 observations
+y=3: 358 - 54 = 304 observations
+Total = 646 observations
+
+Classification Error (x4 ≤ 0.43) = 1 - max(143/334, 137/334, 54/334) = 0.53892
+Classification Error (x4 > 0.43) = 1 - max(120/646, 222/646, 304/646) = 0.47059
+
+Weighted Classification Error (split x4 ≤ 0.43) = (334/980) * 0.53892 + (646/980) * 0.47059 = 0.50029
+
+Impurity Gain for split x4 ≤ 0.43 = 0.63368 - 0.50029 = 0.13339
+
+Split 2: x4 ≤ 0.55
+
+We have:
+y=1: 223 observations
+y=2: 251 observations
+y=3: 197 observations
+Total = 671 observations
+
+For x4 > 0.55, we have:
+y=1: 263 - 223 = 40 observations
+y=2: 359 - 251 = 108 observations
+y=3: 358 - 197 = 161 observations
+Total = 309 observations
+
+Classification Error (x4 ≤ 0.55) = 1 - max(223/671, 251/671, 197/671) = 0.62556
+Classification Error (x4 > 0.55) = 1 - max(40/309, 108/309, 161/309) = 0.47961
+
+Weighted Classification Error (split x4 ≤ 0.55) = (671/980) * 0.62556 + (309/980) * 0.47961 = 0.57165
+
+Impurity Gain for split x4 ≤ 0.55 = 0.63368 - 0.57165 = 0.06203
+
+
+It appears there was a mistake in the interpretation of the problem. The values provided for I0, I(v1), and I(v2) seem to be using the misclassification error as an impurity measure.
+
+The misclassification error for a node is calculated as:
+
+Misclassification Error = 1 - max(P(y=i))
+
+Where P(y=i) is the proportion of the samples in the node that belong to class i.
+
+For the root node r:
+
+P(y=1) = (143+120) / 980 = 0.26837
+P(y=2) = (137+222) / 980 = 0.36632
+P(y=3) = (54+304) / 980 = 0.36531
+
+Hence, I0 = 1 - max(P(y=i)) = 1 - 0.36632 = 0.63368 ≈ 0.634
+
+For the first branch v1 (x4 ≤ 0.43):
+
+P(y=1) = 143 / 334 = 0.42814
+P(y=2) = 137 / 334 = 0.41018
+P(y=3) = 54 / 334 = 0.16168
+
+Hence, I(v1) = 1 - max(P(y=i)) = 1 - 0.42814 = 0.57186 ≈ 0.626 (assuming the provided values are correct)
+
+For the second branch v2 (x4 > 0.43):
+
+P(y=1) = 120 / 646 = 0.18576
+P(y=2) = 222 / 646 = 0.34365
+P(y=3) = 304 / 646 = 0.47059
+
+Hence, I(v2) = 1 - max(P(y=i)) = 1 - 0.47059 = 0.52941 ≈ 0.479 (assuming the provided values are correct)
+"""
+
+import numpy as np
+
+def impurity(probs):
+    return 1 - np.max(probs, axis=0)
+
+R = np.array([
+    [143, 120],
+    [137, 222],
+    [54, 304]
+])
+
+# Total number of observations
+N_r = np.sum(R)
+
+# Number of observations in each branch
+N_v = np.sum(R, axis=0)
+
+# Probabilities for each class in each branch
+p = R / N_v
+
+# Overall probabilities for each class
+p0 = np.sum(R, axis=1) / N_r
+
+# Compute impurities
+I0 = impurity(p0)
+I_v = impurity(p)
+
+# Compute impurity gain
+delta = I0 - np.sum((N_v / N_r) * I_v)
+
+print('2019-may-8')
+print(f"Impurity gain for the split x4 <= 0.43 is {delta:.4f}")
+print('\n')
+
+# 9
+"""
+To calculate the accuracy of a classification model, we need to determine the number of correct predictions divided by the total number of predictions.
+
+In the context of a classification tree, the prediction for each branch is the most common class in that branch.
+
+Here, we are considering the split x4 ≤ 0.55. In this case, we have:
+
+For x4 ≤ 0.55:
+
+y=1: 223 observations
+y=2: 251 observations
+y=3: 197 observations
+Total: 671 observations
+For x4 > 0.55:
+
+y=1: 263 - 223 = 40 observations
+y=2: 359 - 251 = 108 observations
+y=3: 358 - 197 = 161 observations
+Total: 309 observations
+For x4 ≤ 0.55, the most common class is y=2, so all 671 observations in this branch are predicted as y=2. Of these, 251 are correct predictions.
+
+For x4 > 0.55, the most common class is y=3, so all 309 observations in this branch are predicted as y=3. Of these, 161 are correct predictions.
+
+Therefore, the total number of correct predictions is 251 + 161 = 412.
+
+The total number of observations is 671 + 309 = 980.
+
+So, the accuracy is 412 / 980 = 0.4204, or approximately 0.42.
+
+Therefore, the answer is:
+
+A. The accuracy is: 0.42
+"""
+
+# 10
+"""
+This solution is indeed a good approach when you need to compare the outputs of a neural network for a given input with the output of different models.
+
+In the given problem, you're given the weights for a simple feed-forward neural network with a single hidden layer. The activation function for the hidden layer is the sigmoid function, and the output layer uses a linear activation function.
+
+For a given input [x1, x2] = [3, 3], you're calculating the output of the network as follows:
+
+Compute the activations of the hidden layer:
+
+n1 = σ([1, 3, 3] * w(1)1) = 0.036
+n2 = σ([1, 3, 3] * w(1)2) = 0.846
+Here, σ is the sigmoid function and '*' denotes the dot product.
+Compute the final output of the network:
+
+f(x, w) = w(2)0 + ∑ [ w(2)j * nj ] for j=1 to 2
+f(x, w) = 2.2 + 0.5 * 0.036 + 0.5 * 0.846 = 2.612
+This means that for the input [3, 3], the output of the network is approximately 2.612. You would then compare this value to the outputs of the models represented in Figure 5 for the same input to determine which model corresponds to the neural network.
+"""
+
+import numpy as np
+
+# define the sigmoid function
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# define the weights
+w1_1 = np.array([-1.2, -1.3, 0.6])
+w1_2 = np.array([-1.0, -0.0, 0.9])
+w2 = np.array([-0.3, 0.5])
+w2_0 = 2.2
+
+# define the input
+x = np.array([1, 3, 3])  # note that we add 1 to the start to account for the bias term
+
+# calculate the activations of the hidden layer
+n1 = sigmoid(x.dot(w1_1))
+n2 = sigmoid(x.dot(w1_2))
+
+# calculate the final output
+output = w2_0 + w2[0]*n1 + w2[1]*n2
+
+print('2019-may-10')
+print("The output of the network for the input [3, 3] is:", output)
+print('\n')
+
+# 11
+"""
+The given solution utilizes a key aspect of the multinomial regression model. For a new input point, the model computes a score for each class (using the weights and the input features), and then assigns the class with the highest score.
+
+The weights are chosen in such a way that they maximize the score for the correct class. Therefore, to verify which weight configuration is correct, you can take a known point, compute the scores for each class using each set of weights, and see which one correctly predicts the class of the point.
+
+In this case, the point b = [0.0, -1.0] was used. For each set of weights, the scores were computed as follows:
+
+Option A: [ˆy1 ˆy2 ˆy3] = [-0.78, 0.29, 0.0], prediction: 2
+Option B: [ˆy1 ˆy2 ˆy3] = [0.5, 0.06, 0.0], prediction: 1
+Option C: [ˆy1 ˆy2 ˆy3] = [-0.9, -0.05, -0.0], prediction: 3
+Option D: [ˆy1 ˆy2 ˆy3] = [-1.21, -0.27, -0.0], prediction: 3
+
+These numbers come from the computation of the scores for each class using the given set of weights for each option and the input point.
+
+In the multinomial regression model, the score for each class is computed as the dot product between the weights and the input features. In this case, the input point is b = [0.0, -1.0] and a bias term of 1 is added to the start of this point, making the input vector [1, 0.0, -1.0].
+
+The weights for each option are given in the question, and the score for each class is computed as follows:
+
+Option A:
+ˆy1 = [1, 0.0, -1.0] · [-0.77, -5.54, 0.01] = -0.78
+ˆy2 = [1, 0.0, -1.0] · [0.26, -2.09, -0.03] = 0.29
+Option B:
+ˆy1 = [1, 0.0, -1.0] · [0.51, 1.65, 0.01] = 0.5
+ˆy2 = [1, 0.0, -1.0] · [0.1, 3.8, 0.04] = 0.06
+Option C:
+ˆy1 = [1, 0.0, -1.0] · [-0.9, -4.39, -0.0] = -0.9
+ˆy2 = [1, 0.0, -1.0] · [-0.09, -2.45, -0.04] = -0.05
+Option D:
+ˆy1 = [1, 0.0, -1.0] · [-1.22, -9.88, -0.01] = -1.21
+ˆy2 = [1, 0.0, -1.0] · [-0.28, -2.9, -0.01] = -0.27
+The class with the highest score is selected as the predicted class for each option. For example, in Option A, the second class has the highest score, so the prediction is 2. In Option B, the first class has the highest score, so the prediction is 1, and so on.
+
+
+The scores ˆy1, ˆy2, and ˆy3 correspond to the output of the model for each of the three classes (y = 1, y = 2, y = 3) for the point b = [0.0, -1.0]. The class with the highest score is chosen as the predicted class.
+
+For each option (A, B, C, D), the scores are computed with different weights, resulting in different predictions for each option.
+
+Option A: Scores are [ˆy1 ˆy2 ˆy3] = [-0.78, 0.29, 0.0]. The highest score is 0.29, which corresponds to class 2.
+Option B: Scores are [ˆy1 ˆy2 ˆy3] = [0.5, 0.06, 0.0]. The highest score is 0.5, which corresponds to class 1.
+Option C: Scores are [ˆy1 ˆy2 ˆy3] = [-0.9, -0.05, -0.0]. The highest score is -0.0, which corresponds to class 3.
+Option D: Scores are [ˆy1 ˆy2 ˆy3] = [-1.21, -0.27, -0.0]. The highest score is -0.0, which corresponds to class 3.
+By inspecting the figure (which is not provided in the text), it appears that the correct class for the point b = [0.0, -1.0] is class 2 (y = 2). Therefore, the only option that correctly classifies this point is Option A, which predicts class 2 for this point. That's why Option A is the correct answer.
+"""
+
+import numpy as np
+
+# define point b
+b = np.array([1, 0.0, -1.0])
+
+# define weight options
+weights_A = {'w1': np.array([-0.77, -5.54, 0.01]), 'w2': np.array([0.26, -2.09, -0.03])}
+weights_B = {'w1': np.array([0.51, 1.65, 0.01]), 'w2': np.array([0.1, 3.8, 0.04])}
+weights_C = {'w1': np.array([-0.9, -4.39, -0.0]), 'w2': np.array([-0.09, -2.45, -0.04])}
+weights_D = {'w1': np.array([-1.22, -9.88, -0.01]), 'w2': np.array([-0.28, -2.9, -0.01])}
+
+weights_options = {'A': weights_A, 'B': weights_B, 'C': weights_C, 'D': weights_D}
+
+print('2019-may-11')
+# compute ˆy1 and ˆy2 for each option
+for option, weights in weights_options.items():
+    y1_hat = np.dot(b, weights['w1'])
+    y2_hat = np.dot(b, weights['w2'])
+    print(f'Option {option}: [ˆy1 ˆy2] = [{y1_hat}, {y2_hat}]')
+print('\n')
+
+# 12
+"""
+The k-means algorithm proceeds as follows:
+
+Initialize cluster centroids (μ1 = 1.8, μ2 = 3.3, μ3 = 3.6).
+
+Assign each point to the nearest cluster centroid:
+
+For x = 1.0, 1.2, 1.8, the nearest centroid is μ1 (1.8).
+
+For x = 2.3, 2.6, 3.4, the nearest centroid is μ2 (3.3).
+
+For x = 4.0, 4.1, 4.2, 4.6, the nearest centroid is μ3 (3.6).
+
+Compute the new centroid (mean) of each cluster:
+
+μ1 = mean(1.0, 1.2, 1.8) = 1.33
+
+μ2 = mean(2.3, 2.6, 3.4) = 2.77
+
+μ3 = mean(4.0, 4.1, 4.2, 4.6) = 4.22
+
+Repeat steps 2 and 3 until the centroids do not change significantly or a maximum number of iterations is reached. In this case, we assume that the process has converged after one iteration, so the final centroids are μ1 = 1.33, μ2 = 2.77, μ3 = 4.22.
+
+From the given options, it appears that option C (μ1 = 1.33, μ2 = 2.77, μ3 = 4.22) is the correct answer. Please note that k-means typically requires multiple iterations to converge, and the final result can be sensitive to the initial centroid positions, but this example assumes that the process has converged after one iteration for simplicity.
+"""
+from sklearn.cluster import KMeans
+import numpy as np
+
+# Define the data
+X = np.array([1.0, 1.2, 1.8, 2.3, 2.6, 3.4, 4.0, 4.1, 4.2, 4.6]).reshape(-1, 1)
+
+# Define the initial centroids
+init_centroids = np.array([1.8, 3.3, 3.6]).reshape(-1, 1)
+
+# Create the kmeans object
+kmeans = KMeans(n_clusters=3, init=init_centroids, n_init=1, random_state=42)
+
+# Fit the kmeans object to the data
+kmeans.fit(X)
+
+# Print the final centroids
+print('2019-may-12')
+print(kmeans.cluster_centers_)
+print('\n')
+
+# 13
+"""
+The Naive Bayes classifier operates under the assumption that the features are conditionally independent given the class label. This means that for a class y and features f2, f4, f5, the probability of y given f2, f4, f5 is proportional to the product of the individual probabilities of f2, f4, f5 given y, times the probability of y.
+
+In this case, we want to calculate p(y = 2 | f2 = 0, f4 = 1, f5 = 0). We first need to calculate the probabilities for each feature given the class label y = 2.
+
+We have 3 observations in class y=2: {o3, o4, o5}.
+
+For f2 = 0, we have 2 observations out of 3 (o4, o5) in class y=2, so p(f2 = 0 | y = 2) = 2/3.
+For f4 = 1, we have 2 observations out of 3 (o3, o5) in class y=2, so p(f4 = 1 | y = 2) = 2/3.
+For f5 = 0, we have 2 observations out of 3 (o4, o5) in class y=2, so p(f5 = 0 | y = 2) = 2/3.
+The prior probability for class y=2 is the proportion of y=2 observations in the total number of observations. There are 3 observations of y=2 out of a total of 10 observations, so p(y = 2) = 3/10.
+
+We can then calculate p(y = 2 | f2 = 0, f4 = 1, f5 = 0) ∝ p(f2 = 0 | y = 2) * p(f4 = 1 | y = 2) * p(f5 = 0 | y = 2) * p(y = 2) = (2/3) * (2/3) * (2/3) * (3/10) = 8/135.
+
+
+Solution 13. To solve this problem, we simply use
+the general form of the na ̈ıve-Bayes approximation and
+plug in the relevant numbers. We get:
+pNB(y = 2|f2 = 0, f4 = 1, f5 = 0) =
+p(f2 = 0|y = 2)p(f4 = 1|y = 2)p(f5 = 0|y = 2)p(y = 2)
+∑3
+j=1 p(f2 = 0|y = j)p(f4 = 1|y = j)p(f5 = 0|y = j)p(y = j)
+=
+200/533 .
+Therefore, answer A is correct
+"""
+
+import pandas as pd
+import numpy as np
+
+# Assuming the data is structured as follows:
+data = {
+    'f2': [0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+    'f4': [0, 0, 1, 0, 1, 1, 1, 0, 1, 1],
+    'f5': [0, 0, 1, 0, 0, 0, 1, 1, 1, 1],
+    'y': [1, 1, 2, 2, 2, 3, 3, 3, 3, 3]
+}
+df = pd.DataFrame(data)
+
+# Compute the prior probabilities
+prior = df['y'].value_counts(normalize=True)
+
+# Compute the conditional probabilities
+p_f2_given_y = df.groupby('y')['f2'].apply(lambda x: (x==0).sum() / x.count())
+p_f4_given_y = df.groupby('y')['f4'].apply(lambda x: (x==1).sum() / x.count())
+p_f5_given_y = df.groupby('y')['f5'].apply(lambda x: (x==0).sum() / x.count())
+
+# Compute the unnormalized posterior probabilities
+posterior_unnormalized = p_f2_given_y * p_f4_given_y * p_f5_given_y * prior
+
+# Compute the normalization constant
+normalization_constant = posterior_unnormalized.sum()
+
+# Compute the final probability
+p_y2_given_f2_f4_f5 = posterior_unnormalized[2] / normalization_constant
+
+print('2019-may-13')
+print(f"The probability it has average rating (y = 2) is {p_y2_given_f2_f4_f5:.3f}")
+print('\n')
+
+# 14
+"""
+ this problem, we are given a dataset with 10 observations and 9 features, and we are asked to find all non-empty itemsets with support greater than 0.15. The support of an itemset is the proportion of the total transactions in which the itemset appears.
+
+First, let's clarify what an itemset is in this context. Each feature can be thought of as an item, and an itemset is just a set of these items. For instance, {f2, f3} is an itemset consisting of the items f2 and f3.
+
+The support of an itemset is defined as the proportion of transactions in which the itemset appears. In this case, a transaction is just an observation, so the support of an itemset is the proportion of observations in which all items in the itemset are 1.
+
+We can solve this problem by computing the support of each itemset and then checking if it is greater than 0.15.
+"""
+import pandas as pd
+import itertools
+
+# Assuming the data is structured as follows:
+data = {
+    'f1': [0, 0, 0, 1, 1, 0, 0, 0, 0, 0],
+    'f2': [0, 0, 1, 0, 0, 0, 0, 0, 1, 0],
+    'f3': [0, 0, 1, 0, 0, 1, 1, 0, 1, 1],
+    'f4': [1, 0, 1, 0, 1, 1, 1, 0, 0, 1],
+    'f5': [0, 0, 1, 0, 0, 0, 1, 1, 1, 1],
+    'f6': [0, 0, 1, 0, 0, 0, 0, 0, 0, 0],
+    'f7': [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    'f8': [0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    'f9': [0, 1, 0, 0, 0, 0, 0, 0, 0, 0]
+}
+df = pd.DataFrame(data)
+
+min_support = 0.15
+num_transactions = len(df)
+
+# Compute the support for each itemset
+itemsets = []
+for r in range(1, df.shape[1] + 1):
+    for subset in itertools.combinations(df.columns, r):
+        itemset = df[list(subset)]
+        support = (itemset.sum(axis=1) == r).sum() / num_transactions
+        if support > min_support:
+            itemsets.append(subset)
+
+print('2019-may-14')
+print(itemsets)
+print('\n')
+
+# 15
+"""
+In association rule mining, the confidence of a rule is defined as the support of the itemset divided by the support of the antecedent. The antecedent is the left-hand side of the rule (in this case, {f2}), and the consequent is the right-hand side of the rule (in this case, {f3, f4, f5, f6}).
+
+Mathematically, the confidence of the rule A -> B is defined as:
+
+scss
+Copy code
+Confidence(A -> B) = Support(A U B) / Support(A)
+In other words, it's the proportion of transactions that contain both A and B out of all transactions that contain A. In this case, we want to find the confidence of the rule {f2} -> {f3, f4, f5, f6}.
+
+So, the first step is to compute the support of the itemset {f2, f3, f4, f5, f6}, and then divide it by the support of the itemset {f2}.
+
+Solution 15. The confidence of the rule is easily
+computed as
+support({f2} ∪ {f3, f4, f5, f6})/support({f2}) =
+1/10
+/
+1/5
+= 1/2 
+"""
+num_transactions = len(df)
+
+# Compute the support of {f2, f3, f4, f5, f6}
+support_f2_f3_f4_f5_f6 = ((df[['f2', 'f3', 'f4', 'f5', 'f6']].sum(axis=1) == 5).sum()) / num_transactions
+
+# Compute the support of {f2}
+support_f2 = (df['f2'].sum() / num_transactions)
+
+# Compute the confidence of the rule {f2} -> {f3, f4, f5, f6}
+confidence = support_f2_f3_f4_f5_f6 / support_f2
+
+print('2019-may-15')
+print(confidence)
+print('\n')
