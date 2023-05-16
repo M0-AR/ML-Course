@@ -3492,3 +3492,742 @@ So, if you're given a covariance matrix like this:
 [-0.4 1.7]
 It means that the variance in the x direction is 2.4, the variance in the y direction is 1.7, and the covariance between the x and y directions is -0.4. The negative covariance suggests that as x increases, y tends to decrease, and vice versa.
 """
+
+######################################
+# Dec 2019
+######################################
+print('Dec 2019')
+
+# 2
+"""
+In PCA, the singular values represent the square roots of the eigenvalues of the covariance matrix of the data. The variance explained by each principal component is proportional to the square of the corresponding singular value. The total variance is the sum of the squares of all singular values.
+
+Let's calculate the total variance and the variance explained by each component:
+
+Total variance:
+Var_total = 43.67^2 + 33.47^2 + 31.15^2 + 30.36^2 + 27.77^2 + 13.86^2
+
+Variance explained by each component:
+
+Variance explained by PC1 = 43.67^2 / Var_total
+Variance explained by PC2 = 33.47^2 / Var_total
+Variance explained by PC3 = 31.15^2 / Var_total
+Variance explained by PC4 = 30.36^2 / Var_total
+Variance explained by PC5 = 27.77^2 / Var_total
+Variance explained by PC6 = 13.86^2 / Var_total
+Variance explained by the first three components = Variance explained by PC1 + Variance explained by PC2 + Variance explained by PC3
+
+Variance explained by the last two components = Variance explained by PC5 + Variance explained by PC6
+"""
+
+# 3
+
+"""
+In PCA, the projection of an observation onto a principal component can be calculated as the dot product of the observation and the corresponding principal component vector. The sign of the projection is determined by the relative values of the features in the observation and the coefficients in the principal component vector.
+
+Let's look at each statement:
+
+A. An observation with a low value of PM10 (x3), a high value of PRES (x8), and a low value of WSPM (x11) will typically have a negative value of the projection onto principal component number 5.
+
+The coefficients for x3, x8, and x11 in the 5th principal component are -0.44, 0.32, and -0.8, respectively. A low value of x3 and x11 and a high value of x8 would result in a positive contribution to the dot product, which contradicts the statement. So, this statement is false.
+B. An observation with a high value of PM10 (x3), a high value of CO (x5), and a low value of WSPM (x11) will typically have a positive value of the projection onto principal component number 1.
+
+The coefficients for x3, x5, and x11 in the 1st principal component are -0.63, 0.06, and 0.37, respectively. A high value of x3 and x5 and a low value of x11 would result in a negative contribution to the dot product, which contradicts the statement. So, this statement is false.
+C. An observation with a low value of MONTH (x1), a low value of PRES (x8), and a low value of RAIN (x10) will typically have a positive value of the projection onto principal component number 4.
+
+The coefficients for x1, x8, and x10 in the 4th principal component are 0.67, 0.6, and 0.41, respectively. A low value of x1, x8, and x10 would result in a negative contribution to the dot product, which contradicts the statement. So, this statement is false.
+D. An observation with a high value of MONTH (x1), and a low value of RAIN (x10) will typically have a negative value of the projection onto principal component number 3.
+
+The coefficients for x1 and x10 in the 3rd principal component are -0.55 and 0.83, respectively. A high value of x1 and a low value of x10 would result in a negative contribution to the dot product, which agrees with the statement. So, this statement is true.
+So, the correct answer is D.
+"""
+
+# 4
+"""
+In the problem, you have a set of data points described by two attributes, x8 and x11, and you're given a path that the data points follow over time (the blue line in Figure 2). The rest of the attributes are kept constant.
+
+The problem asks which of the plots (A, B, C, D) in Figure 3 represents the path of the data when it's projected onto the first two principal components.
+
+The solution uses a shortcut by calculating the difference in the attributes x8 and x11 between the start and the end of the path (in the original space), which results in a vector ∆x.
+
+This difference vector is then projected onto the space of the first two principal components using the matrix V (specifically, the first two columns of V which represent the first two principal components), resulting in a new vector ∆b.
+
+This new vector ∆b represents the change from the start to the end in the PCA-transformed space. By comparing this vector ∆b with the plots in Figure 3, the solution concludes that only option C shows a path with the same direction and magnitude as ∆b.
+
+It's important to note that this method works because PCA is a linear transformation, which means that the difference between two points in the original space will be the same as the difference between the points in the transformed space.
+
+
+You've been given the following data:
+
+The change in x (attributes) from start to end is given by ∆x:
+
+∆x = x_end - x_start =
+[
+0.0,
+0.0,
+0.0,
+3.74,
+0.0,
+0.0
+]
+
+And the first two columns of V (the matrix of principal components) are:
+
+v1 =
+[
+0.1,
+-0.63,
+-0.67,
+-0.09,
+0.06,
+0.37
+]
+
+v2 =
+[
+-0.45,
+-0.02,
+0.07,
+0.69,
+-0.35,
+0.44
+]
+
+To project ∆x onto the first two principal components (v1 and v2), you simply take the dot product of ∆x with each of these vectors:
+
+∆b = (∆x)T * [v1 v2]
+
+∆b1 = ∆x * v1 = (0.0 * 0.1) + (0.0 * -0.63) + (0.0 * -0.67) + (3.74 * -0.09) + (0.0 * 0.06) + (0.0 * 0.37) = -0.3366
+
+∆b2 = ∆x * v2 = (0.0 * -0.45) + (0.0 * -0.02) + (0.0 * 0.07) + (3.74 * 0.69) + (0.0 * -0.35) + (0.0 * 0.44) = 2.5806
+
+So, the change in the principal component space, ∆b, is given by:
+
+∆b = [-0.3366, 2.5806]
+
+This vector should match the vector in the PCA-transformed space in one of the plots in Figure 3. According to the solution, only plot C matches this vector.
+"""
+import numpy as np
+
+# ∆x vector
+delta_x = np.array([0.0, 0.0, 0.0, 3.74, 0.0, 0.0])
+
+# First two principal components
+v1 = np.array([0.1, -0.63, -0.67, -0.09, 0.06, 0.37])
+v2 = np.array([-0.45, -0.02, 0.07, 0.69, -0.35, 0.44])
+
+# Project ∆x onto the first two principal components
+delta_b1 = np.dot(delta_x, v1)
+delta_b2 = np.dot(delta_x, v2)
+
+delta_b = np.array([delta_b1, delta_b2])
+
+print('2019-Dec-4')
+print("The projection of ∆x onto the first two principal components is: ", delta_b)
+print('\n')
+
+# TODO
+""" 
+The result ∆b = [-0.34, 2.58] is a vector in a 2D space. This vector represents the change in the projection of the data points onto the first two principal components, from the start point to the end point. In other words, if you started at some point (x,y) in the PCA projected plots, then after applying the change ∆b, you would end up at the point (x - 0.34, y + 2.58).
+
+As for visualizing this, consider ∆b as a direction vector in the 2D space of the first two principal components. The numbers -0.34 and 2.58 are the x and y components of the direction vector. This vector doesn't start at the origin (0, 0), but rather it starts at the projection of the starting point of the path onto the first two principal components.
+"""
+
+# 5
+"""
+The empirical correlation between two variables can be computed using the formula for the Pearson correlation coefficient, which is defined as the covariance of the two variables divided by the product of their standard deviations.
+
+The formula for the Pearson correlation coefficient is:
+
+ρ(X,Y) = Cov(X,Y) / (σX * σY)
+
+Where:
+
+ρ(X,Y) is the correlation coefficient between X and Y,
+Cov(X,Y) is the covariance between X and Y,
+σX is the standard deviation of X,
+σY is the standard deviation of Y.
+In your provided covariance matrix, the covariance between MONTH (x1) and PM2.5 (x5) is -317. The variances (which are the square of the standard deviations) of MONTH and PM2.5 are on the diagonal of the covariance matrix, 12 and 1212707 respectively.
+
+To calculate the correlation, we need to:
+
+Take the square root of the variances to get the standard deviations.
+Divide the covariance by the product of the standard deviations.
+
+--- The empirical covariance matrix provides a measure of the relationship between each pair of variables in your 
+dataset. Each entry in the matrix represents the covariance between two variables. 
+
+Here's how you can read this empirical covariance matrix, with x1 through x2 representing the variables:
+
+Each row and each column represents one of the variables from x1 to x2.
+
+The diagonal entries (from the top left to the bottom right) represent the variance of each variable. For example, 
+the variance of x1 is 12, the variance of x2 is 6104, and so on. Variance is a measure of how much a variable 
+deviates from its mean. 
+
+The off-diagonal entries represent the covariance between two variables. Covariance is a measure of how much two 
+variables change together. For example, the entry in the first row and second column (-29) represents the covariance 
+between x1 and x2. Similarly, the entry in the second row and first column (-29) represents the covariance between x2 
+and x1. In a covariance matrix, the entry at the i-th row and j-th column is equal to the entry at the j-th row and 
+i-th column. 
+
+A positive covariance indicates that the two variables tend to increase or decrease together, while a negative 
+covariance indicates that as one variable increases, the other tends to decrease, and vice versa. 
+
+So, for example, the covariance between x1 (MONTH) and x2 (PM2.5) is -29. This means that there's a negative 
+relationship between these two variables: as the month number increases, the PM2.5 levels tend to decrease, 
+and vice versa. --- 
+
+
+The empirical covariance matrix you provided is a symmetric matrix, where the diagonal entries represent the 
+variances of the variables (x1, x2, x3, x4, x5) and the off-diagonal entries represent the covariances between the 
+pairs of variables. 
+
+In your covariance matrix:
+
+yaml
+Copy code
+Σ =
+[ 12  -29  -21  -12  -317
+ -29 6104 6026 1557 67964
+ -21 6026 7263 1701 70892
+ -12 1557 1701 1012 25415
+ -317 67964 70892 25415 1212707 ]
+The covariance between x1 and x2 is -29, x1 and x3 is -21, x1 and x4 is -12, and x1 and x5 is -317.
+
+However, the correct covariance between x1 and x2 should be -29. Therefore, the calculation using the correct covariance value will give the correct correlation value.
+"""
+
+import numpy as np
+
+# Given empirical covariance matrix
+cov_matrix = np.array([
+    [12, -29, -21, -12, -317],
+    [-29, 6104, 6026, 1557, 67964],
+    [-21, 6026, 7263, 1701, 70892],
+    [-12, 1557, 1701, 1012, 25415],
+    [-317, 67964, 70892, 25415, 1212707]
+])
+
+cov_x1_x2 = cov_matrix[0, 1]
+var_x1 = cov_matrix[0, 0]
+var_x2 = cov_matrix[1, 1]
+
+std_x1 = np.sqrt(var_x1)
+std_x2 = np.sqrt(var_x2)
+
+# Compute the correlation using the formula
+correlation_x1_x2 = cov_x1_x2 / (std_x1 * std_x2)
+
+print('2019-Dec-5')
+print(correlation_x1_x2)
+print('\n')
+
+# 6
+"""
+To calculate the average relative density (ard) for observation o5, we first need to find the 2 nearest neighbors of o5. Looking at the distance matrix, the 2 nearest neighbors are o4 and o6 with distances 1.5 and 2.4 respectively.
+
+Then, we calculate the density for o5:
+
+scss
+Copy code
+densityX\5(o5, 2) = 1 / (1/2 * (d(o5, o4) + d(o5, o6))) 
+                  = 1 / (1/2 * (1.5 + 2.4)) 
+                  = 1 / 1.95 
+                  = 0.51282
+Next, we calculate the densities for o4 and o6. The nearest neighbors for o4 are o5 and o6 (distances 1.5 and 1.6), and for o6 are o5 and o8 (distances 2.4 and 1.7):
+
+scss
+Copy code
+densityX\4(o4, 2) = 1 / (1/2 * (1.5 + 1.6)) = 0.60606
+
+densityX\6(o6, 2) = 1 / (1/2 * (1.6 + 1.7)) = 0.58824
+Finally, we calculate the average relative density for o5:
+
+scss
+Copy code
+ardX(o5, 2) = densityX\5(o5, 2) / ((1/2) * (densityX\4(o4, 2) + densityX\6(o6, 2))) 
+            = 0.51282 / ((1/2) * (0.60606 + 0.46511)) 
+            = 0.51282 / 0.53559 
+            = 0.95757
+Therefore, the average relative density for observation o5 for K = 2 nearest neighbors is approximately 0.95757. Please note that the final result may vary slightly due to rounding errors.
+"""
+
+distances = {
+    'o4': 1.5,
+    'o5': 0.0,
+    'o6': 2.4,
+}
+
+# K nearest neighbors for o5 are o4 and o6
+K = 2
+
+# Calculate density for o5
+density_o5 = 1 / (1/2 * (distances['o4'] + distances['o6']))
+
+# Calculate density for o4 and o6
+density_o4 = 1 / (1/2 * (1.6 + 1.8))  # 1.6 and 1.8 are distances to two nearest neighbors of o4
+density_o6 = 1 / (1/2 * (1.6 + 1.7))  # 1.6 and 1.7 are distances to two nearest neighbors of o6
+
+# Calculate average relative density for o5
+ard_o5 = density_o5 / (1/2 * (density_o4 + density_o6))
+
+print('2019-Dec-6')
+print(ard_o5)
+print('\n')
+
+# 8
+"""
+The Jaccard similarity coefficient, also known as the Jaccard index or Jaccard measure, is a statistic used for comparing the similarity and diversity of sample sets. For binary vectors, it's defined as the size of the intersection divided by the size of the union of the two vectors.
+
+In this case, x1 and x2 are binary vectors with dimensions N = 1500. x1 has only one non-zero element, and x2 has 1498 non-zero elements.
+
+The maximum Jaccard similarity happens when the non-zero element of x1 is also non-zero in x2. In this case, the intersection of x1 and x2 is 1 (since there's only one non-zero element in x1), and the union of x1 and x2 is 1498 (since all non-zero elements of x1 and x2 are counted). So, the maximum Jaccard similarity is 1/1498.
+
+The minimum Jaccard similarity occurs when the non-zero element of x1 is zero in x2. In this case, the intersection of x1 and x2 is 0 (since there's no overlap of non-zero elements), and the union of x1 and x2 is 1499 (since we count all non-zero elements in both vectors). So, the minimum Jaccard similarity is 0/1499 = 0.
+
+So, the possible range of values of the Jaccard similarities of x1 and x2 is [0, 1/1498].
+
+The solution provided uses the alternate definition of the Jaccard similarity in terms of n11 (the number of coordinates where both x1 and x2 are non-zero) and N (total number of dimensions or elements) and n00 (the number of coordinates where both x1 and x2 are zero).
+
+In this context, the Jaccard similarity is defined as:
+
+n11 / (N - n00)
+
+The minimum value of the Jaccard similarity (0) happens when there is no overlap between the non-zero elements of x1 and x2 (n11 = 0).
+
+The maximum value of the Jaccard similarity is obtained when the non-zero element in x1 is also non-zero in x2 (n11 = 1), and the number of zero elements in both vectors is as small as possible (n00 = 2, given that x1 has 1499 zero elements and x2 has 2 zero elements).
+
+Therefore, the maximum Jaccard similarity in this case is 1 / (1500 - 2) = 1 / 1498 = 0.00067.
+
+So, the range of possible values of the Jaccard similarity in this case is [0, 0.00067].
+
+The correct answer, according to the solution provided, is B (which presumably corresponds to this range).
+"""
+
+# 20
+"""
+The structure of the artificial neural network (ANN) is as follows:
+f(x, w) = σ(w0(2) + w1(2) * σ(w0(1) + w1(1) * x) + w2(2) * σ(w0(2) + w2(1) * x)).
+
+Given that the weights are:
+
+w0(1) = -0.5, w1(1) = -0.1,
+w0(2) = 0.9, w2(1) = 2.0,
+w0(2) = 1.4, w1(2) = -1.0, w2(2) = 0.4,
+
+"""
+
+# The solution computes the output of the artificial neural network (ANN) at a specific input value x2 = -2. The steps can be implemented in Python as follows:
+"""
+The solution involves a forward pass through the network, computing the activations at each node, and then using these activations to compute the final output. Here's how it is done in theory:
+
+First layer activations:
+We compute the activation of each of the two hidden neurons, n1 and n2, using the logistic sigmoid activation function. The inputs to these neurons are [1, -2] (a 1 for the bias term and -2 for x2) and the weights are w1[0] and w1[1], respectively.
+The formula for activation of a neuron in the first layer is h(1)([1 x] w(1)[j]), where h(1) is the logistic sigmoid function, [1 x] is the input vector (including a 1 for the bias term), and w(1)[j] are the weights for the jth neuron in the first layer.
+
+For n1, we have h(1)([1 -2] * [-0.5 -0.1]) = h(1)(0.7) = 0.426.
+For n2, we have h(1)([1 -2] * [0.9 2.0]) = h(1)(-3.1) = 0.043.
+Second layer activation (Output):
+We then use these activations to compute the final output of the network using the formula for the activation of the output layer h(2)(w(2)[0] + sum(w(2)[j] * h(1)([1 x] w(1)[j])), where h(2) is also the logistic sigmoid function, w(2)[0] is the bias term for the output neuron, and the sum is over the activations of the hidden layer neurons weighted by their respective weights.
+
+So, the final output is h(2)(1.4 + [0.4 -1.0] * [0.426 0.043]) = h(2)(1.4 - 0.106) = h(2)(1.294) = 0.729.
+The output value of 0.729 at x2 = -2 is consistent with "ANN output 1" in the given options. Hence, the answer is A.
+"""
+import numpy as np
+
+# Define the logistic sigmoid function
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# Define the weights
+w1 = np.array([[-0.5, -0.1], [0.9, 2.0]])
+w2 = np.array([-1.0, 0.4])
+w2_0 = 1.4
+
+# Compute the activations of the hidden neurons
+n1 = sigmoid(np.dot([1, -2], w1[0]))
+n2 = sigmoid(np.dot([1, -2], w1[1]))
+
+# Compute the final output of the network
+output = sigmoid(w2_0 + np.dot([n1, n2], w2))
+
+print('2019-Dec-20')
+print(output)
+print('\n')
+
+
+# The network can be implemented in Python with numpy and matplotlib.pyplot to visualize the result.
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Define the sigmoid function
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+# Define the weights
+w0_1 = -0.5
+w1_1 = -0.1
+
+w0_2 = 0.9
+w2_1 = 2.0
+
+w0_2_2 = 1.4
+w1_2 = -1.0
+w2_2 = 0.4
+
+# Define the range of x
+x = np.linspace(-10, 10, 1000)
+
+# Calculate the output of the network
+output = sigmoid(w0_2_2 + w1_2 * sigmoid(w0_1 + w1_1 * x) + w2_2 * sigmoid(w0_2 + w2_1 * x))
+
+# Plot the result
+plt.plot(x, output)
+plt.show()
+
+
+# 21
+"""
+The graph should be a plot of the average per observation negative log-likelihood (which is a measure of error) against the kernel width σ.
+
+As σ changes, the error will also change. In general, very small values of σ may lead to overfitting, where the model is too sensitive to small fluctuations in the training data. This can result in a high error when testing the model on new, unseen data (high variance, low bias). Conversely, very large values of σ can lead to underfitting, where the model is not sensitive enough to the training data. This also leads to high error because the model is too generalized (low variance, high bias).
+
+Between these two extremes, there should be an optimal value of σ that minimizes the error. This would appear as a dip or trough in the graph. The exact position and depth of this trough would depend on the specific data and model being used.
+
+In the context of your specific question, you would need to look at the graph and identify the curve that most closely matches this expected pattern based on the given training and testing data.
+
+If you can describe the curves in Figure 9, I may be able to help you interpret which one is likely to be the correct one.
+"""
+import numpy as np
+from scipy.stats import norm
+
+# The observations
+x = np.array([4.5, -0.5, 1.2])
+
+# The kernel width
+sigma = 2
+
+# The density at each observation i, when the KDE is fitted on the other N - 1 observations, is
+p_sigma_x3 = 0.5 * (norm.pdf(x[2], x[0], sigma) + norm.pdf(x[2], x[1], sigma))
+
+# The CV hold-out error is the average of the test set, but since the test set only contains a single observation it
+# is equal to minus the log of the above expression
+E_sigma_2 = -np.log(p_sigma_x3)
+
+print('2019-Dec-21')
+print("E(σ = 2) =", E_sigma_2)
+print('\n')
+
+
+# 22
+"""
+The AdaBoost algorithm works by combining multiple "weak" classifiers to create a "strong" classifier. The weights of the training examples are adjusted at each iteration (or "round") of the algorithm. Instances that are misclassified by the current weak classifier have their weights increased, while instances that are correctly classified have their weights decreased. This encourages the next weak classifier to focus more on the examples that the current one found difficult (i.e., the ones it misclassified).
+
+Here's the process applied to your data:
+
+The initial weights are equal for all instances since it's the first round of boosting. So, each weight is 1/7.
+
+Calculate the error rate. The error rate is the sum of the weights of the misclassified instances. From your data, the misclassified instances are y2, y4, and y5. So, the error rate is 3 * (1/7) = 3/7 ≈ 0.429.
+
+Calculate the weight adjustment factor, α. The formula for α is 0.5 * log((1 - error_rate) / error_rate). Substituting the error rate calculated above, we get α = 0.5 * log((1 - 0.429) / 0.429) = 0.144.
+
+Update the weights. For the misclassified instances (y2, y4, y5), the new weights are the old weights * e^α. For the correctly classified instances (y1, y3, y6, y7), the new weights are the old weights * e^-α.
+
+So, for y2, y4, y5: new_weight = (1/7) * e^0.144 = 0.167
+And for y1, y3, y6, y7: new_weight = (1/7) * e^-0.144 = 0.125
+
+Normalize the weights so that they sum up to 1.
+
+Based on these calculations, the new weights are as in option C: [0.125, 0.167, 0.125, 0.167, 0.167, 0.125, 0.125]. Therefore, the correct answer is option C.
+"""
+
+import numpy as np
+
+# initial weights
+weights = np.ones(7) / 7
+
+# true and predicted labels
+y_true = np.array([1, 1, 1, 2, 2, 2, 2])
+y_pred = np.array([1, 2, 1, 1, 1, 2, 2])
+
+# error rate
+error_rate = np.sum(weights[y_true != y_pred])
+
+# calculate alpha
+alpha = 0.5 * np.log((1 - error_rate) / error_rate)
+
+# update weights
+weights[y_true != y_pred] *= np.exp(alpha)
+weights[y_true == y_pred] *= np.exp(-alpha)
+
+# normalize weights
+weights /= np.sum(weights)
+
+print('2019-Dec-22')
+print(weights)
+print('\n')
+
+# 23
+"""
+To solve this problem, we first need to understand that we're being asked for a conditional probability: the probability of medium pollution level given a low value of O3 concentration.
+
+We have the total count of observations (N = 981) and we also know how many observations had a high value of O3 concentration for each pollution level. However, we want to know about the cases where the O3 concentration is low.
+
+So we need to find out the number of observations with low O3 concentration for each pollution level. We do this by subtracting the count of high O3 concentration from the total count for each pollution level.
+
+Light pollution: 391 - 64 = 327 observations with low O3 concentration
+Medium pollution: 241 - 66 = 175 observations with low O3 concentration
+High pollution: 349 - 206 = 143 observations with low O3 concentration
+
+Then we sum these to get the total number of observations with low O3 concentration: 327 + 175 + 143 = 645.
+
+Finally, we calculate the probability of observing medium pollution level given a low O3 concentration by dividing the count of medium pollution observations with low O3 concentration by the total count of observations with low O3 concentration:
+
+Probability(Medium pollution | Low O3) = Medium pollution and Low O3 / Total Low O3
+= 175 / 645
+= approximately 0.2713 or 27.13%.
+
+So, the probability of observing medium pollution level given a low value of O3 concentration is approximately 27.13%.
+
+---
+
+First, let's calculate the probabilities p(y = k) and p(x = 1|y = k) for k = 1 (light pollution), k = 2 (medium pollution), and k = 3 (high pollution). The total number of observations N is 981.
+
+p(y = 1) = 391 / 981 ≈ 0.3986 and p(x = 1|y = 1) = 64 / 391 ≈ 0.1637.
+p(y = 2) = 241 / 981 ≈ 0.2457 and p(x = 1|y = 2) = 66 / 241 ≈ 0.2739.
+p(y = 3) = 349 / 981 ≈ 0.3557 and p(x = 1|y = 3) = 206 / 349 ≈ 0.5903.
+Remember that p(x = 0|y) = 1 - p(x = 1|y). Now let's use these probabilities in Bayes' theorem:
+
+p(y = 2|x = 0) = p(x = 0|y = 2)p(y = 2) / [p(x = 0|y = 1)p(y = 1) + p(x = 0|y = 2)p(y = 2) + p(x = 0|y = 3)p(y = 3)]
+
+= [(1 - 0.2739) * 0.2457] / [(1 - 0.1637) * 0.3986 + (1 - 0.2739) * 0.2457 + (1 - 0.5903) * 0.3557]
+= [0.7261 * 0.2457] / [0.8363 * 0.3986 + 0.7261 * 0.2457 + 0.4097 * 0.3557]
+≈ 0.1783 / (0.3335 + 0.1783 + 0.1457)
+≈ 0.1783 / 0.6575
+≈ 0.271
+
+So, the probability of observing medium pollution level given a low value of O3 concentration is approximately 0.271 (or 27.1%).
+"""
+# number of observations
+N = 981
+
+# number of observations for each pollution level
+N_y1 = 391
+N_y2 = 241
+N_y3 = 349
+
+# number of high O3 observations for each pollution level
+N_x1_y1 = 64
+N_x1_y2 = 66
+N_x1_y3 = 206
+
+# probabilities p(y = k) for k = 1, 2, 3
+p_y1 = N_y1 / N
+p_y2 = N_y2 / N
+p_y3 = N_y3 / N
+
+# probabilities p(x = 1|y = k) for k = 1, 2, 3
+p_x1_y1 = N_x1_y1 / N_y1
+p_x1_y2 = N_x1_y2 / N_y2
+p_x1_y3 = N_x1_y3 / N_y3
+
+# probabilities p(x = 0|y = k) for k = 1, 2, 3
+p_x0_y1 = 1 - p_x1_y1
+p_x0_y2 = 1 - p_x1_y2
+p_x0_y3 = 1 - p_x1_y3
+
+# apply Bayes theorem
+p_y2_x0 = p_x0_y2 * p_y2 / (p_x0_y1 * p_y1 + p_x0_y2 * p_y2 + p_x0_y3 * p_y3)
+
+print('2019-Dec-23')
+print(f"The probability of observing medium pollution level given a low value of O3 concentration is {p_y2_x0}")
+print('\n')
+
+
+
+# 24
+"""
+Solution 24. Recall the multinomial regression model
+computes class-assignment probabilities by first
+computing the class-conditional log-odds ratios:
+
+s1 = [1 b1 b2] w1 = 0.04 + 1.32 * (-5.52) - 1.48 * (-4.69) = 3.064
+s2 = [1 b1 b2] w2 = -0.03 + 0.7 * (-5.52) - 0.85 * (-4.69) = 1.032
+
+and then applying the softmax function to these to
+obtain probabilities. Therefore,
+
+s = [s1 s2 0] = [3.064, 1.032, 0]
+y = softmax(s)
+
+The softmax function is defined as softmax(x_i) = exp(x_i) / Σj exp(x_j) for each i.
+
+This gives us y = [exp(3.064) / (exp(3.064) + exp(1.032) + exp(0)),
+exp(1.032) / (exp(3.064) + exp(1.032) + exp(0)),
+exp(0) / (exp(3.064) + exp(1.032) + exp(0))]
+
+You can compute these probabilities with a calculator or a programming language like Python. Comparing the computed values with the options provided, you can then select the correct option.
+---
+Here is a step-by-step interpretation of the process:
+
+The given input vector b is [1, -5.52, -4.69].
+The class-assignment probability is computed using the softmax function for each class.
+In multinomial regression, the log-odds of the classes are calculated as the dot product of the input vector and the weight vector for each class. For example, ˆy1 = ̃bT w1 and ˆy2 = ̃bT w2 are the log-odds for the first and second class respectively.
+These log-odds are then converted into probabilities using the softmax function. For the first coordinate of the class-assignment probability vector, it's calculated as p(y = 1|x) = e^ˆy1 / (1 + e^ˆy1 + e^ˆy2) = 0.26 (and similarly for the other classes).
+Therefore, based on these calculations, the class-assignment probability vector for the given input vector is [0.26, 0.39, 0.35]>. Option B is the correct answer.
+
+The Python code provided in the previous message implements these calculations.
+"""
+import numpy as np
+
+# Define the weights
+w1 = np.array([0.04, 1.32, -1.48])
+w2 = np.array([-0.03, 0.7, -0.85])
+
+# Define the input observation
+b1 = -5.52
+b2 = -4.69
+x = np.array([1, b1, b2])
+
+# Compute the class-conditional log-odds ratios
+s1 = np.dot(x, w1)
+s2 = np.dot(x, w2)
+s = np.array([s1, s2, 0])
+
+# Compute the class-assignment probabilities using the softmax function
+exp_s = np.exp(s)
+y = exp_s / np.sum(exp_s)
+
+print('2019-Dec-24')
+print("Class-assignment probability vector:", y)
+print('\n')
+
+
+
+# 25
+"""
+In the Gaussian Mixture Model (GMM), each cluster is modeled by a multivariate normal distribution. The multivariate normal distribution is defined by a mean vector and a covariance matrix. In the question, these parameters are provided for each of the three clusters in the GMM.
+
+To solve this problem, you should compare the properties of the given GMMs to the properties of the clusters in the figure. Here are a few pointers:
+
+The mean vector ([μ1, μ2]) of each normal distribution gives the center of the corresponding cluster in the figure.
+
+The covariance matrix for each normal distribution provides information about the shape, size, and orientation of the cluster. The diagonal elements of the covariance matrix give the variance along each axis, and the off-diagonal elements provide information about the correlation between the axes.
+
+The coefficients in front of each N(x|μ, Σ) term represent the mixing coefficients or the prior probabilities of each cluster. These coefficients tell you about the relative size of each cluster in the figure.
+
+By comparing these properties of each GMM to the properties of the clusters in your figure, you should be able to determine which GMM was used to generate the data.
+
+---
+Each of the four options A, B, C, and D represent different Gaussian Mixture Models (GMM). A GMM is a probabilistic model that assumes all the data points are generated from a mixture of a finite number of Gaussian distributions with unknown parameters.
+
+In each option, you have three terms, each representing a Gaussian distribution. The parameters for these distributions are provided:
+
+Mixing Coefficient: This is the coefficient in front of the N() notation. It represents the proportion of the overall population that this particular normal distribution represents. The sum of all these coefficients should be 1.
+
+Mean Vector: Inside the N(), you first see a vector (e.g., [2.0, 2.4]). This vector represents the mean (center) of the Gaussian distribution in a 2-dimensional space. The first value is the mean on the x-axis and the second value is the mean on the y-axis.
+
+Covariance Matrix: This is the 2x2 matrix that follows the mean vector (e.g., [1.1, -0.9, -0.9, 2.2]). The covariance matrix describes the shape and orientation of the Gaussian distribution. The diagonal elements of the matrix (1.1 and 2.2) are the variances along the x and y axes, respectively. The off-diagonal elements (-0.9) represent the covariance between the x and y dimensions. If these off-diagonal elements are positive, there is a positive correlation between the x and y dimensions. If they are negative, there is a negative correlation. The larger the absolute value of these elements, the stronger the correlation.
+
+By changing these parameters, you change the characteristics of the Gaussian distributions, and hence the overall GMM.
+---
+The covariance matrix is a key concept in the multivariate Gaussian distribution. This matrix provides information about the variances of the individual variables (along the diagonal) and the covariances between every pair of variables (off the diagonal).
+
+To make it simpler, let's take an example of a 2-dimensional Gaussian distribution. Here the covariance matrix is a 2x2 matrix:
+
+csharp
+Copy code
+[ var(x)  cov(x,y)
+  cov(x,y) var(y) ]
+In this matrix:
+
+var(x) and var(y) are the variances of x and y, respectively. Variance is a measure of how spread out the values are around the mean. They are the diagonal elements of the matrix.
+
+cov(x, y) is the covariance of x and y, which measures how much x and y change together. This is the off-diagonal element.
+
+So, if you have a covariance matrix like this:
+
+css
+Copy code
+[ 1.1 -0.9 -0.9  2.2 ]
+It means that var(x) = 1.1, var(y) = 2.2, and cov(x, y) = -0.9. The variances are along the diagonal, and the covariance is off-diagonal.
+
+So, when we say "The diagonal elements of the matrix (1.1 and 2.2) are the variances along the x and y axes, respectively.", we mean exactly this: the value 1.1 represents the variance of the distribution along the x-axis, and the value 2.2 represents the variance along the y-axis in our 2-dimensional Gaussian distribution.
+
+
+"""
+
+# 26
+"""
+However, I can give you some general insights that might help you to answer your question.
+
+ANN (Artificial Neural Networks) decision boundaries can be highly non-linear and complex. They can create almost any shape of decision boundary.
+
+CT (Classification Trees) usually create axis-aligned decision boundaries, meaning they are vertical and horizontal lines in the case of two dimensions.
+
+MREG (Multinomial Regression) is a linear classifier. It creates a linear decision boundary in the input space.
+
+KNN (K-Nearest Neighbors) can create complex boundaries depending on the distribution of the data points in the classes. The decision boundaries can be highly irregular.
+
+Based on these general characteristics of these classifiers, you should be able to match the decision boundaries in your figure to the correct classifiers.
+"""
+
+# 27
+"""
+The k-means algorithm starts with the initial cluster centers:
+μ1 = 2.4, μ2 = 3.3, μ3 = 3.5
+
+Assign each observation to the nearest cluster center:
+{0.4, 0.5, 1.1, 2.2, 2.6} -> μ1
+{3.0} -> μ2
+{3.6, 3.7, 4.9, 5.0} -> μ3
+Update the cluster centers by calculating the mean of the observations in each cluster:
+μ1 = mean(0.4, 0.5, 1.1, 2.2, 2.6) = 1.36
+μ2 = mean(3.0) = 3.0
+μ3 = mean(3.6, 3.7, 4.9, 5.0) = 4.3
+Reassign the observations to the nearest updated cluster center:
+{0.4, 0.5, 1.1} -> μ1
+{2.2, 2.6, 3.0, 3.6} -> μ2
+{3.7, 4.9, 5.0} -> μ3
+Update the cluster centers again:
+μ1 = mean(0.4, 0.5, 1.1) = 0.66667
+μ2 = mean(2.2, 2.6, 3.0, 3.6) = 2.85
+μ3 = mean(3.7, 4.9, 5.0) = 4.53333
+Reassign the observations again (note that no observation changes its cluster):
+{0.4, 0.5, 1.1} -> μ1
+{2.2, 2.6, 3.0, 3.6} -> μ2
+{3.7, 4.9, 5.0} -> μ3
+Since there are no changes in the assignment of observations, the k-means algorithm has converged.
+
+The resulting clustering is: {0.4, 0.5, 1.1}, {2.2, 2.6, 3.0, 3.6}, {3.7, 4.9, 5.0}, which corresponds to option B.
+"""
+import numpy as np
+
+# Define the data and initial centroids
+data = np.array([0.4, 0.5, 1.1, 2.2, 2.6, 3.0, 3.6, 3.7, 4.9, 5.0])
+centroids = np.array([2.4, 3.3, 3.5])
+
+# Initialize an array to hold the cluster assignments
+clusters = np.zeros(data.shape[0], dtype=int)
+
+while True:
+    # Assign each point to the closest centroid
+    new_clusters = np.argmin(np.abs(data[:, np.newaxis] - centroids), axis=1)
+
+    # If no assignments changed, break the loop
+    if np.array_equal(clusters, new_clusters):
+        break
+
+    clusters = new_clusters
+
+    # Recompute the centroids based on the new clusters
+    for i in range(3):
+        centroids[i] = data[clusters == i].mean()
+
+
+print('2019-Dec-27')
+# Print the final clusters
+for i in range(3):
+    print(f"Cluster {i+1}: {data[clusters == i]}")
+print('\n')
