@@ -3805,6 +3805,239 @@ So, the range of possible values of the Jaccard similarity in this case is [0, 0
 The correct answer, according to the solution provided, is B (which presumably corresponds to this range).
 """
 
+# 13 TODO
+"""
+"""
+
+# 14
+"""
+The goal here is to calculate the Ridge Regression cost function, given the dataset and the weight vector w. The Ridge Regression cost function is defined as:
+
+Eλ(w, w0) = Summation[(yi - ŷi)²] + λwT w
+
+The ŷi values are the predicted values computed from the standardized feature matrix as:
+
+ŷ = (x - μ)/σ * w + E[y]
+
+Where μ and σ are the mean and standard deviation of x, respectively, and E[y] is the mean of y.
+
+In the provided solution, μ = 5.0 and σ = 2.16 are calculated from the dataset in Table 6. The mean E[y] is calculated as (6+7+7+9)/4 = 7.25.
+
+The predicted values of y, ŷ, are then calculated as [6.417, 7.25, 7.528, 7.805].
+
+These values are then inserted into the Ridge Regression cost function to calculate Eλ(w, w0):
+
+Eλ(w, w0) = (6 - 6.417)² + (7 - 7.25)² + (7 - 7.528)² + (9 - 7.805)² + λ*(0.6)²
+
+= 0.422 + 0.0625 + 0.276484 + 1.418025 + 2*0.36
+
+= 2.662009, which is rounded to 2.662 in the provided solution.
+
+Therefore, the correct answer is D, Eλ(w, w0) = 2.662.
+"""
+import numpy as np
+
+# given data
+x = np.array([2, 5, 6, 7])
+y = np.array([6, 7, 7, 9])
+
+# calculate mean and standard deviation of x
+x_mean = np.mean(x)
+"""
+In statistics, when we collect data, we usually collect a sample from a larger population. For example, if we wanted to know the average height of adults in a city, we might measure a random sample of 1000 adults, rather than trying to measure everyone.
+
+When we calculate the standard deviation (a measure of variability in the data) from this sample, we can do it in two ways:
+
+Population Standard Deviation: We assume that our sample is the entire population. This means that our calculated standard deviation is the actual standard deviation. We use the formula:
+
+σ = sqrt(Σ(xi - μ)^2 / N)
+
+where
+
+σ is the population standard deviation
+xi are the individual observations
+μ is the mean of the observations
+N is the number of observations
+Sample Standard Deviation: We assume that our sample is just a part of the larger population. This means that our calculated standard deviation is an estimate of the actual standard deviation. We use the formula:
+
+s = sqrt(Σ(xi - x̄)^2 / (N - 1))
+
+where
+
+s is the sample standard deviation
+xi are the individual observations
+x̄ is the mean of the observations
+N is the number of observations
+The difference between the two formulas is the denominator. In the population standard deviation, we divide by N, the number of observations. In the sample standard deviation, we divide by N - 1. This is known as Bessel's correction, and it corrects the bias in the estimation of the population variance. It also partially corrects the bias in the estimation of the population standard deviation.
+
+However, when using numpy's std() function, by default, it calculates the population standard deviation. If you want to calculate the sample standard deviation, you need to set the ddof parameter to 1.
+
+So, in your case, if you want to match the standard deviation calculation in the original solution (which appears to be using the sample standard deviation), you would need to use np.std(x, ddof=1).
+"""
+x_std = np.std(x, ddof=1)
+
+# calculate the mean of y
+y_mean = np.mean(y)
+
+# the weight w
+w = 0.6
+
+# compute the predicted y
+y_hat = (x - x_mean) / x_std * w + y_mean
+
+# calculate the sum of square errors
+sse = np.sum((y - y_hat) ** 2)
+
+# regularization parameter
+lambda_ = 2
+
+# compute the ridge regression cost function
+E = sse + lambda_ * (w ** 2)
+print('The ridge regression cost function is', E)
+print('\n')
+
+
+
+# 15
+"""
+To find the prediction for this leaf, we need to identify the training samples that fall into this leaf. Looking at Table 7, we see that when x7 > 0.365, the corresponding yr values are 4 and 2 (from the 5th and 6th observations).
+
+Therefore, the prediction for this leaf is the average of these yr values, i.e., (4+2)/2 = 3.
+
+So, the predicted yr for x7 = 0.5 according to this regression tree is 3 (Option B).
+"""
+
+# 16
+"""
+This solution explains the calculation of the purity gain, denoted as Δ, after the first split in a decision tree. The first split is at x7 > 0.365.
+
+Let's break it down:
+
+The observations are split into two sets based on the split criterion x7 > 0.365. The sets are v1 = {1, 2, 3, 4} and v2 = {5, 6}, where the numbers correspond to the observation indices.
+
+The impurity of these two sets, and the impurity of all y-values, is computed using the impurity measure appropriate for regression trees. Here, the impurity measure I(v) is the variance of the y-values in each set, which is the average of the squared deviations from the mean y-value in the set.
+
+The mean y-values for the sets are computed: y(v1) = 9.0 and y(v2) = 3.0.
+
+The impurities (variances) of the sets are then calculated: I(v1) = 5.0 and I(v2) = 1.0.
+
+The impurity at the root node (before the split) is also calculated, using all 6 observations: I(v0) = 11.67.
+
+The impurity gain is then calculated as the difference between the root impurity and the weighted sum of the impurities of the two branches: Δ = I(v0) - (N(v1)/N * I(v1) + N(v2)/N * I(v2)), where N(v1) and N(v2) are the number of observations in branches 1 and 2, and N is the total number of observations.
+
+Upon inserting the values, we find Δ = 8.0. Therefore, the answer is C.
+
+This calculation shows that the split at x7 > 0.365 results in a purity gain of 8.0, meaning that this split has reduced the variance of the y-values and hence improved the purity of the data.
+"""
+
+import numpy as np
+
+# Define x7 and yr values
+x7 = np.array([-1.76, -0, 0.06, 0.08, 0.65, 1.3])
+yr = np.array([12, 6, 8, 10, 4, 2])
+
+# Calculate the overall variance before the split
+var_before = np.var(yr)
+
+# Define the split
+split_value = 0.365
+
+# Split the data
+yr_left = yr[x7 <= split_value]
+yr_right = yr[x7 > split_value]
+
+# Calculate the variances of the subsets
+var_left = np.var(yr_left)
+var_right = np.var(yr_right)
+
+# Calculate the weights for each subset
+weight_left = len(yr_left) / len(yr)
+weight_right = len(yr_right) / len(yr)
+
+# Calculate the weighted sum of the subset variances
+var_after = weight_left * var_left + weight_right * var_right
+
+# Calculate the purity gain
+delta = var_before - var_after
+
+print('2019-Dec-16')
+print("Purity gain: ", delta)
+print('\n')
+
+# 17
+"""
+Sure, let's break down the K-Nearest Neighbors (KNN) algorithm and the Leave-One-Out (LOO) estimate of the generalization error in theory.
+
+The KNN algorithm works by finding the K nearest neighbors to a given observation and predicting the outcome based on the average outcome of these neighbors. In this case, we are doing KNN regression with K = 3, which means we find the three nearest neighbors to each observation and predict the yr value as the average yr value of these neighbors.
+
+The LOO estimate of the generalization error is a method used to estimate the error of a machine learning model. It works by leaving out one observation at a time, fitting the model to the remaining observations, and calculating the error on the left-out observation. The LOO error is the average of these individual errors.
+
+For observation i = 1, the first step is to find the three nearest neighbors based on the pairwise distances. From the distances you provided in Table 3, the three nearest neighbors to observation 1 are observations 2, 4, and 5 with distances 4.2, 3.9, and 3.8 respectively.
+
+The next step is to find the corresponding yr values of these three observations from Table 7. The yr values for observations 2, 4, and 5 are 6, 10, and 4 respectively.
+
+The predicted yr value for observation 1 is then the average of these yr values, which is (6 + 10 + 4) / 3 = 6.667.
+
+The actual yr value for observation 1 is 12 (from Table 7). We can then calculate the loss for observation 1 as the squared difference between the actual and predicted yr values. This is (12 - 6.667)^2 = 28.444.
+
+So, the contribution to the LOO error from observation 1 is 28.444. This is the individual error for observation 1 when we leave it out, fit the KNN model to the remaining observations, and predict the yr value for observation 1. This process would be repeated for each observation to calculate the full LOO error.
+
+This calculation is represented in option B. L(yr,1, ˆyr,1) = 28.444.
+"""
+
+
+import numpy as np
+
+distances = np.array([
+    [0.0, 4.2, 8.3, 3.9, 3.8, 4.6],  # pairwise distances from Table 3
+    [4.2, 0.0, 7.4, 2.6, 3.0, 3.2],
+    [8.3, 7.4, 0.0, 6.3, 7.1, 5.5],
+    [3.9, 2.6, 6.3, 0.0, 1.5, 1.6],
+    [3.8, 3.0, 7.1, 1.5, 0.0, 2.4],
+    [4.6, 3.2, 5.5, 1.6, 2.4, 0.0]
+])
+
+yr_values = np.array([12, 6, 8, 10, 4, 2])  # yr values from Table 7
+
+# get the indices of the K=3 closest points
+K = 3
+
+# Find the indices of the three smallest distances (excluding the first one)
+neighbors_indices = np.argsort(distances[0])[1:K + 1]
+
+# Calculate the average yr value of the three nearest neighbors
+predicted_yr = np.mean(yr_values[neighbors_indices])
+
+# Calculate the loss
+loss = (yr_values[0] - predicted_yr)**2
+
+print('2019-Dec-17')
+print(f"The contribution from observation i = 1 is: {loss}")
+print('\n')
+
+# 18 + 19
+"""
+Solution 18.
+The McNemar test is a statistical test used to compare the performance of two classification models. It specifically tests the null hypothesis that the two models are equally effective.
+
+Let's first add up the values in each category from Table 8:
+
+Both models are correct (M1/M2): 134 + 141 + 131 + 132 = 538
+M1 is correct, M2 is wrong (M1/M2): 40 + 31 + 23 + 30 = 124
+M1 is wrong, M2 is correct (M1/M2): 24 + 26 + 25 + 25 = 100
+Both models are wrong (M1/M2): 47 + 48 + 66 + 58 = 219
+The accuracy of a model is calculated as the number of correct predictions divided by the total number of predictions. Hence, the accuracy of M1 is (538 + 124) / (538 + 124 + 100 + 219) = 0.827 and the accuracy of M2 is (538 + 100) / (538 + 124 + 100 + 219) = 0.795.
+
+Therefore, the estimated difference in accuracy of the two models is ˆθ = acc(M1) - acc(M2) = 0.827 - 0.795 = 0.032. This corresponds to option D.
+
+Solution 19.
+The Jeffreys interval is a type of confidence interval for a binomial proportion in Bayesian statistics. The interval is (B(0.025|a, b), B(0.975|a, b)) where B is the beta distribution and a and b are the number of successes and failures, respectively, plus 0.5.
+
+In this case, the number of successes is the number of times M2 is correct, which is 538 + 100 = 638, and the number of failures is the number of times M2 is incorrect, which is 124 + 219 = 343.
+
+So the Jeffreys interval is (cdf−1 B (0.025|a = 638.5, b = 343.5), cdf−1 B (0.975|a = 638.5, b = 343.5)), which corresponds to option B.
+"""
+
 # 20
 """
 The structure of the artificial neural network (ANN) is as follows:
