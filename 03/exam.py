@@ -4464,3 +4464,359 @@ print('2019-Dec-27')
 for i in range(3):
     print(f"Cluster {i+1}: {data[clusters == i]}")
 print('\n')
+
+######################################
+# May 2020
+######################################
+print('May 2020')
+
+# 1
+"""
+Options A and C: The attributes x1 to x5 (BirthRt, DeathRt, InfMort, LExpM, LExpF) are ratio attributes because they have a clear definition of zero and can be ranked, subtracted, and divided in a meaningful way. However, the attribute x6 (Region) is nominal, as it represents categorically different regions encoded as numbers, without a meaningful order or zero.
+
+Option B: As explained above, the attribute x6 (Region) is a nominal attribute. It simply labels categories and doesn't convey any order or measure.
+
+Option D: The output attribute yr (GNP) is a ratio attribute, not ordinal. It represents a quantitative measurement with a clear definition of zero, and it can be ranked, subtracted, and divided in a meaningful way. An ordinal attribute would only be able to convey a rank or order, but not a precise measurement.
+"""
+
+# 2
+"""
+The solution is about understanding and interpreting the statistics of the datasets and the histograms provided. Let's break it down:
+
+Percentiles: Percentiles are a measure used in statistics indicating the value below which a given percentage of observations fall. For example, the 25th percentile (also known as the first quartile) is the value below which 25% of the observations may be found.
+
+Histograms: Histograms are a graphical representation of data distribution. They divide the data into a set of intervals (or "bins") on the x-axis, and the count of observations falling within each bin is shown on the y-axis.
+
+Now, by using the percentiles and histograms, you can try to match which histogram corresponds to which feature.
+
+From the percentiles, you see that the variable 'DeathRt' has all its percentiles (25th, 50th, 75th) below 25. So it cannot have observations above 25. When you check the histograms, only Histogram 2 satisfies this condition. Therefore, Histogram 2 must represent 'DeathRt'.
+
+Similarly, 'InfMort' is the only variable that has percentiles going above 88.25. So, the histogram representing 'InfMort' should have observations above 88.25. Only Histogram 4 satisfies this condition. Therefore, Histogram 4 must represent 'InfMort'.
+
+These deductions allow us to match the histograms with the attributes, based on the statistical properties of the attributes.
+"""
+
+# 3
+"""
+PCA is a dimensionality reduction technique that finds the directions (principal components) in which the data varies the most. In the context of PCA, the variance explained by each principal component is given by the square of the corresponding singular value divided by the sum of squares of all singular values.
+
+Let's calculate the total variance and the variance explained by each principal component:
+
+Calculate the total variance:
+Total variance = (19.64^2) + (6.87^2) + (3.26^2) + (2.30^2) + (1.12^2)
+
+Calculate the variance explained by each principal component:
+Variance explained by the first PC = (19.64^2) / Total variance
+Variance explained by the first two PCs = ((19.64^2) + (6.87^2)) / Total variance
+Variance explained by the first four PCs = ((19.64^2) + (6.87^2) + (3.26^2) + (2.30^2)) / Total variance
+Variance explained by the last four PCs = ((6.87^2) + (3.26^2) + (2.30^2) + (1.12^2)) / Total variance
+Now you can compare these calculated values to the percentages given in the answer choices (A-D) to find the correct statement. Remember to convert the variance explained by each set of PCs to a percentage by multiplying by 100.
+"""
+import numpy as np
+
+# Singular values
+S = np.array([19.64, 6.87, 3.26, 2.30, 1.12])
+
+# Calculate the square of singular values
+S_squared = S**2
+
+# Total variance
+total_variance = np.sum(S_squared)
+
+# Variance explained by each principal component
+variance_explained = S_squared / total_variance
+
+# Variance explained by the first PC
+variance_PC1 = variance_explained[0]
+
+# Variance explained by the first two PCs
+variance_PC1_PC2 = np.sum(variance_explained[:2])
+
+# Variance explained by the first four PCs
+variance_PC1_PC4 = np.sum(variance_explained[:4])
+
+# Variance explained by the last four PCs
+variance_PC2_PC5 = np.sum(variance_explained[1:])
+
+# Convert to percentages
+variance_PC1 *= 100
+variance_PC1_PC2 *= 100
+variance_PC1_PC4 *= 100
+variance_PC2_PC5 *= 100
+
+print("2020-may-01")
+print(f"Variance explained by the first PC: {variance_PC1}%")
+print(f"Variance explained by the first two PCs: {variance_PC1_PC2}%")
+print(f"Variance explained by the first four PCs: {variance_PC1_PC4}%")
+print(f"Variance explained by the last four PCs: {variance_PC2_PC5}%")
+print('\n')
+
+# 4
+"""
+Deciding what value is considered "high" or "low" for a particular variable often depends on the context, the nature of the data, and sometimes on domain knowledge.
+
+Relative Comparison: Within a single dataset, a "high" value for a variable might mean a value that is significantly above the average (mean) or median of that variable. Similarly, a "low" value might mean a value significantly below the average or median.
+
+Domain Knowledge: For example, in a dataset of human heights, a height of 6 feet might be considered "high" because it is much greater than the average human height.
+
+Statistical Thresholds: In statistical terms, values that fall in the upper quartile (greater than 75th percentile) might be considered "high", and values in the lower quartile (less than 25th percentile) might be considered "low".
+
+Fixed Thresholds: In some cases, there are universally accepted thresholds that define "high" and "low". For example, in health science, Body Mass Index (BMI) over 30 is considered "high" as it indicates obesity.
+
+For the PCA loadings matrix, the values are constrained to be between -1 and 1. A "high" absolute value (close to 1 or -1) indicates a strong influence on that particular PC. A "low" absolute value (close to 0) indicates a weak influence. The sign (+/-) indicates the direction of the influence: positive values indicate that the original variable and the PC are positively correlated (they increase together), and negative values indicate a negative correlation (one increases as the other decreases).
+
+---
+
+The vector v1 is the first column of V, which is [0.43, 0.38, 0.46, -0.48, -0.48]. When projecting the original variables (x1 to x5) onto v1, we obtain the projection b1. This is calculated by the dot product of the variables x1 to x5 with v1. This projection represents the variables on the first principal component.
+
+To have a large positive value of b1 (which is what we observe for countries from Africa), the original variables x1 to x5 must have values that, when multiplied by the corresponding values in v1 and summed together (the dot product), result in a large number. Considering the sign of each element in v1, this implies that x1, x2, and x3 should have high values, while x4 and x5 should have low values. This aligns with answer choice A.
+
+Regarding the correlation between the observations projected onto PC1 and PC2, the calculation shows that it is zero. This is because, in PCA, the principal components are orthogonal (uncorrelated). Therefore, there is no correlation between the projections onto PC1 and PC2, ruling out answer choice D.
+"""
+
+# 6
+"""
+In order to calculate the average relative density (ARD) for observation o3 using K=2 nearest neighbors, we first need to identify o3's two nearest neighbors, calculate the K-Nearest Neighbors (KNN) density for o3, and then calculate the average KNN density of the neighbors.
+
+Identify the two nearest neighbors:
+From the given table, the two observations with the smallest Euclidean distances to o3 are o2 (distance = 1.0) and o5 (distance = 0.9).
+
+Calculate the KNN density for o3:
+The KNN density is defined as the reciprocal of the average distance to the K nearest neighbors. So, for o3, the KNN density is calculated as follows:
+
+density_o3 = 1 / (average distance to o2 and o5)
+= 1 / ((1.0 + 0.9) / 2)
+= 1 / 0.95
+= 1.0526 (approx)
+
+Calculate the average KNN density of the neighbors (o2 and o5):
+For this, we first need to calculate the KNN density for o2 and o5 considering their own two nearest neighbors, and then calculate the average of these densities.
+
+Note: It's important to remember that the two nearest neighbors for o2 and o5 may not be o3 and each other. You will need to look at the distances in the table to identify their two nearest neighbors, calculate their individual densities as in step 2, and then take the average.
+
+Finally, calculate the ARD for o3:
+The ARD is calculated as the KNN density of o3 divided by the average KNN density of the neighbors.
+
+ard_o3 = density_o3 / (average density of o2 and o5)
+
+So, the ARD of o3 depends on the densities of o2 and o5, which in turn depend on their own nearest neighbors. Be sure to identify the correct neighbors based on the given distance table.
+
+I hope this gives you an idea of how to approach the problem. Let me know if you need further clarification
+"""
+import numpy as np
+
+# let's assume this is your distance matrix
+dist_matrix = np.array([
+    [0.0, 1.7, 1.4, 0.4, 2.2, 3.7, 5.2, 0.2, 4.3, 6.8, 6.0],
+    [1.7, 0.0, 1.0, 2.0, 1.3, 2.6, 4.5, 1.8, 3.2, 5.9, 5.2],
+    [1.4, 1.0, 0.0, 1.7, 0.9, 2.4, 4.1, 1.5, 3.0, 5.5, 4.8],
+    [0.4, 2.0, 1.7, 0.0, 2.6, 4.0, 5.5, 0.3, 4.6, 7.1, 6.3],
+    [2.2, 1.3, 0.9, 2.6, 0.0, 1.7, 3.4, 2.4, 2.1, 4.8, 4.1],
+    [3.7, 2.6, 2.4, 4.0, 1.7, 0.0, 2.0, 3.8, 1.6, 3.3, 2.7],
+    [5.2, 4.5, 4.1, 5.5, 3.4, 2.0, 0.0, 5.4, 2.5, 1.6, 0.9],
+    [0.2, 1.8, 1.5, 0.3, 2.4, 3.8, 5.4, 0.0, 4.4, 6.9, 6.1],
+    [4.3, 3.2, 3.0, 4.6, 2.1, 1.6, 2.5, 4.4, 0.0, 3.4, 2.9],
+    [6.8, 5.9, 5.5, 7.1, 4.8, 3.3, 1.6, 6.9, 3.4, 0.0, 1.0],
+    [6.0, 5.2, 4.8, 6.3, 4.1, 2.7, 0.9, 6.1, 2.9, 1.0, 0.0]
+])
+
+def knn_density(dist_vector, K):
+    # get the indices of the K nearest neighbors (exclude the first one because it's the point itself)
+    nearest_neighbors_idx = dist_vector.argsort()[1:K+1]
+    # calculate the average distance to the K nearest
+    # calculate the average distance to the K nearest neighbors
+    avg_distance = dist_vector[nearest_neighbors_idx].mean()
+
+    # the density is the inverse of the average distance
+    density = 1 / avg_distance if avg_distance != 0 else 0
+
+    return density, nearest_neighbors_idx
+
+
+def ard(dist_matrix, idx, K):
+    # calculate the density for the chosen observation and get its K nearest neighbors
+    density_xi, nearest_neighbors_idx = knn_density(dist_matrix[idx], K)
+
+    # calculate the densities for the K nearest neighbors
+    densities_neighbors = [knn_density(dist_matrix[i], K)[0] for i in nearest_neighbors_idx]
+
+    # calculate the average of the densities of the K nearest neighbors
+    avg_density_neighbors = np.mean(densities_neighbors)
+
+    # the average relative density is the density of the chosen observation divided by the average density of its K nearest neighbors
+    ard_xi = density_xi / avg_density_neighbors if avg_density_neighbors != 0 else 0
+
+    return ard_xi
+
+
+# calculate the average relative density for observation o3 (index 2) for K=2 nearest neighbors
+ard_o3 = ard(dist_matrix, 2, 2)
+
+print("2020-may-06")
+print(ard_o3)
+print('\n')
+
+# 7
+"""
+The solution given here employs a method called leave-one-out cross-validation (LOOCV) for the k-nearest neighbors (k-NN) classifier. For each observation, the method trains the classifier on all data except for the one left out, and then makes a prediction for the left-out data. It then checks whether this prediction is correct.
+
+To illustrate:
+
+For observation o1, the nearest neighbor in the remaining data is o8. The classifier predicts the class of o1 correctly based on o8's class.
+
+The process continues with each observation (o2, o3, ..., o11). For instance, for observation o6, the nearest neighbor is o9. However, the class of o6 is different from o9, leading to an incorrect prediction.
+
+By repeating this process for all the observations, the classifier makes incorrect predictions for observations o6, o7, o9, and o11.
+
+The error rate is the proportion of incorrect predictions out of all predictions. In this case, 4 out of 11 predictions are incorrect, so the error rate is 4/11. Thus, the correct answer to your question is B. 4/11.
+
+The one-nearest neighbor classifier with LOOCV is a simple yet effective way of measuring the performance of a classifier, especially when the dataset is small. It effectively uses the available data to evaluate the model, as each observation is used once as a validation data point.
+"""
+def loo_cv_error_rate(dist_matrix, labels):
+    num_errors = 0
+    n = len(dist_matrix)
+
+    # For each observation
+    for i in range(n):
+        # Compute the distances to all other observations and their corresponding labels, excluding the current observation
+        distances = np.delete(dist_matrix[i], i)
+        other_labels = np.delete(labels, i)
+
+        # Find the index of the nearest neighbor
+        nn_index = np.argmin(distances)
+
+        # If the label of the nearest neighbor is different from the label of the current observation, count it as an error
+        if other_labels[nn_index] != labels[i]:
+            num_errors += 1
+
+    # The error rate is the number of errors divided by the number of observations
+    error_rate = num_errors / n
+
+    return error_rate
+
+labels = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]
+
+# Assuming that labels = [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1] (replace with your actual labels)
+error_rate = loo_cv_error_rate(dist_matrix, labels)
+
+print("2020-may-07")
+print(error_rate)
+print('\n')
+
+# 9
+"""
+A. According to the estimated model an increase in a country’s birth rate will increase the probability that the country is rich.
+This statement can be true or false depending on which of the standardized features x1, . . . , x5 corresponds to the birth rate of a country. If the birth rate corresponds to a feature with a positive coefficient, then increasing birth rate increases the probability that the country is rich, and vice versa.
+
+B. The probability observation x6 belongs to class y = 1 is less than 1 %.
+To verify this, we need to compute the class-probability for the observation x6 using the logistic function applied to the output of the linear model. The logistic function is defined as σ(z) = 1 / (1 + exp(-z)).
+
+C. The attribute Region has very little influence on whether a country is poor or rich.
+This is dependent on the weights assigned to the one-hot encoded features c1, c2, c3, c4, c5 representing the region. If these coefficients are very close to 0, then we can say that the region has very little influence on the model's output.
+
+D. As the weight for x1 and x3 have opposing signs we can conclude the two features are negatively correlated.
+This statement is not necessarily true. The signs of the weights in a logistic regression model do not tell us about the correlation between the input features. The weights only tell us how each feature independently contributes to the model's output, given all other features are held constant. Two features can be negatively correlated, yet have weights of the same sign in a logistic regression model.
+
+Without more context or a way to calculate the probability of x6 belonging to class y=1, it's hard to definitively say which statement is correct. But based on the information given, statement D is certainly incorrect, and statement A could be true or false depending on which feature corresponds to the birth rate. Statement C could be evaluated if we knew which values in c1, c2, c3, c4, c5 represent the region.
+"""
+import numpy as np
+
+def logistic(z):
+    return 1 / (1 + np.exp(-z))
+
+def calculate_logit(x, c, w):
+    return w[0] + np.dot(x, w[1:6]) + np.dot(c, w[6:])
+
+x6 = np.array([-0.06, -0.28, 0.43, -0.30, -0.36])
+c6 = np.array([0, 0, 0, 0, 1])
+w = np.array([1.41, 0.76, 1.76, -0.32, -0.96, 6.64, -5.13, -2.06, 96.73, 1.03, -2.74])
+
+logit = calculate_logit(x6, c6, w)
+prob = logistic(logit)
+
+print("2020-may-09")
+print(f'The probability that observation x6 belongs to class y=1 is {prob * 100}%')
+print('\n')
+
+# 10
+"""
+The F1 score is the harmonic mean of precision and recall. Precision (P) is defined as the number of true positives (T_p) over the number of true positives plus the number of false positives (F_p). Recall (R) is defined as the number of true positives (T_p) over the number of true positives plus the number of false negatives (F_n).
+
+Here's the formula:
+
+scss
+Copy code
+Precision = T_p / (T_p + F_p)
+Recall = T_p / (T_p + F_n)
+F1 = 2 * (Precision * Recall) / (Precision + Recall)
+In this case, we can assume that the "positive" class is the high GNP (yb = 1) class. Therefore, from the confusion matrix:
+
+makefile
+Copy code
+T_p = 34, 
+F_p = 7 (the count of low GNP instances incorrectly classified as high GNP), 
+F_n = 11 (the count of high GNP instances incorrectly classified as low GNP).
+We can substitute these values into the formula to find the F1 score.
+
+Let me do the calculations in Python for you:
+"""
+T_p = 34
+F_p = 7
+F_n = 11
+
+Precision = T_p / (T_p + F_p)
+Recall = T_p / (T_p + F_n)
+
+F1 = 2 * (Precision * Recall) / (Precision + Recall)
+
+print("2020-may-10")
+print(f'F1 = {F1}')
+print('\n')
+
+
+# 11 TODO
+
+
+# 13
+"""
+The outer cross-validation loop divides the data into K1 = 4 folds. For each fold, we train and test each of our 3 model architectures, each with 7-fold (K2) cross-validation in the inner loop. The total time to train a single model for each inner fold is 20 seconds and to test is 1 second.
+
+Therefore, for each outer fold, we perform the following steps for each model architecture:
+
+Train and test for each inner fold: This takes (20 seconds for training + 1 second for testing) * K2 = 21 * 7 = 147 seconds.
+Since we have 3 model architectures, we multiply this by 3, giving us 147 * 3 = 441 seconds for each outer fold.
+
+As there are 4 outer folds, the total time required for this 2-level cross-validation procedure is 441 * 4 = 1764 seconds.
+
+This is the theoretical minimum time required assuming perfect parallelism, no overhead from splitting the data, and that model complexity doesn't affect the training or testing time. In reality, it may take somewhat longer.
+"""
+
+
+# 15
+"""
+This is an application of Bayes' Theorem, which can be written as:
+
+P(A|B) = P(B|A) * P(A) / P(B)
+
+In this context:
+
+P(Africa|GNP>1000) is what we're trying to find.
+P(GNP>1000|Africa) is given as 28.6% or 0.286.
+P(Africa) is given as 15.4% or 0.154.
+P(GNP>1000) can be calculated from the total law of probability: P(Africa) * P(GNP>1000|Africa) + P(Not Africa) * P(GNP>1000|Not Africa)
+Let's calculate P(GNP>1000):
+
+P(GNP>1000) = P(Africa) * P(GNP>1000|Africa) + P(Not Africa) * P(GNP>1000|Not Africa)
+= 0.154 * 0.286 + 0.846 * 0.688
+= 0.044084 + 0.581808
+= 0.625892
+
+Now, we can find P(Africa|GNP>1000) using Bayes' Theorem:
+
+P(Africa|GNP>1000) = P(GNP>1000|Africa) * P(Africa) / P(GNP>1000)
+= 0.286 * 0.154 / 0.625892
+= 0.070245
+= 7.02%
+
+So, the correct answer is C. 7.0%.
+"""
