@@ -3289,16 +3289,20 @@ print(weights)
 print('\n')
 
 # 25
-"""
-The solution is using the formula for leave-one-out (LOO) cross-validation with a kernel density estimator (KDE). The general idea is to train the model on all the data except one point, then calculate the likelihood of that left-out point given the model. This is done for each point in the dataset.
+"""The solution is using the formula for leave-one-out (LOO) cross-validation with a kernel density estimator (KDE). 
+The general idea is to train the model on all the data except one point, then calculate the likelihood of that 
+left-out point given the model. This is done for each point in the dataset. 
 
 Here, the Gaussian KDE is used, which is given by the formula:
 
 pσ(xi) = 1/(N−1) ∑ (j≠i) N(xi|xj, σ)
 
-In this formula, N(xi|xj, σ) is the Gaussian (normal) distribution for the left-out data point xi, with mean xj and standard deviation σ. The sum goes over all data points except the one left out. So, for each point in the dataset, a normal distribution is fitted to the remaining points, and the likelihood of the left-out point is calculated.
+In this formula, N(xi|xj, σ) is the Gaussian (normal) distribution for the left-out data point xi, with mean xj and 
+standard deviation σ. The sum goes over all data points except the one left out. So, for each point in the dataset, 
+a normal distribution is fitted to the remaining points, and the likelihood of the left-out point is calculated. 
 
-The values pσ(xi) are the likelihoods of each point when that point is left out and the model is trained on the remaining points. These values are approximately:
+The values pσ(xi) are the likelihoods of each point when that point is left out and the model is trained on the 
+remaining points. These values are approximately: 
 
 pσ(x1) = 0, pσ(x2) = 0.029, pσ(x3) = 0.078, pσ(x4) = 0.082
 
@@ -4820,3 +4824,240 @@ P(Africa|GNP>1000) = P(GNP>1000|Africa) * P(Africa) / P(GNP>1000)
 
 So, the correct answer is C. 7.0%.
 """
+
+# 16
+"""
+According to the provided table:
+
+The number of occurrences matching both f2 = 1, f3 = 1, and yb = 1 is indeed zero.
+The total number of occurrences matching yb = 1 is 3 (for observations o9, o10, and o11).
+So, with these counts, we apply the given formula (with α = 1):
+
+p(f2 = 1, f3 = 1 | yb = 1) = (Occurrences matching f2 = 1, f3 = 1 and yb = 1 + α) / (Occurrences matching yb = 1 + 2α)
+= (0 + 1) / (3 + 2*1)
+= 1 / 5
+= 0.2
+
+So, the probability estimate with α = 1 is 0.2. I apologize for the confusion and thank you for your patience.
+"""
+
+# 17
+import pandas as pd
+import numpy as np
+
+# Data
+data = {
+    'f1': [1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 0],
+    'f2': [1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1],
+    'f3': [1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0],
+    'f4': [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1],
+    'f5': [0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1],
+    'yb': [0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1]
+}
+
+# Create DataFrame
+df = pd.DataFrame(data)
+
+# Compute the probabilities
+P_yb1 = np.mean(df['yb'] == 1)
+P_yb0 = 1 - P_yb1
+
+P_f2_1_yb1 = np.mean(df[df['yb'] == 1]['f2'] == 1)
+P_f3_0_yb1 = np.mean(df[df['yb'] == 1]['f3'] == 0)
+
+P_f2_1_yb0 = np.mean(df[df['yb'] == 0]['f2'] == 1)
+P_f3_0_yb0 = np.mean(df[df['yb'] == 0]['f3'] == 0)
+
+# Apply Bayes' Theorem
+P_f2_1_f3_0 = P_f2_1_yb0 * P_f3_0_yb0 * P_yb0 + P_f2_1_yb1 * P_f3_0_yb1 * P_yb1
+
+P_yb1_f2_1_f3_0 = P_f2_1_yb1 * P_f3_0_yb1 * P_yb1 / P_f2_1_f3_0
+
+# Print result
+print('The probability that the observation has high GNP (i.e., yb = 1) given that the features f2 = 1 and f3 = 0 according to a naive-Bayes classifier trained using only the data in Table 5 is:', P_yb1_f2_1_f3_0)
+print('\n')
+
+# 18
+"""
+To calculate the purity gain, we first calculate the Gini impurity of the root node. Then we calculate the Gini impurity of the child nodes if we split by the feature f1. The purity gain is then the difference between the Gini impurity of the root node and the weighted sum of the Gini impurity of the child nodes.
+
+Gini impurity of the root node: The root node includes all 11 observations. Eight observations belong to class 0 (low GNP) and three observations belong to class 1 (high GNP). So, the Gini impurity of the root node is calculated as follows:
+
+I(root) = 1 - [(8/11)^2 + (3/11)^2] = 0.396
+
+Gini impurity of the child nodes if we split by feature f1: If we split by feature f1, the observations will be divided into two groups. Group 1 has the observations where f1=1 (7 observations), and group 2 where f1=0 (4 observations). We can see from Table 5 that in group 1, six observations belong to class 0 and one observation belongs to class 1. In group 2, two observations belong to class 0 and two belong to class 1. So, the Gini impurity of the child nodes are:
+
+I(group 1) = 1 - [(6/7)^2 + (1/7)^2] = 0.245
+I(group 2) = 1 - [(2/4)^2 + (2/4)^2] = 0.5
+
+Weighted average of the Gini impurity of the child nodes: The weighted average of the Gini impurity of the child nodes is the sum of the Gini impurity of each child node multiplied by the proportion of observations in that node. So, the weighted average of the Gini impurity of the child nodes is:
+
+I(split) = (7/11)*I(group 1) + (4/11)*I(group 2) = 0.335
+
+Purity gain: The purity gain is the difference between the Gini impurity of the root node and the weighted average of the Gini impurity of the child nodes. So, the purity gain is:
+
+∆ = I(root) - I(split) = 0.061
+
+So, the purity gain of this split by feature f1 is 0.061. This value shows how much the impurity decreases if we split the observations by feature f1.
+"""
+
+# 19
+"""
+The Jaccard index (J) is calculated as:
+
+J = S / [N*(N-1)/2 - D]
+
+where:
+
+S is the number of pairs of observations assigned to the same cluster that are in the same class.
+N is the total number of observations.
+D is the number of pairs of observations assigned to different clusters that are also in different classes.
+S is calculated as follows:
+
+For cluster 1 (f2 = 0), there are 2 items which belong to the same class (yb = 1). So, there is 1 pair with the same class label.
+For cluster 2 (f2 = 1), there are 8 items which belong to the same class (yb = 0) out of 9. The number of pairs in a group is given by the formula N(N-1)/2, where N is the number of items in the group. So, there are 8*(8-1)/2 = 28 pairs with the same class label.
+Therefore, S = 1 (from cluster 1) + 28 (from cluster 2) = 29 pairs.
+N is the total number of observations, which in this case is 11.
+
+D is calculated as follows: There are 8 observations in cluster 2 with yb = 0 and 2 observations in cluster 1 with yb = 1. Therefore, there are 8*2 = 16 pairs of observations assigned to different clusters that are also in different classes.
+
+Plugging these values into the formula, we get:
+
+J = 29 / [11*(11-1)/2 - 16] = 29 / [55 - 16] = 29 / 39 = 0.7436.
+
+So, the Jaccard index of the true class labels and the two extracted clusters is approximately 0.7436.
+
+
+You are correct, and I apologize for the oversight. The binary array z = [2 2 2 2 2 2 2 2 1 1 2] does indeed indicate that the final observation is assigned to cluster 2, not cluster 1. However, it belongs to class 1 (yb=1) as per the true labels yb = [0 0 0 0 0 0 0 0 1 1 1].
+
+Let's break this down:
+
+There are 8 observations assigned to cluster 2 that belong to class 0 (yb = 0).
+There are 2 observations assigned to cluster 1 that belong to class 1 (yb = 1).
+There is 1 observation assigned to cluster 2 that belongs to class 1 (yb = 1).
+The 'D' value is calculated considering pairs that are in different clusters and also belong to different classes. So, in this case, we have:
+
+Each of the 8 observations in cluster 2 (class 0) can pair with each of the 2 observations in cluster 1 (class 1). This gives us 8*2 = 16 pairs.
+However, the final observation that belongs to cluster 2 and class 1 does not form a pair that matches the criteria for 'D', since there are no more observations in cluster 1 (but a different class, i.e., class 0). So, this observation is not included in the 'D' calculation.
+Therefore, the 'D' value remains 16.
+"""
+
+# 22
+"""
+The three linkage methods mentioned in the question (minimum, maximum, and average) are used in hierarchical clustering to determine the distance between clusters, which then guides how clusters are formed. Each of these methods considers the distances between the points in different clusters in a different way:
+
+Maximum linkage (complete linkage) considers the maximum distance between points in the two clusters. The green point would be assigned to the cluster where the maximum distance to any point in the cluster is smallest.
+
+Minimum linkage (single linkage) considers the minimum distance between points in the two clusters. The green point would be assigned to the cluster where the minimum distance to any point in the cluster is smallest.
+
+Average linkage considers the average of the distances between all pairs of points where one point is in each cluster. The green point would be assigned to the cluster where the average distance to the points in the cluster is smallest.
+
+--
+Maximum linkage (complete linkage): This approach would consider the maximum distance from the green point to the furthest point in each cluster. Because the blue pluses cluster has a point closest to the green point among the furthest points of all clusters, option A is correct.
+
+Minimum linkage (single linkage): This approach would consider the minimum distance from the green point to the closest point in each cluster. The cluster which has the closest point to the green point will be chosen. However, without the specific data or visualization, it's hard to tell whether option B or D is correct.
+
+Average linkage: This method would consider the average distance from the green point to all points in each cluster. As per your description, the center of the red crosses is furthest away, so the green point wouldn't be assigned to the cluster given by red crosses. Therefore, option C is incorrect.
+
+Remember that these are educated guesses based on the descriptions you provided, and the specific assignment of the green point might differ depending on the actual data or visualization in Figure 8.
+"""
+
+# 23
+"""
+The Mahalanobis distance is a measure of the distance between a point and a distribution, and it is different from the Euclidean distance in that it accounts for correlations between variables and scales the variables to their standard deviations. Therefore, to accurately calculate and compare Mahalanobis distances, I need information about the points' locations and the data's distribution.
+
+However, I can provide some general comments on the options:
+
+A. This would depend on the relative locations of the green circles and black squares, and how these relate to the overall distribution of the blue points.
+
+B. The Mahalanobis distances between two pairs of points will only be the same if the pairs of points are in the same relative locations with respect to the distribution of the blue points.
+
+C. This would depend on the relative locations of the black squares and cyan plusses, and how these relate to the overall distribution of the blue points.
+
+D. It's possible for an empirical covariance matrix to have negative elements. The covariance between two variables can be negative if the variables tend to move in opposite directions (i.e., when one variable increases, the other tends to decrease).
+
+---
+The Mahalanobis distance takes into account the covariance of the data set and the scales of differences in units. If the variables in your data set are correlated, using the Mahanalobis distance will take these correlations into account, while the Euclidean distance would not.
+
+If the correlation between x1 and x2 is positive, as you've stated, that means an increase in x1 is typically associated with an increase in x2. This would lead to a shape of the covariance matrix in the direction of the green circles and blue plusses, as they are likely following this trend.
+
+Because of this correlation and the orientation of the covariance matrix, the Mahalanobis distances of the pairs of observations following the trend (the green circles and blue plusses) would be shorter. On the other hand, the Mahanalobis distance would be larger for observations not following the trend (like the black squares), as they would deviate more from the expected correlation pattern.
+
+Therefore, the Mahalanobis distance between the two green circles would indeed be smaller than the Mahanalobis distance between the two black squares. This confirms option A as correct.
+"""
+
+# 24
+"""
+The probability density function (pdf) is not a simple triangular distribution as I initially thought. Instead, it seems the pdf is piecewise-linear with three different slopes for three different ranges: 0 to 0.2, 0.2 to 0.6, and 0.6 to 0.9. Hence, the integral has to be calculated separately over these intervals.
+
+The formula for the expected value (E[x]) is still the integral of x*p(x)dx over the range of x. But given the piecewise nature of the function, we need to calculate this integral separately over the three ranges and add these together:
+
+For x from 0 to 0.2, the function appears to increase linearly from 0 to 0.6. The formula for the expected value over this range is the integral of x*(0.6*x) from 0 to 0.2.
+For x from 0.2 to 0.6, the function appears to be constant at 1. The formula for the expected value over this range is the integral of x*1 from 0.2 to 0.6.
+For x from 0.6 to 0.9, the function appears to increase linearly from 1 to 1.6. The formula for the expected value over this range is the integral of x*(1 + 0.6*(x-0.6)) from 0.6 to 0.9.
+By performing these integrals and summing up the results, we get an expected value of E[x] = 0.532.
+"""
+
+# 25
+"""
+It seems like there was a confusion regarding the calculations for the p-norm distances. Let's go over it again:
+
+dp=1(x35, x53): This is the sum of absolute differences between corresponding elements in the two vectors (Manhattan distance). So, it would be:
+
+dp=1(x35, x53) = |(-1.24)-(-0.60)| + |(-0.26)-(-0.86)| + |(-1.04)-(-0.50)| = 0.64 + 0.60 + 0.54 = 1.78
+
+dp=4(x35, x53): This is the fourth root of the sum of the fourth power of differences between corresponding elements in the two vectors. The correct calculation would be:
+
+dp=4(x35, x53) = ((0.64^4 + 0.60^4 + 0.54^4)^(1/4)) = 0.79
+
+dp=∞(x35, x53): This is the maximum absolute difference between corresponding elements in the two vectors (Chebyshev distance). So, it would be:
+
+dp=∞(x35, x53) = max{|(-1.24)-(-0.60)|, |(-0.26)-(-0.86)|, |(-1.04)-(-0.50)|} = max{0.64, 0.60, 0.54} = 0.64
+
+The correct answer is indeed B,
+"""
+
+# 26
+"""
+D. The number of observations used for testing is the same for five-fold and ten-fold cross-validation.
+
+Explanation: Cross-validation is a resampling procedure used to evaluate machine learning models on a limited data sample. In k-fold cross-validation, the original sample is randomly partitioned into k equal-sized subsamples. Of the k subsamples, a single subsample is retained as the validation data for testing the model, and the remaining k − 1 subsamples are used as training data. This process is then repeated k times, with each of the k subsamples used exactly once as the validation data.
+
+Therefore, regardless of the number of folds (5-fold or 10-fold), the total number of observations used for testing throughout the entire cross-validation process remains the same, as each observation is used exactly once for testing. The main difference between 5-fold and 10-fold cross-validation is the number of observations used in each test set at each iteration: in 5-fold cross-validation, each test set comprises 20% of the data, while in 10-fold cross-validation, each test set comprises 10% of the data.
+
+A. In machine learning we are mainly concerned about the training error as opposed to the test error.
+This statement is incorrect because in machine learning we are actually more concerned about the test error as opposed to the training error. The goal of a machine learning model is to generalize well to unseen data, which is represented by the test set. A model could have low training error (even 0 in the case of overfitting), but the important measure is how well it performs on the test set.
+
+B. As we get more training data the trained model becomes more prone to overfitting.
+This statement is incorrect. As a general rule, as we get more training data, the model becomes less prone to overfitting. Overfitting happens when the model learns the noise in the data, typically when we have too few data points. More data tends to lead to better generalization and less overfitting because it's more representative of the problem space.
+
+C. For a classifier the test error rate will in general be lower than the training error rate.
+This statement is incorrect. In general, the test error rate will be higher than the training error rate, because the model is trained to minimize error on the training data. It's not exposed to the test data during training, so it's likely to make more errors when it encounters this unseen data.
+"""
+
+# 27
+"""
+The αt values are calculated as αt = 0.5log( 1−t / t ), where t is the error rate of the weak classifier in round t. Given the error rates in your question, the αt values for the four rounds are:
+
+α1 = 0.5log( 1−0.417 / 0.417 ) = 0.168,
+α2 = 0.5log( 1−0.243 / 0.243 ) = 0.568,
+α3 = 0.5log( 1−0.307 / 0.307 ) = 0.407,
+α4 = 0.5log( 1−0.534 / 0.534 ) = -0.068.
+
+The F0(x) and F1(x) values for a given data point x are calculated by adding up the αt values for the weak classifiers that predicted class 0 and class 1, respectively.
+
+For x_test1, the weak classifiers from rounds 1, 3, and 4 predicted class 0 and the weak classifier from round 2 predicted class 1. So the F values are:
+
+F0(x_test1) = α1 + α3 + α4 = 0.168 + 0.407 - 0.068 = 0.507,
+F1(x_test1) = α2 = 0.568.
+
+Because F1(x_test1) > F0(x_test1), x_test1 is classified as 1.
+
+For x_test2, the weak classifier from round 1 predicted class 0 and the weak classifiers from rounds 2, 3, and 4 predicted class 1. So the F values are:
+
+F0(x_test2) = α1 = 0.168,
+F1(x_test2) = α2 + α3 + α4 = 0.568 + 0.407 - 0.068 = 0.907.
+
+Because F1(x_test2) > F0(x_test2), x_test2 is also classified as 1.
+"""
+
