@@ -5378,6 +5378,228 @@ Adding these up and dividing by 6 (the number of pairs), we get the average link
 Average linkage = (1025 + 925 + 1375 + 1100 + 1000 + 1450) / 6 = 1145.17 (rounded to two decimal places).
 """
 
+# 21
+"""
+
+"""
+import numpy as np
+
+# Define the sigmoid function
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+# Define the weights
+weights = [[423.49, 48.16], [0.0, -46.21], [0.0, -27.89], [418.94, -26.12]]
+
+x2 = 16
+
+# Compute the probabilities for each set of weights
+for i, weight in enumerate(weights):
+    z = weight[0] + weight[1]*x2
+    p = sigmoid(z)
+    print(f"Option {chr(65+i)}: {p}")
+print('\n')
+
+# 22
+"""
+The solution is computing the posterior probability γi,2 for observation i being assigned to cluster 2, which can be obtained using Bayes' theorem.
+
+The Bayes' theorem is:
+
+css
+Copy code
+P(A|B) = P(B|A) * P(A) / P(B)
+Where:
+
+P(A|B) is the posterior probability of A given B (in this case, the probability of observation i being in cluster 2 given the data)
+P(B|A) is the likelihood of B given A (in this case, the probability of the data given that observation i is in cluster 2)
+P(A) is the prior probability of A (in this case, the prior probability of observation i being in cluster 2)
+P(B) is the total probability of B (in this case, the total probability of the data)
+The probabilities p(xi|zik = 1) for k=1,2,3 are computed using the normal density function with the parameters μk and σk of the corresponding Gaussian k. These probabilities represent the likelihood of the data point xi given that it is in cluster k.
+
+Combining these likelihoods with the prior probabilities (the mixture weights), we can use Bayes' theorem to compute the posterior probabilities γi,k, which are the probabilities of observation i being assigned to cluster k given the data.
+
+For the specific data point x0=15.38, the solution finds that the posterior probability of it being assigned to cluster 2, γi,2, is approximately 0.975.
+--- 
+
+Given the weights w (the prior probabilities πk), means μ, and standard deviations σ of the three normal distributions in the Gaussian Mixture Model (GMM), we can calculate the likelihoods p(xi|zik = 1) for the data point xi = 15.38, as follows:
+
+The probability density function (PDF) of a normal distribution is given by:
+
+N(x | μ, σ) = (1/√(2πσ²)) * e^-((x-μ)² / 2σ²)
+So, we have:
+
+p(xi|zi1 = 1) = N(xi | μ1, σ1) = (1/√(2π*σ1²)) * e^-((xi-μ1)² / 2σ1²)
+               = (1/√(2π*1.2193²)) * e^-((15.38-18.347)² / 2*1.2193²)
+               = 0.017 (after computation)
+
+p(xi|zi2 = 1) = N(xi | μ2, σ2) = (1/√(2π*σ2²)) * e^-((xi-μ2)² / 2σ2²)
+               = (1/√(2π*0.986²)) * e^-((15.38-14.997)² / 2*0.986²)
+               = 0.375 (after computation)
+
+p(xi|zi3 = 1) = N(xi | μ3, σ3) = (1/√(2π*σ3²)) * e^-((xi-μ3)² / 2σ3²)
+               = (1/√(2π*1.1354²)) * e^-((15.38-18.421)² / 2*1.1354²)
+               = 0.01 (after computation)
+According to Bayes’ theorem, the posterior probability γi,2 that observation i is assigned to mixture component 2 is:
+
+γi,2 = p(xi|zi,2 = 1)π2 / ∑3_k=1 p(xi|zik = 1)πk
+     = p(xi|zi2 = 1)*w2 / (p(xi|zi1 = 1)*w1 + p(xi|zi2 = 1)*w2 + p(xi|zi3 = 1)*w3)
+     = 0.375*0.55 / (0.017*0.13 + 0.375*0.55 + 0.01*0.32)
+     = 0.975 (after computation)
+Hence, the probability that an observation at xi = 15.38 is assigned to cluster 2 is approximately 0.975.
+
+
+
+
+"""
+import numpy as np
+from scipy.stats import norm
+
+# Mixture weights
+w = np.array([0.13, 0.55, 0.32])
+
+# Means of the Gaussians
+mu = np.array([18.347, 14.997, 18.421])
+
+# Standard deviations of the Gaussians
+sigma = np.array([1.2193, 0.986, 1.1354])
+
+# Data point
+x0 = 15.38
+
+# Compute likelihoods
+likelihoods = np.array([norm.pdf(x0, mu_k, sigma_k) for mu_k, sigma_k in zip(mu, sigma)])
+
+# Compute evidence
+evidence = np.sum(w * likelihoods)
+
+# Compute posterior probabilities
+posteriors = w * likelihoods / evidence
+
+# Probability that x0 is assigned to cluster k=2
+prob_x0_c2 = posteriors[1]
+
+print('2020-dec-22')
+print('The probability an observation at x0 = 15.38 is assigned to cluster k=2 is:', prob_x0_c2)
+print('\n')
+
+# 24
+"""
+To answer this question, we need to understand how the ROC curve is constructed. An ROC curve plots the True Positive Rate (TPR) against the False Positive Rate (FPR) at different classification thresholds.
+
+To create the ROC curve, the predicted probabilities are first sorted in descending order. Then, for each sorted predicted probability, a threshold is set to classify samples above the threshold as positive and below as negative. As a result, for each threshold, we can calculate the TPR and FPR and plot it on the graph.
+
+The true labels and predicted probabilities for the 7 observations are:
+
+makefile
+Copy code
+y   = 1, 0, 0, 1, 1, 0, 1
+ˆy  = 0.01, 0.05, 0.14, 0.3, 0.31, 0.36, 0.91
+When sorted by predicted probabilities in descending order, we get:
+
+makefile
+Copy code
+y   = 1, 0, 1, 1, 0, 0, 1
+ˆy  = 0.91, 0.36, 0.31, 0.3, 0.14, 0.05, 0.01
+We have 4 positives (1s) and 3 negatives (0s) in total.
+
+For each predicted probability threshold, the TPR and FPR are calculated:
+
+Threshold = 0.91: TPR = 1/4, FPR = 0
+Threshold = 0.36: TPR = 1/4, FPR = 1/3
+Threshold = 0.31: TPR = 2/4, FPR = 1/3
+Threshold = 0.3: TPR = 3/4, FPR = 1/3
+Threshold = 0.14: TPR = 3/4, FPR = 2/3
+Threshold = 0.05: TPR = 3/4, FPR = 3/3
+Threshold = 0.01: TPR = 4/4, FPR = 3/3
+---
+The calculation of True Positive Rate (TPR) and False Positive Rate (FPR) requires setting a threshold and calculating the proportion of true positives and false positives relative to the total actual positives and negatives, respectively.
+
+To do this manually, you would order your predictions from highest to lowest, then step through them. At each step, you would calculate the TPR and FPR and record those values.
+
+So, let's correct the calculation:
+
+The predictions sorted by score in descending order:
+
+(1, 0.91)
+(0, 0.36)
+(1, 0.31)
+(1, 0.30)
+(0, 0.14)
+(0, 0.05)
+(1, 0.01)
+Using these sorted predictions, you calculate the TPR and FPR for each threshold:
+
+Threshold > 0.91: TPR = 0/4, FPR = 0/3 (Because there are no predictions with a score above 0.91)
+Threshold <= 0.91: TPR = 1/4, FPR = 0/3 (0.91 is a true positive)
+Threshold <= 0.36: TPR = 1/4, FPR = 1/3 (0.36 is a false positive)
+Threshold <= 0.31: TPR = 2/4, FPR = 1/3 (0.31 is a true positive)
+Threshold <= 0.30: TPR = 3/4, FPR = 1/3 (0.30 is a true positive)
+Threshold <= 0.14: TPR = 3/4, FPR = 2/3 (0.14 is a false positive)
+Threshold <= 0.05: TPR = 3/4, FPR = 3/3 (0.05 is a false positive)
+Threshold <= 0.01: TPR = 4/4, FPR = 3/3 (0.01 is a true positive)
+---
+
+Sure, I'll explain in more detail. The True Positive Rate (TPR) and False Positive Rate (FPR) are measures of the performance of a binary classification system, and they are defined as follows:
+
+TPR (True Positive Rate, or sensitivity) is the number of true positive results divided by the number of all relevant elements (all actual positives) in the data. So, it's the proportion of actual positive cases that were correctly identified.
+
+FPR (False Positive Rate) is the number of false positive results divided by the number of all relevant negative elements (all actual negatives) in the data. So, it's the proportion of actual negative cases that were incorrectly identified as positive.
+
+Now, in order to calculate TPR and FPR at each threshold, we treat all predictions with a score equal to or lower than the threshold as positive, and all predictions with a score higher than the threshold as negative. Then we calculate TPR and FPR using these treated predictions.
+
+So, for example, when the threshold is set to 0.14:
+
+Predictions with a score equal to or lower than 0.14 are treated as positive. This includes one actual positive (0.01) and two actual negatives (0.14, 0.05). So there are one true positive and two false positives.
+
+TPR is the number of true positives (1) divided by the number of all actual positives (4), which equals 1/4 = 0.25 or 25%.
+
+FPR is the number of false positives (2) divided by the number of all actual negatives (3), which equals 2/3 = 0.67 or 67%.
+
+And you do this for each threshold, resulting in a series of TPR and FPR values that you can use to draw the ROC curve. I hope this clears things up! Let me know if you have any more questions.
+"""
+from sklearn.metrics import roc_curve, auc
+import matplotlib.pyplot as plt
+
+# Define the true labels and predicted probabilities
+y_true = [1, 0, 0, 1, 1, 0, 1]
+y_score = [0.01, 0.05, 0.14, 0.3, 0.31, 0.36, 0.91]
+
+# Calculate ROC curve
+fpr, tpr, _ = roc_curve(y_true, y_score)
+roc_auc = auc(fpr, tpr)
+
+# Plot ROC curve
+plt.figure()
+plt.plot(fpr, tpr, color='darkorange', label='ROC curve (area = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='navy', linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic Example 2020-dec-24')
+plt.legend(loc="lower right")
+plt.show()
+print('\n')
+# 25
+"""
+In a neural network, there are generally two types of parameters that need to be trained: weights and biases. Each connection between two neurons has an associated weight, and each neuron (except for the input neurons) has an associated bias.
+
+For a neural network with input layer, one hidden layer, and output layer:
+
+Weights from the input layer to the hidden layer: The number of these weights would be the number of input neurons times the number of neurons in the hidden layer. Here we have 4 attributes, so we have 4 input neurons, and we have 6 units in the hidden layer. So the number of weights from the input layer to the hidden layer is 4 * 6 = 24.
+
+Biases in the hidden layer: The number of biases in the hidden layer would be the same as the number of neurons in the hidden layer, which is 6 in this case.
+
+Weights from the hidden layer to the output layer: The number of these weights would be the number of neurons in the hidden layer times the number of output neurons. In this case, we're predicting the class label y, which has 3 possible values, so we have 3 output neurons. So the number of weights from the hidden layer to the output layer is 6 * 3 = 18.
+
+Biases in the output layer: The number of biases in the output layer would be the same as the number of output neurons, which is 3 in this case.
+
+Adding these all up, the total number of parameters to be trained in this neural network is 24 (weights input-hidden) + 6 (biases hidden) + 18 (weights hidden-output) + 3 (biases output) = 51 parameters.
+---
+However, based on the context of the Palmer Penguins dataset you provided in other questions, there are typically three species of penguins: Adelie, Gentoo, and Chinstrap. Therefore, I assumed three output classes.
+"""
+
 # 26
 """
 This problem can be solved using Bayes' Theorem, which is a principle in statistics that provides a way to revise existing predictions or theories given new or additional evidence.
