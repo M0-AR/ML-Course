@@ -5061,3 +5061,396 @@ F1(x_test2) = α2 + α3 + α4 = 0.568 + 0.407 - 0.068 = 0.907.
 Because F1(x_test2) > F0(x_test2), x_test2 is also classified as 1.
 """
 
+######################################
+# Dec 2020
+######################################
+print('Dec 2020')
+
+# 1
+"""
+Looking at the descriptions of the variables in the Palmer Penguins dataset and understanding the meaning of nominal, ordinal, interval, and ratio types, we can answer the question:
+
+x1 (Bill length), x2 (Bill depth), x3 (Flipper length), and x4 (Mass) are ratio data, as they can be ordered, the differences between values are meaningful, and they have a natural zero point.
+x5 (Sex) is nominal, as it represents categories without an intrinsic order.
+x6 (Year) is an interval type, because the differences between years are meaningful, but it doesn't have a natural zero point (the year 0 doesn't mean there is no time).
+y (Species) is nominal, as it represents categories without an intrinsic order.
+So the correct answer is:
+
+C. x5 (Sex) and y (Species) are both nominal.
+"""
+
+# 3
+"""
+Assuming that the attributes are represented in the same order they're listed in the question, you can make the following observations based on the box plots:
+
+A. We cannot compare the variance of Bill length and Flipper length because the box plot only shows the quartiles (25th percentile, median, 75th percentile) and not the spread or variance of the data.
+
+B. For Flipper length (x3), the median (the line in the middle of the box) might be close to the center of the box. But we cannot conclude for certain that the mean and median coincide.
+
+C. From the boxplot for Sex (x5), we can see that the median is closer to 2 (Female) than 1 (Male). This suggests there are more female penguins than male penguins. So this statement is incorrect.
+
+D. The boxplots don't provide any information about the correlation between two different attributes, so we can't make any conclusions about the correlation between Bill length and Bill depth.
+---
+The solution is examining each statement given in the question and explaining why it is true or false. Here's a breakdown of the solution:
+
+A. This statement is false because the data in the boxplots is standardized, meaning it has been scaled to have a mean of 0 and a standard deviation of 1. This standardization process changes the variance of the original data to 1 for all features, so we cannot compare the variances of the original features based on these boxplots. Furthermore, the solution states that in the original dataset, the variance of Bill length is actually smaller than the variance of Flipper length.
+
+B. This statement is false because a boxplot does not show the mean of the data. The line in the middle of the box represents the median, not the mean. The mean and median are the same if the data is symmetric, but we cannot conclude this from the boxplot.
+
+C. This statement is true. The Sex attribute is encoded as 1 for males and 2 for females. After standardization, the median of this attribute is close to -1, which means that more data points had the lower value (1), indicating there are more males than females. The solution also provides the actual counts from the dataset: there are 168 males and 165 females.
+
+D. This statement is false because boxplots do not provide information about the correlation between two different attributes. They only show summary statistics for each individual attribute. The solution also notes that Bill length and Bill depth are actually negatively correlated, which is the opposite of the claim in the statement.
+
+So, the correct answer to this question is C: "There are more male penguins than female penguins."
+"""
+
+# 4
+"""
+Given the covariance cov(x3, x4) = 9852 and the correlation coefficient ρ = 0.87, we can use the relationship between covariance, correlation, and standard deviations:
+
+cov(x3, x4) = ρ * σ_x3 * σ_x4
+
+Rearranging for the standard deviation gives us:
+
+σ_x3 = cov(x3, x4) / (ρ * σ_x4)
+
+and
+
+σ_x4 = cov(x3, x4) / (ρ * σ_x3)
+
+But we know that the variance is the square of the standard deviation, σ^2. Without the actual values of σ_x3 and σ_x4, we cannot determine the exact variances from the given options. However, we can infer that the variance of x4 (σ^2_x4) is expected to be much larger than the variance of x3 (σ^2_x3) because mass (x4) is typically measured on a much larger scale than flipper length (x3).
+
+Hence, the most plausible answer is A. σ^2_x3 = 196 and σ^2_x4 = 648025. However, this would need to be confirmed with the actual data.
+---
+The provided solution explains how to utilize the relationship between correlation, covariance, and standard deviations to validate the answer option.
+
+The formula of the correlation coefficient is:
+
+ρ = cov(x3, x4) / (σ_x3 * σ_x4)
+
+Here, the correlation coefficient ρ is given as 0.87, and the covariance cov(x3, x4) is given as 9852.
+
+For option A, let's substitute the variances σ^2_x3 = 196 and σ^2_x4 = 648025 into the formula. We need to take the square root of each variance to get the standard deviations (σ_x3 and σ_x4):
+
+ρ = 9852 / (√196 * √648025) = 9852 / (14 * 805) ≈ 0.87
+
+This value matches the given correlation coefficient ρ, so option A is the correct answer.
+
+This method is used to verify that the provided variances are consistent with the given correlation coefficient and covariance. It shows the strong connection between these three statistical properties and how they can be used to cross-check and validate each other.
+"""
+
+# 6
+"""
+Solution 6.
+ A is false: since all the coordinates in the second
+PC are negative, an observation with high negative
+values for all features will have a high positive
+projection onto the second principal component.
+ B is false: since all column vectors have unit
+length.
+ C is false: The first PC has nearly the same
+positive value for both Flipper length (x3) and
+Body mass (x4). Therefore, flipping the values of
+x3 and x4 would nearly give the same projection.
+ D is true: The forth PC has a large negative co-
+efficient for flipper length (x3) and a large posi-
+tive coefficient for body mass (x4). Therefore, the
+forth PC primarily separates penguins with rela-
+tively low x3 (short flipper length) and high x4
+(high body mass) from penguins with relatively
+high x3 (long flipper length) and low x4 (low body
+mass)
+
+---
+The Principal Component Analysis (PCA) technique tries to identify the directions (principal components) in which the data varies the most. Here, the fourth principal component (PC4) is represented by the last column in matrix V:
+
+[0.15, -0.16, -0.78, 0.58]
+
+The coefficients of the attributes x3 (Flipper length) and x4 (Body mass) in this vector are -0.78 and 0.58, respectively.
+
+These coefficients represent the weight or importance of each attribute in the direction of PC4. The sign of these coefficients (negative for x3 and positive for x4) shows how these attributes relate to each other in this direction:
+
+A negative coefficient for x3 (Flipper length) means that as the value for x3 increases, the projection of the data point on PC4 decreases, and vice versa.
+
+A positive coefficient for x4 (Body mass) means that as the value for x4 increases, the projection of the data point on PC4 also increases.
+
+This means that on PC4, penguins with short Flipper lengths (lower x3 values) and high Body mass (higher x4 values) will have a higher projection, while those with long Flipper lengths (higher x3 values) and lower Body mass (lower x4 values) will have a lower projection. This is how PC4 separates these two groups of penguins.
+"""
+
+# 7
+"""
+The vector [-0.08, 1.33, 0.56, 1.37] represents the coordinates of the new data point in the transformed space of principal components.
+
+Each value in this vector corresponds to the projection of the data point onto the corresponding principal component. More specifically:
+
+-0.08 is the projection onto the first principal component (PC1)
+1.33 is the projection onto the second principal component (PC2)
+0.56 is the projection onto the third principal component (PC3)
+1.37 is the projection onto the fourth principal component (PC4)
+When we visualize these projections on the scatter plots of the different combinations of principal components (for example PC1 vs PC4, PC2 vs PC4, PC2 vs PC3, and PC3 vs PC4), we can find the location of the new data point in each of these plots.
+
+The claim "which can be seen to only being closest to a ’+’ in one figure (PC1 vs. PC4)" is based on visual inspection of these scatter plots.
+
+You can only know this if you have the scatter plot where the data is projected onto the PCs and labeled by species. The '+' might be representing a 'Chinstrap' penguin in their plots. When the projected point [-0.08, 1.33, 0.56, 1.37] is added to these plots, it appears to be closest to the '+' points in the PC1 vs PC4 plot, suggesting that the new data point would be classified as 'Chinstrap' in that particular 2D projection.
+
+Please note that without the actual plots, I can only provide an explanation based on the provided information. This statement would typically be concluded from a visual analysis of the scatter plots in the question.
+----
+The solution provided explains how the new observation (standardized to [-1, -1, -1, 1]) is projected onto the principal components, using the transformation matrix V.
+
+Let me break it down:
+
+The point [-1, -1, -1, 1] is projected onto the principal components using the matrix multiplication with V, resulting in [-0.08, 1.33, 0.56, 1.37].
+
+This projected point is then plotted in the scatter plots of the different combinations of principal components.
+
+Only in the scatter plot of PC1 vs PC4, the projected point is closest to a 'Chinstrap' class point.
+
+Therefore, when a k-nearest neighbor classification with k=1 is performed using the projected dataset, the new observation is classified as a 'Chinstrap' in the projection onto PC1 and PC4.
+
+This operation can be done in Python as follows:
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Assuming original_data is your data matrix where each row is a data point
+# For the sake of example, I will create a random dataset of 100 points in 4 dimensions
+original_data = np.random.rand(100, 4)
+
+# This is your transformation matrix
+V = np.array([
+    [0.45, -0.60, -0.64, 0.15],
+    [-0.40, -0.80, 0.43, -0.16],
+    [0.58, -0.01, 0.24, -0.78],
+    [0.55, -0.08, 0.59, 0.58]
+])
+
+# Your observation
+x_tilde = np.array([-1, -1, -1, 1])
+
+print('2020-dec-7')
+# Compute the projection
+projection = x_tilde.dot(V)
+print(projection)
+# Output: [-0.08, 1.33, 0.56, 1.37]
+print('\n')
+
+# 8
+"""
+The Rand index (also known as the Rand measure or Rand statistic) is a measure of the similarity between two data clusters. It's often used to measure the agreement between different clustering methods applied to the same dataset, for example to compare the output of a machine learning algorithm against manually assigned labels or "ground truth".
+
+The Rand index is calculated as follows:
+
+For every two elements in your dataset, count the number of pairs that are:
+
+in the same cluster in both your predicted clustering and the ground truth (this is "S" in the formula)
+in different clusters in both your predicted clustering and the ground truth (this is "D" in the formula)
+Add these two numbers together.
+
+Divide by the total number of pairs in your dataset.
+
+This gives you a number between 0 (no agreement between the clusters) and 1 (complete agreement between the clusters).
+
+In the provided solution, the Rand similarity between clusters Z (the output of the k-means algorithm) and Q (the 
+ground truth) was calculated as R(Z, Q) = (S + D) / (1/2 * N * (N - 1)). Plugging in the counts from the confusion 
+matrix, the Rand index was found to be 0.87, indicating a relatively high degree of similarity between the predicted 
+and actual clusters. """
+import numpy as np
+
+# confusion matrix as given in the question
+confusion_matrix = np.array([
+    [114, 0, 32],
+    [0, 119, 0],
+    [8, 0, 60]
+])
+
+# calculate S
+S = np.sum([confusion_matrix[i, j] *
+            (confusion_matrix[i, j] - 1) /
+            2 for i in range(3) for j in range(3)])
+
+# total number of observations
+N = np.sum(confusion_matrix)
+
+# numbers of observations in each cluster for Z and Q
+n_Zk = np.sum(confusion_matrix, axis=1)
+n_Qm = np.sum(confusion_matrix, axis=0)
+
+# calculate D
+D = N * (N - 1) / 2 - np.sum(n_Zk * (n_Zk - 1) / 2) - np.sum(n_Qm * (n_Qm - 1) / 2) + S
+
+# Rand index
+R = (S + D) / (N * (N - 1) / 2)
+
+print('2020-dec-8')
+print(f"Rand index: {R}")
+print('\n')
+
+# 9
+"""
+Solution 9. The answer is C. K nearest neighbor classification using the K = 1 nearest neighbor classification rule. This model does not have any parameters to fit. It simply stores the training data and classifies new observations based on their similarity to the stored data.
+
+
+Question 9. The question is asking which of the given machine learning models doesn't involve the fitting of any parameters.
+
+Option A: Linear regression does involve the fitting of parameters. The coefficients of the independent variables in the linear equation are parameters that are estimated from the data.
+
+Option B: A neural network with no hidden layers, essentially a perceptron, still requires the fitting of weights (parameters) on the inputs.
+
+Option C: K nearest neighbor (K=1) does not involve any parameter fitting. Instead, it labels new points based on the label of the most similar data point in the training set.
+
+Option D: Multinomial regression does involve the fitting of parameters. Like linear regression, it has coefficients that need to be estimated from the data.
+"""
+
+# 10
+
+"""
+Solution 10. The answer is B. Reducing the amount of training data. Less training data can lead to a model that doesn't generalize well, resulting in overfitting. The other options—reducing the number of attributes (A), selecting a less complex model (C), and adding model regularization (D)—are strategies that can help reduce overfitting.
+
+
+Question 10. The question is asking which action will typically increase the amount of over-fitting.
+
+Option A: Reducing the number of attributes typically decreases overfitting. Less attributes means less complexity in the model which can help reduce overfitting.
+
+Option B: Reducing the amount of training data typically increases overfitting. Less data makes it harder for the model to learn the general trend, causing it to overfit on the lesser amount of data it is trained on.
+
+Option C: Selecting a less complex model typically decreases overfitting. A less complex model is less likely to learn the noise in the data, helping to prevent overfitting.
+
+Option D: Adding model regularization typically decreases overfitting. Regularization adds a penalty to the model complexity, preventing it from learning the noise in the data and thus reducing overfitting.
+"""
+
+# 11
+"""
+In order to solve this problem, we need to use Bayes' theorem. According to Bayes' theorem, the posterior probability can be calculated as follows:
+
+P(y|X) = P(X|y) * P(y) / P(X)
+
+where:
+
+P(y|X) is the posterior probability of class (y, target) given predictor (X, attributes). It is also called the conditional probability.
+P(y) is the prior probability of class.
+P(X|y) is the likelihood which is the probability of predictor given class.
+P(X) is the prior probability of predictor.
+For this case, we are looking for P(y=3 | ˆx1=1, ˆx2=0).
+
+First, let's look at the values from the table:
+
+P(ˆx1=1, ˆx2=0 | y=3) = 0.16
+P(y=3) = 0.20
+The probability of ˆx1=1 and ˆx2=0 (P(ˆx1=1, ˆx2=0)) is calculated by summing over all classes:
+
+P(ˆx1=1, ˆx2=0) = P(ˆx1=1, ˆx2=0 | y=1)P(y=1) + P(ˆx1=1, ˆx2=0 | y=2)P(y=2) + P(ˆx1=1, ˆx2=0 | y=3)P(y=3)
+= 00.44 + 0.850.36 + 0.160.20
+= 0 + 0.306 + 0.032
+= 0.338
+
+So, the posterior probability P(y=3 | ˆx1=1, ˆx2=0) can be calculated as:
+
+P(y=3 | ˆx1=1, ˆx2=0) = P(ˆx1=1, ˆx2=0 | y=3) * P(y=3) / P(ˆx1=1, ˆx2=0)
+= 0.16 * 0.20 / 0.338
+≈ 0.094.
+"""
+
+# 13
+"""
+In average linkage clustering, the distance between two clusters is defined as the average distance between all pairs of objects where each pair is made up of one object from each group.
+
+We are given two clusters C2 = {o6, o7} and C3 = {o8, o9, o10} and need to calculate the average distance between these two clusters.
+
+The distances between the points in these two clusters are given in Table 4. We can find the distance between each point in cluster C2 with each point in cluster C3 and then take the average of these distances.
+
+Let's calculate:
+
+Distance between o6 and o8 = 1025
+
+Distance between o6 and o9 = 925
+
+Distance between o6 and o10 = 1375
+
+Distance between o7 and o8 = 1100
+
+Distance between o7 and o9 = 1000
+
+Distance between o7 and o10 = 1450
+
+Adding these up and dividing by 6 (the number of pairs), we get the average linkage:
+
+Average linkage = (1025 + 925 + 1375 + 1100 + 1000 + 1450) / 6 = 1145.17 (rounded to two decimal places).
+"""
+
+# 26
+"""
+This problem can be solved using Bayes' Theorem, which is a principle in statistics that provides a way to revise existing predictions or theories given new or additional evidence.
+
+We are trying to find the probability that an image contains a penguin given that it is classified as a penguin, which we denote as P(Penguin | Classified as Penguin).
+
+We know the following from the question:
+
+P(Classified as Penguin | Penguin) = 0.97, which is the probability that an image is classified as a penguin given it is a penguin.
+P(Classified as Penguin | Not Penguin) = 0.03, which is the probability that an image is classified as a penguin given it is not a penguin.
+P(Penguin) = 0.01, which is the prior probability that an image contains a penguin.
+P(Not Penguin) = 0.99, which is the prior probability that an image does not contain a penguin.
+Bayes' Theorem states:
+
+P(A | B) = P(B | A) * P(A) / P(B)
+
+We can calculate P(B), the total probability that an image is classified as a penguin, by considering both ways it could happen: either the image is a penguin and is correctly classified, or it is not a penguin and is incorrectly classified:
+
+P(Classified as Penguin) = P(Classified as Penguin | Penguin) * P(Penguin) + P(Classified as Penguin | Not Penguin) * P(Not Penguin)
+
+Now we can use Bayes' Theorem to calculate P(Penguin | Classified as Penguin):
+
+P(Penguin | Classified as Penguin) = P(Classified as Penguin | Penguin) * P(Penguin) / P(Classified as Penguin)
+
+Let's calculate this:
+
+P(Classified as Penguin) = 0.97 * 0.01 + 0.03 * 0.99 = 0.0097 + 0.0297 = 0.0394
+
+P(Penguin | Classified as Penguin) = 0.97 * 0.01 / 0.0394 ≈ 0.24619
+
+So, the probability that a random image from this dataset contains a penguin given that it is classified as a penguin is approximately 24.6%. This surprisingly low number is due to the imbalance in the original dataset (only 1% of images contain a penguin) and the non-zero false positive rate.
+"""
+
+# 27
+"""
+To solve this problem, let's break down how two-level cross-validation works.
+
+In the outer 3-fold cross-validation, the data is divided into 3 equal parts. Two parts are used for training the model and one part is used for validation. This process is repeated 3 times so that each part serves as the validation set once. So, for 2 out of 3 folds, a given observation, say o1, will be used for training.
+
+In the inner leave-one-out cross-validation, for each fold in the outer cross-validation, we further partition the training set (2/3 of the total data) and each time leave one observation out for validation, and train the model on the rest of the data. This is repeated for each observation in the training set.
+
+---
+In the outer fold, we have three training sets, each of size 222. For each observation, it is part of two of these training sets.
+
+In the inner fold, we split each outer training set into 222 training sets (for leave-one-out cross-validation). If o1 is in an outer training set, then it is part of 221 of these inner training sets (since it is left out once).
+
+For each inner training set, we train 4 models (one for each value of λ {0.001, 0.01, 0.1, 1.0}).
+
+Finally, once the optimal λ is chosen, we train one more model on the full outer training set.
+
+So, o1 is used:
+
+2 [outer CV folds where o1 is in the training set] * (221 [inner training sets where o1 is included] * 4 [models per inner training set] + 1 [final model on the full outer training set])
+
+= 2 * (221 * 4 + 1)
+
+= 2 * (884 + 1)
+
+= 2 * 885
+
+= 1770 times in total for training a model.
+
+---
+
+While there isn't a "static rule" that can apply to all similar questions (as variations can occur), understanding the principles of k-fold cross-validation and how datasets are split and used for model training can help you to answer a wide range of such questions. Here are some key steps to consider:
+
+Understand the Outer Fold: This refers to the high-level split of the data into k parts or "folds" for the k-fold cross-validation. One of these folds is typically held out as a validation set, while the rest are used for training. If the question specifies how many folds are being used (e.g., 3-fold, 5-fold), divide your total dataset size by this number to understand the size of each fold.
+
+Understand the Inner Fold: Sometimes, an "inner" cross-validation is performed within each outer training fold to fine-tune hyperparameters (like the regularization constant λ in your example). Again, consider how the data is being split here.
+
+Consider Model Training Iterations: Pay attention to how many times a model is being trained, which can be influenced by the number of different hyperparameter values being tested, and how many times each observation will be included in these training sets.
+
+Factor in Final Model Training: After hyperparameters are selected, a final model is usually trained using the entire outer training fold. Remember to include this in your count.
+
+In your example question, each outer training fold is used twice (as it's 3-fold CV), each inner training set is used 4 times (once for each λ), and then an additional training run is performed for the final model, making a total of 2*(221*4 + 1) = 1770. Understanding these steps should help you tackle similar questions on cross-validation and model training.
+"""
