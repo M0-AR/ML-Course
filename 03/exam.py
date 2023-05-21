@@ -5526,7 +5526,11 @@ print('\n')
 
 # 21
 """
+Based on the figure provided (which is not visible in this text-based format), you would need to look at the slope and intercept of the logistic regression line.
 
+If the probability is near 0 when x2 is at its minimum and near 1 when x2 is at its maximum, the weight for x2 is likely to be positive. If the reverse is true (probability near 1 for minimum x2 and near 0 for maximum x2), the weight for x2 is likely to be negative.
+
+Similarly, the weight for the intercept (the constant feature) can be inferred from the probability at x2=0. A high probability at x2=0 suggests a positive intercept weight, while a low probability suggests a negative weight.
 """
 import numpy as np
 
