@@ -5378,6 +5378,152 @@ Adding these up and dividing by 6 (the number of pairs), we get the average link
 Average linkage = (1025 + 925 + 1375 + 1100 + 1000 + 1450) / 6 = 1145.17 (rounded to two decimal places).
 """
 
+# 18
+"""
+Firstly, the class error for the parent node would be:
+
+classError(Parent) = 1 - max(p(c|Parent))
+
+Here, the maximum probability for any class in the parent node is the probability of the Adelie class (146 out of 333 total observations), because it has the most observations.
+
+p(Adelie|Parent) = 146 / 333 = 0.4384
+
+classError(Parent) = 1 - 0.4384 = 0.5616
+
+Next, we calculate the class error for the child nodes.
+
+For the left child node, which contains all the Adelie and Gentoo observations, the class error would be:
+
+classError(Left) = 1 - max(p(c|Left))
+
+The maximum probability here is the probability of the Adelie class (146 out of 265 total observations in this child node).
+
+p(Adelie|Left) = 146 / 265 = 0.5509
+
+classError(Left) = 1 - 0.5509 = 0.4491
+
+For the right child node, which contains all the Chinstrap observations, all observations belong to one class, so the class error is 0:
+
+classError(Right) = 1 - max(p(c|Right)) = 1 - 1 = 0
+
+Finally, the purity gain can be calculated using the given formula:
+
+Purity Gain = classError(Parent) - [(N(Left)/N) * classError(Left) + (N(Right)/N) * classError(Right)]
+
+Where N(Left) is the total number of observations in the left child node (265), N(Right) is the total number of observations in the right child node (68), and N is the total number of observations in the parent node (333).
+
+Purity Gain = 0.5616 - [(265/333) * 0.4491 + (68/333) * 0] = 0.5616 - 0.3565 = 0.2051
+
+Therefore, the purity gain for the split is approximately 0.2051.
+"""
+# Define the counts of each class in the parent and child nodes
+count_Adelie_parent = 146
+count_Gentoo_parent = 119
+count_Chinstrap_parent = 68
+
+count_Adelie_left = 146
+count_Gentoo_left = 119
+count_Chinstrap_left = 0
+
+count_Adelie_right = 0
+count_Gentoo_right = 0
+count_Chinstrap_right = 68
+
+# Compute the total counts in each node
+N_parent = count_Adelie_parent + count_Gentoo_parent + count_Chinstrap_parent
+N_left = count_Adelie_left + count_Gentoo_left + count_Chinstrap_left
+N_right = count_Adelie_right + count_Gentoo_right + count_Chinstrap_right
+
+# Compute the class errors in each node
+classError_parent = 1 - max(count_Adelie_parent, count_Gentoo_parent, count_Chinstrap_parent) / N_parent
+classError_left = 1 - max(count_Adelie_left, count_Gentoo_left, count_Chinstrap_left) / N_left
+classError_right = 1 - max(count_Adelie_right, count_Gentoo_right, count_Chinstrap_right) / N_right
+
+# Compute the purity gain
+purity_gain = classError_parent - (N_left / N_parent) * classError_left - (N_right / N_parent) * classError_right
+
+print('2020-dec-18')
+print("Purity Gain: ", purity_gain)
+print(68/333)
+print('\n')
+
+# 19
+"""
+AdaBoost (short for Adaptive Boosting) is an ensemble machine learning algorithm that builds a strong classifier by combining multiple poorly performing classifiers (often called "weak learners"), with the aim to increase the overall accuracy.
+
+The concept behind AdaBoost is to set the weights of classifiers and training the data sample in each iteration such that it ensures the accurate predictions of unusual observations.
+
+Given the output in Table 6, here is how AdaBoost would adjust the weights:
+
+Initialize the weights: At the very beginning, all observations are equally important, so the weights are set to be uniform. This means each of the seven observations would have an initial weight of 1/N (1/7 in this case).
+
+Calculate the error of the weak learner: The total error of the weak learner is calculated as the sum of the weights associated with the incorrectly classified observations. This error is then used to calculate the "amount of say" (α) that the weak learner has in the final classification.
+
+Update the weights: The weights of the observations are then updated. Observations that were classified correctly get their weights decreased, while observations that were misclassified get their weights increased. This forces the weak learner to focus on the observations that it had trouble with in the next round of boosting.
+
+Here's a more detailed explanation of the formulas:
+
+Weight update formula: The new weight w_i(t+1) for the i-th observation at iteration t+1 is obtained by taking the old weight w_i(t) and multiplying it by exp[α * I(y_i ≠ G(x_i))]. Here, α is the amount of say, I(y_i ≠ G(x_i)) is an indicator function that is 1 if the prediction G(x_i) is incorrect and 0 if it is correct, and exp[] is the exponential function.
+
+Amount of say formula: The amount of say α of a weak learner is calculated as α = log((1 - error) / error). Here, error is the total error of the weak learner.
+
+Error calculation: The total error of a weak learner is calculated as the sum of the weights of the incorrectly classified observations divided by the sum of weights of all observations.
+
+These formulas, along with the table you provided, can be used to calculate how AdaBoost would update the weights for each observation. However, without knowing which observations were misclassified, we cannot provide a specific numerical output.
+
+Based on the previous explanation and python script, we can try to solve the problem. But first, we need the initial predictions and the true class labels data to get the final weights.
+
+Let's assume the y_true and y_pred data is available and they look like this:
+
+python
+Copy code
+y_true = [1, 2, 1, 1, 2, 2, 2]
+y_pred = [2, 2, 1, 1, 2, 2, 2]
+We can follow these steps to solve the problem:
+
+Initialize weights for each data point to 1/N, which is 1/7 in this case.
+Calculate the total error of the weak learner (KNN model).
+Calculate the amount of say that the weak learner has in the final decision.
+Update the weights.
+After calculating, let's match the output with the given options. You can substitute the y_true and y_pred in the Python code block provided earlier to get the final weights.
+
+This problem tests your understanding of how the AdaBoost algorithm works, specifically how it updates the weights of the observations in order to focus on the ones that were harder to classify correctly in the previous round. The correct option would be the one that matches with the final weights calculated by the provided Python code.
+"""
+import pandas as pd
+import numpy as np
+
+# Define your data
+data = {
+    'y_true': [2, 2, 1, 1, 2, 2, 2],
+    'y_pred': [2, 2, 2, 1, 2, 2, 2]
+}
+
+df = pd.DataFrame(data)
+
+# Initialize the weights
+df['weights'] = 1/len(df)
+
+# Calculate if the prediction was correct
+df['correct_prediction'] = df['y_true'] == df['y_pred']
+
+# Calculate the total error of the weak learner
+error = sum(df[~df['correct_prediction']]['weights'])
+
+# Calculate the amount of say of the weak learner
+alpha = 0.5 * np.log((1 - error) / error)
+
+# Update the weights
+df.loc[df['correct_prediction'], 'weights'] *= np.exp(-alpha)  # decrease the weights of the correctly classified samples
+df.loc[~df['correct_prediction'], 'weights'] *= np.exp(alpha)  # increase the weights of the misclassified samples
+
+# Normalize the weights
+df['weights'] /= df['weights'].sum()
+
+print('2020-dec-19')
+print(df)
+print('\n')
+
+
 # 21
 """
 
@@ -5393,6 +5539,7 @@ weights = [[423.49, 48.16], [0.0, -46.21], [0.0, -27.89], [418.94, -26.12]]
 
 x2 = 16
 
+print('2020-dec-21')
 # Compute the probabilities for each set of weights
 for i, weight in enumerate(weights):
     z = weight[0] + weight[1]*x2
@@ -5406,8 +5553,6 @@ The solution is computing the posterior probability γi,2 for observation i bein
 
 The Bayes' theorem is:
 
-css
-Copy code
 P(A|B) = P(B|A) * P(A) / P(B)
 Where:
 
@@ -5481,6 +5626,45 @@ prob_x0_c2 = posteriors[1]
 
 print('2020-dec-22')
 print('The probability an observation at x0 = 15.38 is assigned to cluster k=2 is:', prob_x0_c2)
+print('\n')
+
+
+# 23
+"""
+In this problem, we're using McNemar's test to determine if two classifiers, M1 and M2, perform differently. McNemar's test is used when you have paired nominal data. Here, the data is paired because each observation is classified by both M1 and M2.
+
+As per the solution:
+
+First, we calculate n1 and n2:
+
+n1 represents the number of times that M1 is correct and M2 is incorrect. This is the sum of the second column in Table 7, which gives us 28.
+
+n2 represents the number of times that M1 is incorrect and M2 is correct. This is the sum of the third column in Table 7, which gives us 35.
+
+The null hypothesis is that both classifiers have the same performance. Under this hypothesis, the difference in their performance follows a binomial distribution. This is the theoretical basis for McNemar's test.
+
+To calculate the p-value, we need to use the cumulative distribution function (CDF) of the binomial distribution. In this case, we use it with parameters m = min{n1, n2} (which is the minimum value between n1 and n2, i.e., 28), θ = 1/2 (which comes from the null hypothesis that both classifiers are equally good), and N = n1 + n2 (which is the total number of observations where the classifiers disagreed, i.e., 63).
+
+The p-value is then given by 2*cdfbinom(m = 28|θ = 1/2, N = 63).
+
+Table 8 gives us the value of cdfbinom(m|N, θ = 1/2) for different values of m and N. From the table, we can see that cdfbinom(m = 28|θ = 1/2, N = 63) ≈ 0.225.
+
+We multiply this value by 2 to get the p-value, because McNemar's test is a two-tailed test. Thus, the p-value is 2 * 0.225 = 0.45.
+
+Therefore, the answer to the problem is B. 0.45, meaning that we would not reject the null hypothesis at the usual significance levels (for instance, 0.05), and we would conclude that the performance of the two classifiers is not statistically different.
+"""
+from scipy.stats import binom_test
+
+n1 = 8+15+5
+n2 = 7+11+17
+
+# The total number of times the classifiers disagreed
+N = n1 + n2
+
+# p-value calculation
+p_value = binom_test(min(n1, n2), N, 0.5)
+
+print(f"The p-value is: {p_value:.2f}")
 print('\n')
 
 # 24
@@ -5675,4 +5859,35 @@ Consider Model Training Iterations: Pay attention to how many times a model is b
 Factor in Final Model Training: After hyperparameters are selected, a final model is usually trained using the entire outer training fold. Remember to include this in your count.
 
 In your example question, each outer training fold is used twice (as it's 3-fold CV), each inner training set is used 4 times (once for each λ), and then an additional training run is performed for the final model, making a total of 2*(221*4 + 1) = 1770. Understanding these steps should help you tackle similar questions on cross-validation and model training.
+"""
+
+
+######################################
+# May 2021
+######################################
+print('May 2021')
+# 1
+"""
+Solution 1. The problem is solved by simply thinking
+about what the attributes represent and comparing
+them to the definition in the different types. Recall
+that
+ Nominal is a type that only allow comparison
+(equal or different)
+ Ordinal allows ordering (but not differences)
+ Interval allows differences but no (physically well-
+defined) zero
+ Ratio is a type with a zero with a well-defined
+meaning
+With these definitions, we see that
+x1 (Hour ) is interval
+x2 (Temperature) is interval
+x3 (Humidity ) is ratio
+x4 (Wind ) is ratio
+x5 (Visibility ) is ratio
+x6 (Dewpoint) is interval
+x7 (Solar ) is ratio
+x8 (Rain) is ratio
+y (Bike rental ) is ratio
+and therefore option D is correct.
 """
