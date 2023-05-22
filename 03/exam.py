@@ -2,7 +2,149 @@
 # May 2016
 ######################################
 print('May 2016')
-# 1
+# 9
+import numpy as np
+
+def weighted_error(splits):
+    total = np.sum(splits, axis=1)
+    max_class = np.max(splits, axis=1)
+    error = 1 - max_class / total
+    weighted_error = np.sum(total * error) / np.sum(total)
+    return weighted_error
+
+# splits are given as [y=0, y=1]
+splits1 = np.array([[45, 1], [47, 66], [8, 33]])
+splits2 = np.array([[76, 20], [16, 47], [8, 33]])
+splits3 = np.array([[25, 0], [55, 23], [20, 77]])
+
+errors = [weighted_error(splits) for splits in [splits1, splits2, splits3]]
+
+best_split = np.argmin(errors) + 1
+
+print('2016-may-9')
+print(f"Hunt's algorithm will select split {best_split}")
+print('\n')
+
+# 10
+""""""
+# Compute the probabilities
+p_f1_0_y_0 = 1/3
+p_f1_0_y_1 = 2/5
+p_f2_1_y_0 = 1/3
+p_f2_1_y_1 = 2/5
+p_f3_1_y_0 = 1/3
+p_f3_1_y_1 = 1
+
+p_y_0 = 6/11
+p_y_1 = 1 - p_y_0  # as probabilities must sum to 1
+
+# Compute x0 and x1
+x0 = p_f1_0_y_0 * p_f2_1_y_0 * p_f3_1_y_0 * p_y_0
+x1 = p_f1_0_y_1 * p_f2_1_y_1 * p_f3_1_y_1 * p_y_1
+
+# Compute Naive-Bayes estimate
+p_NB_y_1_given_f1_0_f2_1_f3_1 = x1 / (x0 + x1)
+
+print('2016-may-10')
+print("The Naive-Bayes estimate is approximately: ", round(p_NB_y_1_given_f1_0_f2_1_f3_1, 4))
+print('\n')
+# 15
+"""
+We're given that g1 and g2 are binary attributes with g2 representing "room is humid". We're asked to find p(g2 = 1|y = 1), which is the probability that the room is humid given that it is occupied.
+
+We can find this by adding the probabilities where g2 is 1 and y is 1, which are the cases where the room is humid and occupied:
+
+p(g2 = 1, g1 = 0|y = 1) = 0.03
+p(g2 = 1, g1 = 1|y = 1) = 0.50
+
+So, p(g2 = 1|y = 1) = p(g2 = 1, g1 = 0|y = 1) + p(g2 = 1, g1 = 1|y = 1)
+
+= 0.03 + 0.50 = 0.53
+
+So, the answer is
+
+A. p(g2 = 1|y = 1) ≈ 0.53
+"""
+# 21
+"""
+This solution is about identifying the correct weights that were used in a multinomial regression classifier for a three-class problem. Multinomial regression is a classification method that generalizes logistic regression to multiclass problems. The class-probabilities are computed using the softmax function, and each point is labelled according to the maximum class-probability.
+
+The question presents a dataset and a set of potential weight configurations, asking which was used to produce the classifications shown in Figure 10.
+
+The solution follows these steps:
+
+It considers a point x where x1 = 0 and x2 = 1.
+
+Using the provided potential weights w1, w2, w3 for each option, it calculates y1, y2, y3 using the formula y = wT * x (where wT is the transpose of the weight vector w, and * represents matrix multiplication).
+
+It then compares the calculated y values for each option.
+
+Since the multinomial regression function preserves order, the solution only needs to consider the maximal value.
+
+The point x is only classified to the correct class (class 1) for option C, where w1 = [1,1], w2 = [-1,-1], w3 = [1,-1].
+
+Therefore, option C is the correct answer.
+"""
+
+# 22
+"""
+This solution is about identifying the correct decision boundary plot for a K-Nearest Neighbour classifier (KNN) for K=5. The KNN is a simple algorithm that stores all available cases and classifies new cases based on a similarity measure (e.g., distance functions).
+
+The solution points out two major considerations:
+
+The regions on the far left and far right of the plot must be assigned to the same class (red circles) because of the tie-breaking rule. This is because they are closest to the red circle points, and in case of a tie, the rule mentioned assigns the observation to the nearest of the classes that are tied.
+
+The class corresponding to the black cross can't be in any of the grey shaded regions because there's only one black cross, and there are three classes, so no grey shaded region can represent the black cross class.
+
+With these two points in mind, the only plausible plots are C and D.
+
+However, the solution adds another point:
+
+The two blue squares must also be assigned to their own class due to the tie-breaking rule (they are nearest to each other).
+With this, only plot C makes sense because it has two separate regions for two blue squares (class), one region for red circles (class) and no region for black cross. Hence, Plot C (option C) is the correct answer.
+"""
+
+# 25
+import numpy as np
+
+# Number of observations
+N = 6
+
+# Number of misclassifications
+errors = 2
+
+# Calculate the error rate
+error_rate = errors / N
+
+# Calculate the alpha coefficient
+alpha = 0.5 * np.log((1 - error_rate) / error_rate)
+
+# Create an array of weights
+weights = np.array([np.exp(-alpha), np.exp(alpha), np.exp(-alpha), np.exp(-alpha), np.exp(-alpha), np.exp(alpha)])
+
+# Normalize the weights
+weights = weights / np.sum(weights)
+
+print('2016-may-25')
+print("Weights: ", weights)
+print('\n')
+
+
+# 27
+"""
+I apologize for the confusion, I missed out on the aspect of training a new model to estimate the generalization error for each outer fold. This changes the total models trained to be K1 * (K2 * L + 1), where L is the number of pruning levels.
+
+Recalculating the total models trained for each option:
+
+A. K1 = 6, K2 = 5 --> Total models trained = 6 * (5 * 3 + 1) = 96
+B. K1 = 3, K2 = 11 --> Total models trained = 3 * (11 * 3 + 1) = 102
+C. K1 = 14, K2 = 2 --> Total models trained = 14 * (2 * 3 + 1) = 98
+D. K1 = 4, K2 = 9 --> Total models trained = 4 * (9 * 3 + 1) = 112
+
+Out of these options, option D trains more than 100 models and hence exceeds our budget. Between the other options, option C trains the most models (98) while still staying within our budget of 100 trained models.
+
+So, according to this calculation, the correct answer would indeed be C. K1 = 14, K2 = 2, as per the provided solution.
+"""
 
 ######################################
 # Dec 2016
@@ -68,12 +210,324 @@ plt.legend(loc="lower right")
 plt.show()
 print('\n')
 
+# 19
+"""
+Before providing the answer, let's define the terms involved in the Jaccard, Simple Matching Coefficient (SMC), and Cosine similarity metrics:
 
+f11 is the count of variables where both vectors are 1.
+M is the total number of variables.
+f00 is the count of variables where both vectors are 0.
+||r|| and ||s|| are the Euclidean lengths (or norms) of the vectors r and s respectively.
+Given r = [1, 1, 1, 1, 0, 1] and s = [1, 1, 0, 1, 0, 0], let's first compute the values for f11, f00, and M.
+
+f11 = 3 (positions 1, 2, and 4)
+f00 = 1 (position 5)
+M = 6 (total number of positions)
+Now we can compute each of the similarity metrics:
+
+Jaccard similarity, J(r, s) = f11 / (M - f00) = 3 / (6 - 1) = 0.6
+Simple Matching Coefficient, SMC(r, s) = (f11 + f00) / M = (3 + 1) / 6 = 0.6667
+Cosine similarity, cos(r, s) = f11 / (||r|| * ||s||) = 3 / sqrt((4 * 2)) = 0.75 (since ||r|| = sqrt(4) and ||s|| = sqrt(2) in this case)
+---
+Let's recalculate:
+
+The norm of r, ||r|| = sqrt(1^2 + 1^2 + 1^2 + 1^2 + 0^2 + 1^2) = sqrt(5)
+
+The norm of s, ||s|| = sqrt(1^2 + 1^2 + 0^2 + 1^2 + 0^2 + 0^2) = sqrt(3)
+
+So, the Cosine similarity, cos(r, s) = f11 / (||r|| * ||s||) = 3 / (sqrt(5) * sqrt(3)) = 0.7746
+
+You're correct that the Jaccard similarity, J(r, s) is 0.6 and the Simple Matching Coefficient, SMC(r, s) is 0.6667.
+
+Thus, your statement A. "J(r, s) < SMC(r, s)" is indeed correct. My previous answer was mistaken and I apologize for the confusion.
+"""
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Define vectors
+r = np.array([1, 1, 1, 1, 0, 1])
+s = np.array([1, 1, 0, 1, 0, 0])
+
+# Calculate matches
+f_11 = np.sum(np.logical_and(r==1, s==1)) # both are 1
+f_00 = np.sum(np.logical_and(r==0, s==0)) # both are 0
+M = len(r) # total elements
+
+print('2016-dec-19')
+# Calculate Jaccard Similarity
+J = f_11 / (M - f_00)
+print(f"Jaccard Similarity: {J:.4f}")
+
+# Calculate SMC
+SMC = (f_11 + f_00) / M
+print(f"Simple Matching Coefficient: {SMC:.4f}")
+
+# Calculate Cosine Similarity
+cos_sim = cosine_similarity(r.reshape(1, -1), s.reshape(1, -1))
+print(f"Cosine Similarity: {cos_sim[0][0]:.4f}")
+
+print('\n')
+
+
+# 20
+"""
+Given the revised weights:
+
+w13 = 0.5; w14 = 0.5; w15 = -0.5;
+w23 = 0.5; w24 = -0.5; w25 = 0.25;
+w36 = 0.25; w46 = -0.25; w56 = 0.25;
+
+Let's calculate the output for the hidden layer neurons:
+
+n3: ReLU(x1 * w13 + x2 * w23) = ReLU(1 * 0.5 + 1 * 0.5) = ReLU(1) = 1 (since 1 is positive)
+n4: ReLU(x1 * w14 + x2 * w24) = ReLU(1 * 0.5 - 1 * 0.5) = ReLU(0) = 0 (since ReLU(0) is 0)
+n5: ReLU(x1 * w15 + x2 * w25) = ReLU(-1 * 0.5 + 1 * 0.25) = ReLU(-0.25) = 0 (since ReLU of a negative number is 0)
+
+Then, the output of the final neuron is:
+
+n6: ReLU(n3 * w36 + n4 * w46 + n5 * w56) = ReLU(1 * 0.25 + 0 * -0.25 + 0 * 0.25) = ReLU(0.25) = 0.25 (since 0.25 is positive)
+
+So, the output of the neural network is ^y = 0.25 which matches option B.
+"""
+import numpy as np
+
+def relu(x):
+    return np.maximum(0, x)
+
+# Inputs
+x1 = 1
+x2 = 1
+
+# Weights
+w13 = 0.5; w14 = 0.5; w15 = -0.5
+w23 = 0.5; w24 = -0.5; w25 = 0.25
+w36 = 0.25; w46 = -0.25; w56 = 0.25
+
+# Hidden layer
+n3 = relu(x1 * w13 + x2 * w23)
+n4 = relu(x1 * w14 + x2 * w24)
+n5 = relu(x1 * w15 + x2 * w25)
+
+# Output layer
+n6 = relu(n3 * w36 + n4 * w46 + n5 * w56)
+
+print('2016-dec-20')
+print("The output of the neural network is: ", n6)
+print('\n')
+
+# 24
+"""
+The correct answer is D.
+
+In two-level (nested) cross-validation, the process can be visualized as a two-tiered loop. The outer loop is used to evaluate the model's performance, while the inner loop is used for model selection (hyperparameter tuning).
+
+In the proposed options, the number of trained models in total can be calculated by multiplying the number of folds in the outer loop, the number of folds in the inner loop, and the number of parameter settings.
+
+
+Option A: 
+
+K1(K2 · S + 1). This gives for:
+Five fold cross-validation in both the outer and inner
+folds: 5(5 · 3 + 1) = 80 models
+
+5 (outer fold) * (5 (inner fold) * 3 (parameters) + 1) = 80 models > 65. This doesn't satisfy the constraint.
+
+Option B: 
+Leave-one-out cross-validation for the outer fold and
+hold-out: 100.000.000(1 · 3 + 1) = 400.000.000 models
+
+100,000,000 (outer fold - leave one out) * 2 (inner fold - holdout 50%) * 3 (parameters) is far too many models and way above the allowed limit of 65.
+
+Option C: 
+Ten-fold cross-validation for the outer fold and two fold
+cross-validation for the inner fold: 10(2 · 3 + 1) = 70
+
+10 (outer fold) * 2 (inner fold) * 3 (parameters) = 60 models. This is below the limit of 65, but it's not an option in the question.
+
+Option D: 
+Two-fold cross-validation for the outer fold and ten fold
+cross-validation for the inner fold: 2(10 · 3 + 1) = 62.
+
+2 (outer fold) * 10 (inner fold) * 3 (parameters) = 60 models. This is below the limit of 65, and it is an option in the question. So, this is the correct answer.
+"""
+
+# 25
+"""
+We know that we have a total of 25 observations, out of which 5 are misclassified. Hence, the error rate ε is 5/25 = 0.2.
+
+We calculate the coefficient (alpha) α using the formula α = 1/2 * log((1 - ε) / ε). Here, log is the natural logarithm. Plugging in ε = 0.2, we get α = 1/2 * log(4) = 0.6931.
+
+Initially, all the weights are uniform and equal to 1/25.
+
+For the misclassified observations, we calculate the updated weights before normalization using the formula wi(t + 1) = wi(t) * e^(α). So, we get wi(t + 1) = (1/25) * e^(0.6931).
+
+For the correctly classified observations, we calculate the updated weights before normalization using the formula wi(t + 1) = wi(t) * e^(-α). So, we get wi(t + 1) = (1/25) * e^(-0.6931).
+
+Then we calculate the normalization factor Z(t), which is the sum of all the updated weights before normalization: Z(t) = 20/25 * e^(-0.6931) + 5/25 * e^(0.6931) (here, 20 are correctly classified and 5 are misclassified).
+
+Finally, we calculate the updated weight for the misclassified observations, which is the weight before normalization divided by the normalization factor: wi(t + 1) = w~i(t + 1) / Z(t) = (1/25 * e^(0.6931)) / (20/25 * e^(-0.6931) + 5/25 * e^(0.6931)).
+
+This is the manual calculation for the updated weights of the misclassified observations according to the AdaBoost algorithm.
+"""
+import numpy as np
+
+# Define the parameters
+n_obs = 25
+n_misclassified = 5
+epsilon = n_misclassified / n_obs
+
+# Compute alpha
+alpha = 0.5 * np.log((1 - epsilon) / epsilon)
+
+# Initial weights
+w_initial = 1 / n_obs
+
+# Updated weights before normalization for misclassified and correctly classified instances
+w_tilde_misclassified = w_initial * np.exp(alpha)
+w_tilde_correct = w_initial * np.exp(-alpha)
+
+# Compute normalization factor
+norm_factor = (n_obs - n_misclassified) * w_tilde_correct + n_misclassified * w_tilde_misclassified
+
+# Compute updated weights for misclassified instances
+w_updated_misclassified = w_tilde_misclassified / norm_factor
+
+print('2016-dec-25')
+print("The updated weights for the misclassified observations are: ", w_updated_misclassified)
+print('\n')
+
+# 26
+"""
+Solution 26:
+
+The correct answer is C. Cross-validation is a resampling method that is used to evaluate the performance of machine learning models on a limited data sample. It is used for model selection, to find the hyperparameters of a model that give the best performance in terms of bias-variance trade-off.
+
+Option A, B, and D are valid scenarios where cross-validation can help determine the best number of hidden units in an ANN, the width of a Gaussian kernel in KDE, and the number of neighbors in KNN, respectively.
+
+Option C, however, talks about selecting observations that minimize the training error. Cross-validation is not used for this purpose. This seems like an overfitting scenario where the model is just memorizing the training data and not generalizing well. This is not an appropriate use of cross-validation.
+"""
+
+# 27
+"""
+Solution 27:
+
+The correct answer is B. Random Forest is an ensemble learning method that operates by constructing multiple decision 
+trees during training time and outputting the class that is the mode of the classes (classification) or mean 
+prediction (regression) of the individual trees. At each node of the tree, Random Forest randomly samples a subset of 
+features which is a key aspect of the Random Forest, and this is what option B describes. 
+
+Option A (A. In ensemble methods it is important that the
+different trained classifiers perform very similar.) is incorrect because the strength of ensemble methods lies in the diversity of the classifiers it 
+aggregates. If all classifiers perform very similarly, there's little to no gain in aggregating their predictions. 
+
+Option C is incorrect because Random Forest is not just about fitting several decision trees and classifying 
+according to the tree with the highest purity leaf. Random Forest involves an element of randomness in the selection 
+of features at each split, and makes a decision by voting or averaging the results of individual trees. 
+
+Option D is incorrect as bagging does not involve randomly changing the output class labels. Bagging (Bootstrap 
+Aggregating) involves creating multiple subsets of the original dataset, fitting a model to each subset, 
+and then combining the predictions. This method helps to reduce variance and overfitting. The noise introduction for 
+robustness is not achieved by randomly changing class labels in bagging. """
 ######################################
 # May 2017
 ######################################
 print('May 2017')
 # 1
+
+# 17
+"""
+We have:
+
+The first set of weights:
+w(1)1 = [−4, 1, 0.01, 1, -1, -1]
+The second set of weights:
+w(1)2 = [−10, 1, -0.02, 1, 1, 1]
+Weights for the output layer:
+w(2)0 = 7, w(2)1 = 8, and w(2)2 = 9
+The input vector:
+x* = [1, 6, 120, 3.2, 0, 4] (we need to include the bias unit, so we prepend 1 to the vector)
+First, let's compute the outputs of the hidden layer:
+
+For the first neuron in the hidden layer:
+
+z(1)1 = [1, 6, 120, 3.2, 0, 4] * [−4, 1, 0.01, 1, -1, -1] = -4 + 6 - 1.2 + 3.2 - 4 = -0.0002
+Therefore, a(1)1 = tanh(z(1)1) ≈ -0.0002.
+
+For the second neuron in the hidden layer:
+
+z(1)2 = [1, 6, 120, 3.2, 0, 4] * [−10, 1, -0.02, 1, 1, 1] = -10 + 6 - 2.4 + 3.2 + 4 = 0.8
+Therefore, a(1)2 = tanh(z(1)2) ≈ 0.664.
+
+Then, the output of the ANN is given by:
+
+y = w(2)0 + w(2)1 * a(1)1 + w(2)2 * a(1)2 = 7 + 8 * -0.0002 + 9 * 0.664 ≈ 7 - 0.0016 + 5.976 = 12.9744
+As none of the given options match this value, I might have made a mistake. Let me check.
+
+...It appears I made an error. Let's correct this.
+
+The calculations should be as follows:
+
+For the first neuron in the hidden layer, we have:
+
+z(1)1 = [1, 6, 120, 3.2, 0, 4] * [−4, 1, 0.01, 1, -1, -1] 
+= -4 + 6 + 1.2 + 3.2 - 0 - 4 = 2.4
+Hence, a(1)1 = tanh(2.4) ≈ 0.9866.
+
+Similarly, for the second neuron in the hidden layer, we have:
+
+z(1)2 = [1, 6, 120, 3.2, 0, 4] * [−10, 1, -0.02, 1, 1, 1] 
+= -10 + 6 - 2.4 + 3.2 + 0 + 4 = 0.8
+So, a(1)2 = tanh(0.8) ≈ 0.6640.
+
+Finally, the output of the ANN is given by:
+
+y = w(2)0 + w(2)1 * a(1)1 + w(2)2 * a(1)2 
+= 7 + 8 * 0.9866 + 9 * 0.6640 
+= 7 + 7.8928 + 5.9760 
+= 20.8688
+So, the answer is closest to option B: 20.85.
+"""
+import numpy as np
+
+# Define the tanh function
+def tanh(x):
+    return np.tanh(x)
+
+# Define the input vector and weights
+x = np.array([1, 6, 120, 3.2, 0, 4])
+w1_1 = np.array([-4, 1, 0.01, 1, -1, -1])
+w1_2 = np.array([-10, 1, -0.02, 1, 1, 1])
+w2 = np.array([7, 8, 9])
+
+# Compute the output of the first neuron in the hidden layer
+z1_1 = np.dot(x, w1_1)
+a1_1 = tanh(z1_1)
+
+# Compute the output of the second neuron in the hidden layer
+z1_2 = np.dot(x, w1_2)
+a1_2 = tanh(z1_2)
+
+# Compute the final output
+y = w2[0] + w2[1]*a1_1 + w2[2]*a1_2
+
+print(f"The predicted fuel consumption is {y:.2f}")
+print('\n')
+
+
+# 27
+"""
+D. Cross-validation can both be used for supervised and unsupervised learning.
+
+Explanation:
+
+A. This statement is incorrect. Unsupervised learning uses only the input data for training, while supervised learning uses both input data and corresponding outputs (labels).
+
+B. This statement is incorrect. When using Gaussian Mixture Models for outlier detection, it's usually better to not include potential outliers in the training data as this can skew the model's understanding of what's "normal".
+
+C. This statement is incorrect. When dealing with a dataset with very few observations, it's often better to have a simpler model (fewer hidden units in the case of an artificial neural network) to avoid overfitting. Overfitting occurs when a model is so complex that it starts to catch random noise instead of describing the underlying pattern.
+
+D. This statement is correct. Cross-validation is a technique used for assessing how the results of a statistical analysis (model) will generalize to an independent data set. It can be used in both supervised learning (to validate models like regression, classification) and unsupervised learning (to validate models like clustering).
+"""
 
 ######################################
 # Dec 2017
@@ -1702,7 +2156,7 @@ s2 = "remember the representation should be a vector"
 
 similarity = cosine_similarity(s1, s2)
 
-print('2018-Dec-12')
+print('2018-Dec-11')
 print("Cosine similarity between s1 and s2 is:", similarity)
 print('\n')
 
