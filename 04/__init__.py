@@ -1,3 +1,31 @@
+# 23
+# Book
+import scipy.stats as stats
+
+# Data from Table 11.2
+# For fold 1
+b1, c1 = 8, 7
+# For fold 2
+b2, c2 = 15, 11
+# For fold 3
+b3, c3 = 5, 17
+
+# Summing them across the three folds
+b = b1 + b2 + b3
+c = c1 + c2 + c3
+
+# Calculating the test statistic
+chi_square = ((b - c) ** 2) / (b + c)
+
+# Calculating the p-value using the exact binomial test.
+# Note that we are using the tail probability.
+p_value = stats.binom_test(min(b, c), n=b+c, p=0.5, alternative='two-sided')
+
+print("Chi-Square Statistic:", chi_square)
+print("P-Value:", p_value)
+
+
+
 # 24
 import math
 
@@ -41,8 +69,8 @@ alpha_1 = 0.5 * math.log((1 - epsilon_1) / epsilon_1)
 print(f"The importance of the classifier f1, α1, is approximately {alpha_1:.2f}")
 
 
-import scipy.stats as stats
 # 25
+import scipy.stats as stats
 import numpy as np
 
 # Given component weights and covariance matrices
