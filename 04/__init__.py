@@ -1,3 +1,68 @@
+# 22
+"""
+To solve this problem, let's denote the support of X as supp(X), the support of Y as supp(Y), the confidence of the association rule X → Y as conf(X → Y), and the confidence of the association rule Y → X as conf(Y → X). We are given:
+
+supp(X) = 3/5
+supp(Y) = 8/15
+conf(X → Y) = 1/6
+We also know that the confidence of an association rule A → B can be calculated as:
+
+conf(A → B) = supp(A ∩ B) / supp(A)
+
+Let's first find the support of the intersection of X and Y, supp(X ∩ Y), using the given confidence of the rule X → Y:
+
+supp(X ∩ Y) = conf(X → Y) * supp(X)
+= (1/6) * (3/5)
+= 3/30
+= 1/10
+
+Now, we can find the confidence of the association rule Y → X:
+
+conf(Y → X) = supp(Y ∩ X) / supp(Y)
+= supp(X ∩ Y) / supp(Y)
+= (1/10) / (8/15)
+= (1/10) * (15/8)
+= 15/80
+= 3/16
+
+Therefore, the answer is:
+
+D. conf(Y → X) = 3/16
+
+
+-------------
+Let's denote the support of X as sup(X), the support of Y as sup(Y), and the number of transactions containing both X and Y as sup(X, Y). We can express the confidence of X -> Y as:
+
+scss
+Copy code
+conf(X -> Y) = sup(X, Y) / sup(X)
+We know from the question that:
+
+scss
+Copy code
+sup(X) = 3/5
+sup(Y) = 8/15
+conf(X -> Y) = 1/6
+Let's first find sup(X, Y) from the confidence of X -> Y:
+
+scss
+Copy code
+1/6 = sup(X, Y) / (3/5)
+sup(X, Y) = 1/6 * 3/5
+           = 3/30
+           = 1/10
+Now let's find the confidence of Y -> X, which is:
+
+scss
+Copy code
+conf(Y -> X) = sup(X, Y) / sup(Y)
+              = (1/10) / (8/15)
+              = 15/80
+              = 3/16
+So, the answer is D. conf(Y -> X) = 3/16.
+
+"""
+
 # 23
 # Book
 import scipy.stats as stats
