@@ -1,3 +1,39 @@
+# 21
+# Book AUC
+# 16.1
+"""
+For thresholds greater than 1, both TPR and FPR are 0. This forms the first point (0,0) of the ROC curve.
+
+For a threshold of 1, FPR = 3/11 and TPR = 1. This forms the second point (3/11, 1) of the ROC curve. We can calculate the area of this trapezoid: 1/2 * base * (height1 + height2) = 1/2 * (3/11) * (1+0) = 3/22.
+
+Lowering the threshold to 0, FPR = 1 and TPR = 1. This forms the third point (1,1) of the ROC curve. We calculate the area of this trapezoid as well: 1/2 * base * (height1 + height2) = 1/2 * (1-3/11) * (1+1) = 8/11.
+
+Summing up the areas of the trapezoids: AUC = 3/22 + 8/11 = 0.864 (rounded to three decimal places).
+
+Please note that the calculated AUC can vary slightly depending on the method of approximation and rounding used. In practice, AUC is often calculated using more complex datasets and algorithms for ROC curve generation and area calculation, and software packages often implement these calculations for us.
+"""
+# Define the points of the ROC curve
+roc_points = [(0, 0), (3/11, 1), (1, 1)]
+
+# Initialize AUC
+auc = 0
+
+# Calculate the area of each trapezoid and add to AUC
+for i in range(1, len(roc_points)):
+    # Calculate the base and the two heights of the trapezoid
+    base = roc_points[i][0] - roc_points[i-1][0]
+    height1 = roc_points[i-1][1]
+    height2 = roc_points[i][1]
+
+    # Calculate the area of the trapezoid and add it to the AUC
+    auc += 0.5 * base * (height1 + height2)
+
+# Print the AUC
+print(auc)
+print()
+
+
+
 # 22
 """
 To solve this problem, let's denote the support of X as supp(X), the support of Y as supp(Y), the confidence of the association rule X → Y as conf(X → Y), and the confidence of the association rule Y → X as conf(Y → X). We are given:
