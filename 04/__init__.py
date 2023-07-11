@@ -1,3 +1,4 @@
+
 # 21
 # Book AUC
 # 16.1
@@ -30,7 +31,69 @@ for i in range(1, len(roc_points)):
 
 # Print the AUC
 print(auc)
+
+# 16.2
+from sklearn.metrics import roc_curve, auc
+import matplotlib.pyplot as plt
+
+# Actual class labels
+y = [0, 0, 1, 1, 0, 1, 0]
+
+# Predicted probabilities
+probs = [0.15, 0.25, 0.4, 0.5, 0.55, 0.6, 0.61]
+
+# Compute ROC curve
+fpr, tpr, thresholds = roc_curve(y, probs)
+
+# Compute ROC area
+roc_auc = auc(fpr, tpr)
+
+plt.figure()
+plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic')
+plt.legend(loc="lower right")
+plt.show()
+
+
+# 16.3
+# Given values
+N = 1000  # Total number of observations
+TN = 489  # Number of true negatives
+FPR = 0.164  # False positive rate
+TPR = 0.412  # True positive rate
+
+# Calculate the total number of actual negative observations
+N_negative = TN / (1 - FPR)
+
+# Calculate the total number of actual positive observations
+P = N - N_negative
+
+# Calculate the number of true positives
+TP = TPR * P
+
+print("The number of true positives is approximately:", round(TP))
 print()
+# Given values
+N = 1000  # Total number of observations
+TN = 489  # Number of true negatives
+FPR = 0.164  # False positive rate
+TPR = 0.412  # True positive rate
+
+# Calculate the number of false positives
+FP = FPR * TN / (1 - FPR)
+
+# Calculate the number of true positives
+TP = TPR * (N - TN - FP)
+
+print("The number of true positives is approximately:", round(TP))
+print()
+
+
 
 
 
