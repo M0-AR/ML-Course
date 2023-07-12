@@ -1,3 +1,75 @@
+# 19
+
+"""
+This code standardizes the transformed datasets (by subtracting the column-wise mean and dividing by the column-wise standard deviation), then applies Ridge Regression to each. The Ridge regression fit is then done with alpha=0.25 (which corresponds to λ in your question). The learned parameters w0 (intercept) and w (weights) are printed out for each option.
+
+Please note that in practice, Ridge Regression might not result in the exact weights given in your question due to its regularization nature, which discourages learning a model that's too complex. Thus, the results here will be approximations. The option whose weights are closest to [0.39, 0.77] will be the most likely transformation applied to the original data.
+"""
+"""
+Option A: w = [0.0758, 0.437]
+Option C: w = [0.356, 0.118]
+Option D: w = [0.346, 0.682]
+
+We can see that the weights produced by the transformations in Option D are closest to the weights given in the problem statement (w = [0.39, 0.77]). Therefore, it's likely that the transformation used was Option D: ˜xi = [ xi, x_i^2 ].
+"""
+import numpy as np
+from sklearn.linear_model import Ridge
+from sklearn.preprocessing import StandardScaler
+
+# Original dataset
+x = np.array([-0.5, 0.39, 1.19, -1.08]).reshape(-1, 1)
+y = np.array([-0.86, -0.61, 1.37, 0.1])
+
+# Transformed dataset for each option
+x_transform_A = np.hstack([x, x**3])
+x_transform_C = np.hstack([x, np.sin(x)])
+x_transform_D = np.hstack([x, x**2])
+
+# Standardize each transformed dataset
+scaler = StandardScaler()
+x_transform_A_standardized = scaler.fit_transform(x_transform_A)
+x_transform_C_standardized = scaler.fit_transform(x_transform_C)
+x_transform_D_standardized = scaler.fit_transform(x_transform_D)
+
+# Perform Ridge Regression for each option
+ridge = Ridge(alpha=0.25)
+
+# Option A
+ridge.fit(x_transform_A_standardized, y)
+print('A: w0 = {}, w = {}'.format(ridge.intercept_, ridge.coef_))
+
+# Option C
+ridge.fit(x_transform_C_standardized, y)
+print('C: w0 = {}, w = {}'.format(ridge.intercept_, ridge.coef_))
+
+# Option D
+ridge.fit(x_transform_D_standardized, y)
+print('D: w0 = {}, w = {}'.format(ridge.intercept_, ridge.coef_))
+print()
+
+# 20
+# Book ANN
+# 15.2
+"""
+To determine the output of the neural network, let's follow the computation through the layers:
+
+Input Layer:
+
+x1 = 1
+x2 = 2
+Hidden Layer:
+
+n1 = f(w31 * x1 + w32 * x2) = f(0.5 * 1 + (-0.4) * 2) = f(0.5 - 0.8) = f(-0.3) = 0 (thresholded linear activation)
+n2 = f(w41 * x1 + w42 * x2) = f(0.4 * 1 + 0 * 2) = f(0.4) = 0.4 (thresholded linear activation)
+Output Layer:
+
+n3 = f(w53 * n1 + w54 * n2) = f((-0.4) * 0 + 0.1 * 0.4) = f(0.04) = 0.04 (thresholded linear activation)
+Therefore, the output of the network is approximately:
+ˆy = n3 = 0.04
+
+The correct option is:
+A) ˆy = 0.04
+"""
 
 # 21
 # Book AUC
