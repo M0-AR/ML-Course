@@ -1,3 +1,93 @@
+# 17
+# Book Cross Validation
+# 10.1
+# define variables
+"""
+The total time taken for the entire procedure consists of the time spent on two main tasks: training the model during the cross-validation phase and testing it during the hold-out phase. The regularization strength λ is varied six times during the cross-validation.
+
+First, let's calculate the size of datasets. The validation set Dvalidation is 20% of the total data, which is 0.2 * 1000 = 200. The remainder, used for cross-validation DCV, is then 1000 - 200 = 800.
+
+The time required for cross-validation will be computed as the time needed to train and test the model for each of the ten folds and for each of the six values of the regularization strength. In each fold of the cross-validation, 90% of DCV is used for training (720 observations) and 10% for testing (80 observations).
+
+The time for training in each fold is (720^2) = 518400 units of time. As there are ten folds, the time for training for all folds at a given λ is 51840010 = 5184000 units of time. As λ varies six times, the total training time during the cross-validation phase is 51840006 = 31046400 units of time.
+
+The time for testing in each fold is 1/2*(80^2) = 3200 units of time. As there are ten folds, the time for testing for all folds at a given λ is 320010 = 32000 units of time. As λ varies six times, the total testing time during the cross-validation phase is 320006 = 192000 units of time.
+
+Thus, the total time spent during the cross-validation phase is 31046400 + 192000 = 31238400 units of time.
+
+The hold-out phase involves training the model on DCV (800 observations) and testing it on Dvalidation (200 observations), for the optimal λ found during cross-validation. Thus, the time spent during the hold-out phase is:
+
+Training time: (800^2) = 640000 units of time.
+Testing time: 1/2*(200^2) = 20000 units of time.
+
+So the total time spent during the hold-out phase is 640000 + 20000 = 660000 units of time.
+
+In summary, the total time taken for the entire procedure is the sum of the time spent during the cross-validation phase and the hold-out phase, which is 31238400 + 660000 = 31898400 units of time, or approximately 31.90 x 10^6 units of time.
+
+So, the closest answer choice is:
+
+D 31.96 · 10^6 units of time.
+"""
+"""
+This problem might be tricky at first if you're not familiar with cross-validation, hold-out method and the concept of computational cost in terms of training and testing data. Let's break down the problem into simpler steps and guide you through the problem-solving process.
+
+Understanding the problem: The problem is asking you to calculate the total time required for training a linear regression model with different regularization strengths (λ values) and estimating the generalization error using cross-validation and the hold-out method. The time complexity for training is given as N^2 and for testing as 0.5 * N^2.
+
+Splitting the data: The question states that the total data (N=1000) is divided into a validation set (20% of N, which is 200) and the remaining (80% of N, which is 800) is used for cross-validation.
+
+Cross-validation time calculation: Here, the data is split into K folds (K=10), which means for each fold, 90% of data (720 out of 800) is used for training and 10% (80 out of 800) is used for testing. Also, there are 6 possible λ values, so we will repeat this process 6 times.
+
+Training time for each λ value is (720^2)*10 (because there are 10 folds). We multiply the result by 6 for each λ value.
+
+Testing time for each λ value is 0.5 * (80^2)*10 (because there are 10 folds). We multiply the result by 6 for each λ value.
+
+Adding these two times will give us the total time for the cross-validation process.
+
+Hold-out method time calculation: After finding the best λ value, we train the model again on the cross-validation data (800 observations) and test on the validation data (200 observations). The time for this step is calculated similarly as (800^2) for training and 0.5 * (200^2) for testing.
+
+Adding the times: The total time for the entire procedure is the time for the cross-validation process plus the time for the hold-out method.
+
+Doing these calculations step by step and understanding the purpose of each one helps to make the problem more manageable. It might be a complex problem, but breaking it down into smaller, understandable parts can make it much easier to tackle.
+"""
+
+"""
+In machine learning, the process typically involves splitting the data into training, validation, and test sets. Here's how it works and why we're doing additional calculations after cross-validation:
+
+Training set: This is used to train the model parameters. Here, we adjust the model's weights with the goal of minimizing the error on the training data.
+
+Validation set: This is used to tune the hyperparameters of the model, like the regularization strength λ in this case. Cross-validation is a common method used for this purpose, especially when we don't have a lot of data. It splits the training data into K folds, trains the model on K-1 of those folds, and tests it on the remaining fold. It repeats this process K times so every fold serves as the test set once, and averages the results to get an estimate of the model's performance. In this problem, Alice performs cross-validation for different λ values on the cross-validation set, DCV (800 observations).
+
+Test set: Once we've trained our model and chosen the best hyperparameters using the validation set, we want to estimate how well the model will perform on new, unseen data. This is the model's generalization error. The hold-out method is a common way to estimate this: we simply apply the model to the test set and see how well it performs. In this problem, Alice uses the hold-out method on the validation set, Dvalidation (200 observations), to estimate the generalization error.
+
+That's why, after calculating the time for cross-validation, we calculate additional time for training on DCV and testing on Dvalidation. This gives us an estimate of the total computational cost, which includes not only finding the best λ but also estimating the final performance of the model.
+"""
+
+N = 1000
+Dvalidation_ratio = 0.2
+DCV_ratio = 1 - Dvalidation_ratio
+K = 10 # number of folds
+lambda_values = 6 # number of regularization strengths
+
+# calculate sizes of the sets
+Dvalidation = N * Dvalidation_ratio
+DCV = N * DCV_ratio
+
+# sizes for the cross-validation training and test sets
+Ntrain = DCV * (K-1) / K
+Ntest = DCV / K
+
+# calculate training and testing time for the cross-validation
+Ttrain = lambda_values * K * Ntrain**2
+Ttest = lambda_values * K * 0.5 * Ntest**2
+
+# training and testing on the full DCV and Dvalidation sets
+Ttrain_final = DCV**2
+Ttest_final = 0.5 * Dvalidation**2
+
+# calculate total time
+Ttotal = Ttrain + Ttest + Ttrain_final + Ttest_final
+print(f"Total time: {Ttotal} units of time.")
+print()
 # 19
 
 """
