@@ -1,3 +1,65 @@
+# 15
+"""Given the information in the question, we could interpret the nodes as having conditions based on the distance
+between a given point (x1, x2) and a reference point, using either the L1 or L2 norm. If the distance is less than a
+certain threshold, we follow the "True" branch, otherwise we follow the "False" branch.
+
+This interpretation is consistent with the descriptions for each option, where each description appears to indicate a reference point (x1, x2), a norm (1 or 2), and a threshold for each node.
+"""
+class Node:
+    def __init__(self, x1, x2, norm, threshold, true_branch, false_branch):
+        self.x1 = x1
+        self.x2 = x2
+        self.norm = norm
+        self.threshold = threshold
+        self.true_branch = true_branch
+        self.false_branch = false_branch
+
+    def classify(self, observation):
+        if self.norm == 1:
+            dist = abs(self.x1 - observation[0]) + abs(self.x2 - observation[1])
+        else:  # assuming Euclidean norm (norm 2)
+            dist = ((self.x1 - observation[0])**2 + (self.x2 - observation[1])**2)**0.5
+
+        if dist < self.threshold:
+            return self.true_branch
+        else:
+            return self.false_branch
+
+
+# Set up nodes for each option
+# Option A
+D_A = Node(2, 6, 1, 3, 'class1', 'class2')
+B_A = Node(6, 2, 2, 3, D_A, 'class2')
+C_A = Node(2, 4, 2, 2, 'class1', 'class2')
+A_A = Node(2, 4, 1, 3, B_A, C_A)
+
+# Option B
+D_B = Node(2, 4, 2, 2, 'class1', 'class2')
+B_B = Node(2, 6, 1, 3, D_B, 'class2')
+C_B = Node(2, 4, 1, 3, 'class1', 'class2')
+A_B = Node(6, 2, 2, 3, B_B, C_B)
+
+# Option C
+D_C = Node(2, 4, 2, 2, 'class1', 'class2')
+B_C = Node(2, 6, 1, 3, D_C, 'class2')
+C_C = Node(6, 2, 2, 3, 'class1', 'class2')
+A_C = Node(2, 4, 1, 3, B_C, C_C)
+
+# Option D
+D_D = Node(2, 4, 1, 3, 'class1', 'class2')
+B_D = Node(2, 6, 1, 3, D_D, 'class2')
+C_D = Node(6, 2, 2, 3, 'class1', 'class2')
+A_D = Node(2, 4, 2, 2, B_D, C_D)
+
+# to classify an observation, we would start at Node A:
+observation = (3, 3)  # replace with actual values
+current_node = A_A
+current_node = A_D
+while isinstance(current_node, Node):
+    current_node = current_node.classify(observation)
+print(f"Classified as: {current_node}")
+
+print()
 # 17
 # Book Cross Validation
 # 10.1
