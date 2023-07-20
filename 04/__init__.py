@@ -1,3 +1,86 @@
+# 12
+"""
+You're right, my previous analysis was incorrect. Let me re-work this from the beginning:
+
+For MA vs MB:
+- MB correct, MA correct: 416
+- MB wrong, MA wrong: 68
+- MB correct, MA wrong: 42
+- MB wrong, MA correct: 38
+
+For MA vs MC:
+- MC correct, MA correct: 38
+- MC wrong, MA wrong: 416
+- MC correct, MA wrong: 68
+- MC wrong, MA correct: 42
+
+To determine the correct statement, let's recall the formulas for computing the p-values and the difference in accuracy (θ) for McNemar's test.
+
+For two models MA and MB:
+
+p-value: pAB = 2 * cdfT(-|ˆθAB| | ν = 1, μ = 0, σ = 1)
+Difference in accuracy: ˆθAB = (n01 - n10) / (n01 + n10)
+For two models MA and MC:
+
+p-value: pAC = 2 * cdfT(-|ˆθAC| | ν = 1, μ = 0, σ = 1)
+Difference in accuracy: ˆθAC = (n01 - n10) / (n01 + n10)
+Looking at the table:
+
+MA correct | MA wrong
+MB correct | 416 | 42
+MB wrong | 38 | 68
+
+MA correct | MA wrong
+MC correct | 68 | 38
+MC wrong | 42 | 416
+
+We can compute the values for McNemar's test:
+
+For MA vs. MB:
+n01 = 42 (MB correct and MA wrong)
+n10 = 38 (MB wrong and MA correct)
+ˆθAB = (42 - 38) / (42 + 38) = 4 / 80 = 0.05
+pAB = 2 * cdfT(-|0.05| | ν = 1, μ = 0, σ = 1)
+
+For MA vs. MC:
+n01 = 38 (MC correct and MA wrong)
+n10 = 42 (MC wrong and MA correct)
+ˆθAC = (38 - 42) / (38 + 42) = -4 / 80 = -0.05
+pAC = 2 * cdfT(-|-0.05| | ν = 1, μ = 0, σ = 1)
+
+Based on the computed values, we find:
+
+pAB = pAC (both p-values are the same)
+ˆθAB = -ˆθAC (the difference in accuracy for MA vs. MB is the negative of the difference in accuracy for MA vs. MC)
+So, the correct statement is:
+
+A. pAB = pAC and ˆθAB = -ˆθAC.
+"""
+import scipy.stats as stats
+
+# Define the values from the table
+n01_AB = 42  # MB correct and MA wrong
+n10_AB = 38  # MB wrong and MA correct
+
+n01_AC = 38  # MC correct and MA wrong
+n10_AC = 42  # MC wrong and MA correct
+
+# Compute the differences in accuracy (theta) for MA vs. MB and MA vs. MC
+theta_AB = (n01_AB - n10_AB) / (n01_AB + n10_AB)
+theta_AC = (n01_AC - n10_AC) / (n01_AC + n10_AC)
+
+# Compute the p-values for MA vs. MB and MA vs. MC
+p_AB = 2 * stats.t.cdf(-abs(theta_AB), df=1)
+p_AC = 2 * stats.t.cdf(-abs(theta_AC), df=1)
+
+# Print the results
+print("p-value for MA vs. MB:", p_AB)
+print("Difference in accuracy (theta) for MA vs. MB:", theta_AB)
+
+print("p-value for MA vs. MC:", p_AC)
+print("Difference in accuracy (theta) for MA vs. MC:", theta_AC)
+print()
+
 # 15
 """Given the information in the question, we could interpret the nodes as having conditions based on the distance
 between a given point (x1, x2) and a reference point, using either the L1 or L2 norm. If the distance is less than a
