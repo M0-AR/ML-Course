@@ -1,3 +1,70 @@
+# 10
+"""
+From Table 5, we have:
+
+p(ˆx2 = 0, ˆx4 = 0, y = Machine) = 0.18
+p(ˆx2 = 0, ˆx4 = 1, y = Machine) = 0.17
+p(ˆx2 = 1, ˆx4 = 0, y = Machine) = 0.08
+p(ˆx2 = 1, ˆx4 = 1, y = Machine) = 0.1
+
+We need to calculate:
+p(y = Machine | ˆx2 = 1)
+
+Using Bayes' theorem:
+
+p(y = Machine | ˆx2 = 1)
+= (p(ˆx2 = 1 | y = Machine) * p(y = Machine)) / p(ˆx2 = 1)
+
+From the table:
+p(ˆx2 = 1, y = Machine) = 0.08 + 0.1 = 0.18
+p(ˆx2 = 1) = 0.18 + 0.16 = 0.34
+p(y = Machine) = 0.18 + 0.17 + 0.08 + 0.1 = 0.53
+
+Therefore:
+p(y = Machine | ˆx2 = 1)
+= (0.18/0.53) / (0.34)
+= 0.34/0.34
+= 0.36
+"""
+probs = {
+    (0, 0, 'Machine'): 0.18,
+    (0, 1, 'Machine'): 0.17,
+    (1, 0, 'Machine'): 0.08,
+    (1, 1, 'Machine'): 0.1
+}
+
+# p(x2 = 1, y = Machine)
+p_x2_1_y = probs[(1, 0, 'Machine')] + probs[(1, 1, 'Machine')]
+# 0.08 + 0.1 = 0.18
+
+# p(x2 = 1)
+p_x2_1 = 0.18 + 0.16
+# 0.34
+
+# p(y = Machine)
+p_y = 0.18 + 0.17 + 0.08 + 0.10
+# 0.53
+
+# Using Bayes' theorem
+p_y_given_x2_1 = (p_x2_1_y / p_y) / p_x2_1
+
+print(p_y_given_x2_1)
+print()
+# 11
+"""
+To compute p(y = Machine|x) using a Naive Bayes classifier, we need to evaluate the probability of each feature given the class, i.e., p(xᵢ|y = Machine), assuming that the features are conditionally independent given the class.
+
+Each p(xᵢ|y = Machine) is computed by evaluating the normal density function N(x|μ, σ²) where μ and σ² are the mean and variance of feature xᵢ for y = Machine.
+
+In this case, there are M = 6 features, so we need to evaluate the normal density function 6 times for y = Machine.
+
+However, to compute p(y = Machine|x), we also need to compute p(y = Natural|x) for normalization (because p(y = Machine|x) + p(y = Natural|x) = 1). So, we would need to evaluate the normal density function 6 more times for y = Natural.
+
+Therefore, the minimum number of evaluations of the normal density function N(x|μ, σ²) we have to perform to compute p(y = Machine|x) is 6 (for Machine) + 6 (for Natural) = 12.
+
+So, the answer is C. 12.
+"""
+
 # 12
 """
 You're right, my previous analysis was incorrect. Let me re-work this from the beginning:
