@@ -1,4 +1,4 @@
-# 02450ex_Fall2021_sol-1.pdf -
+# 02450ex_Fall2021_sol-1.pdf - 21
 """This script first transforms the input features X using the provided transformation function. It then computes the
 necessary matrices and vectors for the least squares solution. Finally, it computes the optimal weights w_star and
 prints the second weight w_star_2.
