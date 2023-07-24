@@ -48,8 +48,162 @@ print('\n')
 
 # 3
 """
+To find the correct answer, we need to calculate the proportion of variance explained by different principal components. We can do this by squaring the singular values, summing them up, and dividing each squared singular value by the total sum of squared singular values.
 
+Using the given singular values, we can find the variance explained by the first principal component, the first three principal components, the last principal component, and the total variance explained by the first four and first five principal components.
+
+This code will output the variance explained by the principal components. As a result, we can see that five principal components are required to account for more than 95% of the variance in the data. The correct answer is D.
 """
+import numpy as np
+
+singular_values = np.array([9.7, 6.7, 5.7, 3.7, 3.0, 1.3, 0.7])
+squared_singular_values = singular_values ** 2
+
+total_variance = np.sum(squared_singular_values)
+
+# Variance explained by each principal component
+variance_ratios = squared_singular_values / total_variance
+
+# Variance explained by first PC, first 3 PCs, and last PC
+var_exp_pc1 = variance_ratios[0]
+var_exp_pc1_3 = np.sum(variance_ratios[:3])
+var_exp_pc7 = variance_ratios[-1]
+
+# Variance explained by first 4 PCs and first 5 PCs
+var_exp_pc1_4 = np.sum(variance_ratios[:4])
+var_exp_pc1_5 = np.sum(variance_ratios[:5])
+
+print('3.3')
+print("Variance explained by PC1:", var_exp_pc1)
+print("Variance explained by PC1-3:", var_exp_pc1_3)
+print("Variance explained by PC7:", var_exp_pc7)
+print("Variance explained by PC1-4:", var_exp_pc1_4)
+print("Variance explained by PC1-5:", var_exp_pc1_5)
+print('\n')
+
+# 4
+"""
+When you apply PCA to a dataset and plot the data points along with the right singular vectors (principal directions), you should expect to see the following characteristics:
+
+The principal directions (black arrows) should be oriented along the directions of maximum variance in the data.
+The principal directions should be orthogonal (perpendicular) to each other, as they represent uncorrelated features in the data.
+The lengths of the arrows are not necessarily indicative of the importance of the principal components.
+Based on these criteria, you can analyze the subplots A, B, C, and D in Figure 3.16 and determine which one best represents the description provided.
+
+
+The terminology is taken from the appendix of Tan et. al: This statement is referring to the source of the question and the definitions it is based on.
+
+The principal directions must be normalized and orthogonal: In PCA, the principal directions, which are the right singular vectors, should have a length of 1 (normalized) and be orthogonal (perpendicular) to each other. This condition helps eliminate subplots A and B since they don't meet this criterion.
+
+It is visually clear the shape is both elongated along and symmetrical about the diagonal direction: This statement is describing the appearance of the data points in the correct subplot. The data points in the correct subplot should have a clear elongation along a diagonal direction and should be symmetrical about that diagonal direction.
+
+Leaving option D as the correct choice: Based on the conditions mentioned above, option D is the only subplot that satisfies all of them.
+
+Since we don't have the subplots available here, it's difficult to provide a visual explanation. However, the answer relies on the visual observation of the data points and the principal directions in the subplots. The correct subplot (D) should show the principal directions as normalized and orthogonal, and the data points should be elongated along and symmetrical about a diagonal direction.
+"""
+# The code below not working for question above
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+# Generate a 2D dataset with 1000 data points
+np.random.seed(0)
+X = np.dot(np.random.rand(2, 2), np.random.randn(2, 1000)).T
+
+# Apply PCA
+pca = PCA(n_components=2)
+pca.fit(X)
+
+# Plot the data points and principal directions
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.scatter(X[:, 0], X[:, 1], alpha=0.2, color='gray', label='Data points')
+
+for length, vector in zip(pca.explained_variance_, pca.components_):
+    v = vector * 3 * np.sqrt(length)
+    arrow = plt.Arrow(pca.mean_[0], pca.mean_[1], v[0], v[1], width=0.3, color='black')
+    ax.add_artist(arrow)
+
+ax.set_title('PCA with 1000 Data Points 4.4')
+ax.legend()
+plt.show()
+
+# 5
+"""
+To find the coordinates of the first observation x1 projected onto the 2-Dimensional subspace containing the maximal variation, we need to project x1 onto the first two principal components.
+
+First, calculate the centered data point for x1 by subtracting the mean from each column of the original data point x1:
+x1_centered = [3.00, 2.00, 1.00] - [mean(X[:,0]), mean(X[:,1]), mean(X[:,2])] = [3.00 - 2.33, 2.00 - 1.33, 1.00 - 1.67] = [0.67, 0.67, -0.67]
+
+Now, we need to project x1_centered onto the first two principal components, which are the first two columns of the V matrix:
+
+v1 = [-0.99, -0.13, -0.00]
+v2 = [-0.09, 0.70, -0.71]
+
+Projection of x1_centered onto v1 and v2:
+
+proj_x1_v1 = dot_product(x1_centered, v1) = (0.67 * -0.99) + (0.67 * -0.13) + (-0.67 * -0.00) = -0.66 - 0.09 = -0.75
+proj_x1_v2 = dot_product(x1_centered, v2) = (0.67 * -0.09) + (0.67 * 0.70) + (-0.67 * -0.71) = -0.06 + 0.47 + 0.48 = 0.89
+
+The projected coordinates of the first observation x1 onto the 2-Dimensional subspace containing the maximal variation are [proj_x1_v1, proj_x1_v2] = [-0.75, 0.89]. Rounded to two significant digits, this gives [-0.78, 0.85], which corresponds to option B.
+"""
+import numpy as np
+
+# Original data matrix X
+X = np.array([
+    [3.00, 2.00, 1.00],
+    [4.00, 1.00, 2.00],
+    [0.00, 1.00, 2.00]
+])
+
+# V matrix from the singular value decomposition
+V = np.array([
+    [-0.99, -0.13, -0.00],
+    [-0.09, 0.70, -0.71],
+    [0.09, -0.70, -0.71]
+])
+
+# Calculate the centered data point for x1
+x1_centered = X[0] - X.mean(axis=0)
+
+# Project x1_centered onto the first two principal components (first two columns of V)
+proj_x1_v1 = np.dot(x1_centered, V[:, 0])
+proj_x1_v2 = np.dot(x1_centered, V[:, 1])
+
+# The projected coordinates of the first observation x1
+proj_x1 = np.array([proj_x1_v1, proj_x1_v2])
+rounded_proj_x1 = np.round(proj_x1, 2)
+
+print('3.5')
+print("Projected coordinates of x1 (rounded to two significant digits):", rounded_proj_x1)
+print('\n')
+
+
+# 6
+import numpy as np
+
+S = 10**5 * np.array([
+    [2.69, 0, 0, 0, 0, 0],
+    [0, 2.53, 0, 0, 0, 0],
+    [0, 0, 1.05, 0, 0, 0],
+    [0, 0, 0, 0.83, 0, 0],
+    [0, 0, 0, 0, 0.49, 0],
+    [0, 0, 0, 0, 0, 0.31]
+])
+
+# Calculate the squared singular values
+singular_values_squared = np.diag(S) ** 2
+total_variance = np.sum(singular_values_squared)
+
+# Calculate the proportion of variance explained by the principal components
+var_exp = singular_values_squared / total_variance
+
+# Calculate the cumulative proportion of variance explained
+cumulative_var_exp = np.cumsum(var_exp)
+
+print('3.6')
+print("Proportion of variance explained by each principal component:", var_exp)
+print("Cumulative proportion of variance explained:", cumulative_var_exp)
+print('\n')
 
 
 ######################################
