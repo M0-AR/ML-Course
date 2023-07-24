@@ -131,8 +131,9 @@ print('\n')
 
 
 # 27
-"""
-I apologize for the confusion, I missed out on the aspect of training a new model to estimate the generalization error for each outer fold. This changes the total models trained to be K1 * (K2 * L + 1), where L is the number of pruning levels.
+"""I apologize for the confusion, I missed out on the aspect of training a new model to estimate the generalization 
+error for each outer fold. This changes the total models trained to be K1 * (K2 * L + 1), where L is the number of 
+pruning levels. 
 
 Recalculating the total models trained for each option:
 
@@ -402,7 +403,8 @@ Solution 26:
 
 The correct answer is C. Cross-validation is a resampling method that is used to evaluate the performance of machine learning models on a limited data sample. It is used for model selection, to find the hyperparameters of a model that give the best performance in terms of bias-variance trade-off.
 
-Option A, B, and D are valid scenarios where cross-validation can help determine the best number of hidden units in an ANN, the width of a Gaussian kernel in KDE, and the number of neighbors in KNN, respectively.
+Option A, B, and D are valid scenarios where cross-validation can help determine the best number of hidden units in 
+an ANN, the width of a Gaussian kernel in KDE, and the number of neighbors in KNN, respectively. 
 
 Option C, however, talks about selecting observations that minimize the training error. Cross-validation is not used for this purpose. This seems like an overfitting scenario where the model is just memorizing the training data and not generalizing well. This is not an appropriate use of cross-validation.
 """
@@ -614,8 +616,8 @@ print(f"Correct Curve: Variance Explained Curve {correct_curve}")
 print('\n')
 
 # 3
-"""
-The question asks you to project a standardized observation onto the first two principal components using the PCA directions given by the matrix V.
+"""The question asks you to project a standardized observation onto the first two principal components using the PCA 
+directions given by the matrix V. 
 
 The standardized observation is: ̃x∗ = [-0.1, 0.2, 0.1, -0.3, 1, 0.5]
 
@@ -2011,7 +2013,8 @@ For o9, the nearest neighbour is o1
 For o10, the nearest neighbour is o1
 Based on this, the solution identifies that the predicted class matches the true class for the observations {o1, o3, o4, o6}.
 
-However, for the remaining observations {o2, o5, o7, o8, o9, o10}, the predicted class doesn't match the true class, so these are counted as errors.
+However, for the remaining observations {o2, o5, o7, o8, o9, o10}, the predicted class doesn't match the true class, 
+so these are counted as errors. 
 
 Therefore, we have 6 errors out of 10 observations, which gives an error rate of 6/10. So, the correct answer is D: error rate = 6/10.
 """
@@ -2563,12 +2566,14 @@ print(output)
 print('\n')
 
 # 23
-"""
-In the 2-level cross-validation procedure, you first perform outer loop cross-validation (K1 = 3-fold), and for each fold of the outer loop, you perform inner loop cross-validation (K2 = 4-fold) for each model (S = 4 models).
+"""In the 2-level cross-validation procedure, you first perform outer loop cross-validation (K1 = 3-fold), 
+and for each fold of the outer loop, you perform inner loop cross-validation (K2 = 4-fold) for each model (S = 4 
+models). 
 
 The time taken to train a single model is 20 minutes.
 
-So, for each fold of the outer loop, you need to train each model using 4-fold cross-validation. This means training each model 4 times, for a total of 4 (models) * 4 (folds) = 16 trainings.
+So, for each fold of the outer loop, you need to train each model using 4-fold cross-validation. This means training 
+each model 4 times, for a total of 4 (models) * 4 (folds) = 16 trainings. 
 
 Since each training takes 20 minutes, this means each fold of the outer loop takes 16 (trainings) * 20 (minutes) = 320 minutes.
 
@@ -2927,12 +2932,10 @@ C2 (red): {o3, o4, o5}
 C3 (blue): {o6, o7, o8, o9, o10}
 Clustering Q (derived from dendrogram):
 
-{10}
-{1, 2, 4, 5, 6, 7}
-{3, 8, 9}
-To create the counting matrix, we compare the clusters of Z and Q. For each element, we mark the intersection of the cluster from Z and the cluster from Q. Let's denote the clusters in Z as Z1, Z2, Z3 and the clusters in Q as Q1, Q2, Q3. The counting matrix would look like this:
+{10} {1, 2, 4, 5, 6, 7} {3, 8, 9} To create the counting matrix, we compare the clusters of Z and Q. For each 
+element, we mark the intersection of the cluster from Z and the cluster from Q. Let's denote the clusters in Z as Z1, 
+Z2, Z3 and the clusters in Q as Q1, Q2, Q3. The counting matrix would look like this: 
 
-Copy code
 | Q1 | Q2 | Q3 |
 Z1 | | | |
 Z2 | | | |
@@ -2942,7 +2945,6 @@ Now, we fill in the counts. For example, for the first cell, we're looking for t
 
 After doing this for all cells, we obtain the counting matrix:
 
-Copy code
 | Q1 | Q2 | Q3 |
 Z1 | 0 | 2 | 0 |
 Z2 | 0 | 2 | 1 |
@@ -2970,11 +2972,14 @@ n =
 
 Next, we calculate the quantities S and D.
 
-S is the sum of the diagonal elements of the counting matrix n. It represents the number of pairs that are in the same cluster in both Z and Q.
+S is the sum of the diagonal elements of the counting matrix n. It represents the number of pairs that are in the 
+same cluster in both Z and Q. 
 
 S = 0 + 2 + 2 = 4
 
-D represents the number of pairs that are in the same cluster in Z but in different clusters in Q. It's calculated by summing up the squares of each row in the counting matrix, subtracting the square of the diagonal element, and adding these quantities for all rows.
+D represents the number of pairs that are in the same cluster in Z but in different clusters in Q. It's calculated by 
+summing up the squares of each row in the counting matrix, subtracting the square of the diagonal element, 
+and adding these quantities for all rows. 
 
 D = ((0+2+0)^2 - 0^2) + ((0+2+1)^2 - 2^2) + ((1+2+2)^2 - 2^2) = 17
 
@@ -2982,8 +2987,8 @@ Finally, we calculate the Jaccard similarity between the two clusters Z and Q, w
 
 J[Z, Q] = S / (0.5 * N*(N-1) - D)
 
-Where N is the total number of points. However, without knowing N, we cannot compute the final Jaccard similarity. The provided data does not include this information.
-"""
+Where N is the total number of points. However, without knowing N, we cannot compute the final Jaccard similarity. 
+The provided data does not include this information. """
 
 # 8
 
@@ -3605,8 +3610,8 @@ Therefore, option A seems to be correct.
 """
 
 # 21
-"""
-The vectors [x1, x2], [2, 4], [6, 0], etc. represent points or positions in a 2-dimensional space. In this context, they are being used to define decision boundaries for a decision tree classifier.
+"""The vectors [x1, x2], [2, 4], [6, 0], etc. represent points or positions in a 2-dimensional space. In this 
+context, they are being used to define decision boundaries for a decision tree classifier. 
 
 The expressions such as ||[x1, x2] - [2, 4]||1 < 2, ||[x1, x2] - [6, 0]||2 < 3, etc., define hyperplanes or boundaries in the feature space that split the space into different regions. Each region corresponds to a different class or output of the decision tree.
 
@@ -4151,8 +4156,8 @@ So, the change in the principal component space, ∆b, is given by:
 
 ∆b = [-0.3366, 2.5806]
 
-This vector should match the vector in the PCA-transformed space in one of the plots in Figure 3. According to the solution, only plot C matches this vector.
-"""
+This vector should match the vector in the PCA-transformed space in one of the plots in Figure 3. According to the 
+solution, only plot C matches this vector. """
 import numpy as np
 
 # ∆x vector
@@ -4173,8 +4178,10 @@ print("The projection of ∆x onto the first two principal components is: ", del
 print('\n')
 
 # TODO
-""" 
-The result ∆b = [-0.34, 2.58] is a vector in a 2D space. This vector represents the change in the projection of the data points onto the first two principal components, from the start point to the end point. In other words, if you started at some point (x,y) in the PCA projected plots, then after applying the change ∆b, you would end up at the point (x - 0.34, y + 2.58).
+"""The result ∆b = [-0.34, 2.58] is a vector in a 2D space. This vector represents the change in the projection of 
+the data points onto the first two principal components, from the start point to the end point. In other words, 
+if you started at some point (x,y) in the PCA projected plots, then after applying the change ∆b, you would end up at 
+the point (x - 0.34, y + 2.58). 
 
 As for visualizing this, consider ∆b as a direction vector in the 2D space of the first two principal components. The numbers -0.34 and 2.58 are the x and y components of the direction vector. This vector doesn't start at the origin (0, 0), but rather it starts at the projection of the starting point of the path onto the first two principal components.
 """
@@ -4255,6 +4262,7 @@ cov_matrix = np.array([
     [-317, 67964, 70892, 25415, 1212707]
 ])
 
+
 cov_x1_x2 = cov_matrix[0, 1]
 var_x1 = cov_matrix[0, 0]
 var_x2 = cov_matrix[1, 1]
@@ -4267,6 +4275,14 @@ correlation_x1_x2 = cov_x1_x2 / (std_x1 * std_x2)
 
 print('2019-Dec-5')
 print(correlation_x1_x2)
+print('\n')
+
+# Spring 2023 Q2
+std_x1 = 1.55
+std_x4 = 3.78
+correlation_x1_x4 = 0.15
+cov_x1_x4 = correlation_x1_x4 * (std_x1 * std_x4)
+print(cov_x1_x4)
 print('\n')
 
 # 6
@@ -4459,7 +4475,9 @@ Let's break it down:
 
 The observations are split into two sets based on the split criterion x7 > 0.365. The sets are v1 = {1, 2, 3, 4} and v2 = {5, 6}, where the numbers correspond to the observation indices.
 
-The impurity of these two sets, and the impurity of all y-values, is computed using the impurity measure appropriate for regression trees. Here, the impurity measure I(v) is the variance of the y-values in each set, which is the average of the squared deviations from the mean y-value in the set.
+The impurity of these two sets, and the impurity of all y-values, is computed using the impurity measure appropriate 
+for regression trees. Here, the impurity measure I(v) is the variance of the y-values in each set, which is the 
+average of the squared deviations from the mean y-value in the set. 
 
 The mean y-values for the sets are computed: y(v1) = 9.0 and y(v2) = 3.0.
 
@@ -5036,8 +5054,9 @@ These deductions allow us to match the histograms with the attributes, based on 
 """
 
 # 3
-"""
-PCA is a dimensionality reduction technique that finds the directions (principal components) in which the data varies the most. In the context of PCA, the variance explained by each principal component is given by the square of the corresponding singular value divided by the sum of squares of all singular values.
+"""PCA is a dimensionality reduction technique that finds the directions (principal components) in which the data 
+varies the most. In the context of PCA, the variance explained by each principal component is given by the square of 
+the corresponding singular value divided by the sum of squares of all singular values. 
 
 Let's calculate the total variance and the variance explained by each principal component:
 
@@ -5110,8 +5129,9 @@ The vector v1 is the first column of V, which is [0.43, 0.38, 0.46, -0.48, -0.48
 
 To have a large positive value of b1 (which is what we observe for countries from Africa), the original variables x1 to x5 must have values that, when multiplied by the corresponding values in v1 and summed together (the dot product), result in a large number. Considering the sign of each element in v1, this implies that x1, x2, and x3 should have high values, while x4 and x5 should have low values. This aligns with answer choice A.
 
-Regarding the correlation between the observations projected onto PC1 and PC2, the calculation shows that it is zero. This is because, in PCA, the principal components are orthogonal (uncorrelated). Therefore, there is no correlation between the projections onto PC1 and PC2, ruling out answer choice D.
-"""
+Regarding the correlation between the observations projected onto PC1 and PC2, the calculation shows that it is zero. 
+This is because, in PCA, the principal components are orthogonal (uncorrelated). Therefore, there is no correlation 
+between the projections onto PC1 and PC2, ruling out answer choice D. """
 
 # 6
 """
@@ -6678,7 +6698,9 @@ So, to compute the Jaccard similarity for the two binary vectors x1 and x2, we f
 
 The intersection between x1 and x2 is the number of positions where both x1 and x2 have 1s. Given that the first two elements of x1 are 1 and the first M/2 elements of x2 are 1, there are 2 positions where both x1 and x2 are 1.
 
-The union of x1 and x2 is the number of positions where either x1 or x2 (or both) have a 1. This is equal to the first two elements of x1 plus the first M/2 elements of x2, minus the intersection (because we're double counting the places where both x1 and x2 have a 1). This is 2 + M/2 - 2 = M/2.
+The union of x1 and x2 is the number of positions where either x1 or x2 (or both) have a 1. This is equal to the 
+first two elements of x1 plus the first M/2 elements of x2, minus the intersection (because we're double counting the 
+places where both x1 and x2 have a 1). This is 2 + M/2 - 2 = M/2. 
 
 So, the Jaccard similarity coefficient J(x1, x2) is equal to the size of the intersection divided by the size of the union, which is 2/(M/2) = 4/M.
 
@@ -7005,7 +7027,9 @@ Therefore, option B. w1/w5 = 1 - error_rate / error_rate is the correct choice.
 ---
 I apologize if the explanation was confusing. Let me try to simplify it:
 
-AdaBoost is an ensemble learning method that works by fitting a sequence of weak learners (models) on repeatedly modified versions of the data. Each model makes predictions on the dataset, and the weights of incorrectly classified instances are adjusted such that subsequent models focus more on difficult cases.
+AdaBoost is an ensemble learning method that works by fitting a sequence of weak learners (models) on repeatedly 
+modified versions of the data. Each model makes predictions on the dataset, and the weights of incorrectly classified 
+instances are adjusted such that subsequent models focus more on difficult cases. 
 
 Now, in each iteration of AdaBoost, the algorithm assigns a weight to each sample in the training set. Initially, these weights are equal. If a sample is incorrectly predicted by the weak learner, its weight is increased. Conversely, if the sample is predicted correctly, its weight is decreased.
 
@@ -7092,10 +7116,14 @@ Statement B is true. AdaBoost is a boosting algorithm which is used to improve t
 
 Statement A is false. Regularization is a technique used to prevent overfitting by adding a penalty term to the loss function. It is applicable to logistic regression models, often in the form of L1 or L2 regularization.
 
-Statement C is false. McNemar's test is used to determine if the performances of two classification models are significantly different. However, it does not require two-level cross-validation. It can be applied using the predictions of the two models on the same test set.
+Statement C is false. McNemar's test is used to determine if the performances of two classification models are 
+significantly different. However, it does not require two-level cross-validation. It can be applied using the 
+predictions of the two models on the same test set. 
 
-Statement D is also false. Principal Component Analysis (PCA) transforms the data into a new coordinate system of orthogonal basis vectors, which are the principal components of the data. However, the lengths (norms) of the original vectors (xi) and their projections onto the principal components (bi) are generally not equal, because PCA can scale and rotate the original vectors.
-"""
+Statement D is also false. Principal Component Analysis (PCA) transforms the data into a new coordinate system of 
+orthogonal basis vectors, which are the principal components of the data. However, the lengths (norms) of the 
+original vectors (xi) and their projections onto the principal components (bi) are generally not equal, because PCA 
+can scale and rotate the original vectors. """
 
 # 19
 """
@@ -7150,8 +7178,9 @@ Comparing this with the expressions given in options A to D, we can see that onl
 """
 
 # 20
-"""
-In this problem, ridge regression is being used. This is a form of linear regression that includes a regularization term to prevent overfitting. The regularization term is the squared magnitude of the coefficient vector, multiplied by a regularization hyperparameter lambda (λ).
+"""In this problem, ridge regression is being used. This is a form of linear regression that includes a 
+regularization term to prevent overfitting. The regularization term is the squared magnitude of the coefficient 
+vector, multiplied by a regularization hyperparameter lambda (λ). 
 
 The ridge regression model is:
 
@@ -7198,3 +7227,188 @@ Therefore, all the other options apart from D are incorrect due to these reasons
 ######################################
 print('Dec 2021')
 # 1
+import numpy as np
+
+# Pairwise Euclidean distances matrix
+distances = np.array([
+    [0.0, 1.3, 4.1, 3.8, 4.5, 2.4, 3.2, 2.7, 3.0, 3.9],
+    [1.3, 0.0, 3.2, 3.1, 4.7, 2.3, 2.6, 2.2, 2.7, 4.2],
+    [4.1, 3.2, 0.0, 0.4, 4.9, 2.7, 1.1, 1.6, 2.4, 4.8],
+    [3.8, 3.1, 0.4, 0.0, 4.6, 2.5, 0.9, 1.3, 2.1, 4.5],
+    [4.5, 4.7, 4.9, 4.6, 0.0, 3.1, 4.4, 3.7, 2.8, 2.3],
+    [2.4, 2.3, 2.7, 2.5, 3.1, 0.0, 1.8, 1.2, 0.9, 2.8],
+    [3.2, 2.6, 1.1, 0.9, 4.4, 1.8, 0.0, 1.0, 1.7, 4.1],
+    [2.7, 2.2, 1.6, 1.3, 3.7, 1.2, 1.0, 0.0, 1.1, 3.6],
+    [3.0, 2.7, 2.4, 2.1, 2.8, 0.9, 1.7, 1.1, 0.0, 2.9],
+    [3.9, 4.2, 4.8, 4.5, 2.3, 2.8, 4.1, 3.6, 2.9, 0.0],
+])
+
+
+
+
+def knn_density(distances, i, K):
+    nearest_neighbors = np.argsort(distances[i])[:K + 1]  # include i'th observation itself
+    nearest_neighbors = nearest_neighbors[nearest_neighbors != i]  # exclude i'th observation
+    return 1 / (1 / K * np.sum(distances[i, nearest_neighbors]))
+
+
+K = 3
+n = distances.shape[0]
+i_O2 = 0  # index of O2 in the distance matrix
+
+density_O2 = knn_density(distances, i_O2, K)
+densities_neighbors = [knn_density(distances, j, K) for j in np.argsort(distances[i_O2])[:K + 1] if j != i_O2]
+
+ard_O2 = density_O2 / (1 / K * np.sum(densities_neighbors))
+
+print('2023-dec-5')
+print("The average relative density for observation O2 for K = 2 nearest neighbors is ", ard_O2)
+print('\n')
+
+# 6
+
+# Classifications: 1 for safe, 0 for unsafe
+classes = np.array([1, 0, 1, 1, 1, 0, 0, 0, 0, 1])
+
+# Initialize error count
+errors = 0
+
+# For each observation
+for i in range(10):
+    # Get a copy of the distances, then set the distance to self to infinity
+    distances_to_others = distances[i].copy()
+    distances_to_others[i] = np.inf
+
+    # Find the index of the nearest neighbor
+    nearest = np.argmin(distances_to_others)
+
+    # If the classes don't match, increment the error count
+    if classes[i] != classes[nearest]:
+        errors += 1
+
+# Calculate error rate
+error_rate = errors / 10
+
+print('2018-may-15')
+print(f"Error rate: {error_rate * 100}%")
+print('\n')
+
+
+# 7
+# 7
+"""
+From the data provided, we can derive the clustering assignments as follows:
+
+Ground-truth clustering Z (color indicated):
+
+C1 (black): {o1, o2}
+C2 (red): {o3, o4, o5}
+C3 (blue): {o6, o7, o8, o9, o10}
+Clustering Q (derived from dendrogram):
+
+{10} {1, 2, 4, 5, 6, 7} {3, 8, 9} To create the counting matrix, we compare the clusters of Z and Q. For each 
+element, we mark the intersection of the cluster from Z and the cluster from Q. Let's denote the clusters in Z as Z1, 
+Z2, Z3 and the clusters in Q as Q1, Q2, Q3. The counting matrix would look like this: 
+
+| Q1 | Q2 | Q3 |
+Z1 | | | |
+Z2 | | | |
+Z3 | | | |
+
+Now, we fill in the counts. For example, for the first cell, we're looking for the number of elements that are in both Z1 and Q1.
+
+After doing this for all cells, we obtain the counting matrix:
+
+| Q1 | Q2 | Q3 |
+Z1 | 0 | 2 | 0 |
+Z2 | 0 | 2 | 1 |
+Z3 | 1 | 2 | 2 |
+
+This matrix tells us how many elements from each cluster in Z are in each cluster in Q. For example, the cell (Z1, Q2) tells us that there are 2 elements that are in Z1 (ground truth cluster 1) and also in Q2 (cluster 2 from the dendrogram).
+
+
+The solution is using the Jaccard similarity to measure the similarity between the ground-truth clustering Z and the clustering Q obtained by cutting the dendrogram.
+
+The first step is to define the clusters in Z and Q. Here, Z is the clustering corresponding to the colors in Table 2, and Q is the clustering obtained from the dendrogram as {10}, {1, 2, 4, 5, 6, 7}, {3, 8, 9}.
+
+Next, a counting matrix 'n' is created based on these clusters. Each cell in the matrix represents the number of pairs of points that are in the same cluster in both Z and Q.
+
+The counting matrix is given as:
+
+n =
+
+
+0 2 0
+0 2 1
+1 2 2
+
+
+
+Next, we calculate the quantities S and D.
+
+S is the sum of the diagonal elements of the counting matrix n. It represents the number of pairs that are in the 
+same cluster in both Z and Q. 
+
+S = 0 + 2 + 2 = 4
+
+D represents the number of pairs that are in the same cluster in Z but in different clusters in Q. It's calculated by 
+summing up the squares of each row in the counting matrix, subtracting the square of the diagonal element, 
+and adding these quantities for all rows. 
+
+D = ((0+2+0)^2 - 0^2) + ((0+2+1)^2 - 2^2) + ((1+2+2)^2 - 2^2) = 17
+
+Finally, we calculate the Jaccard similarity between the two clusters Z and Q, which is given by the formula:
+
+J[Z, Q] = S / (0.5 * N*(N-1) - D)
+
+Where N is the total number of points. However, without knowing N, we cannot compute the final Jaccard similarity. 
+The provided data does not include this information. """
+N = 10
+S = 5
+D = ((4+0+0)^2 - 4^2) + ((4+1+1)^2 - 1^2)
+R = (S + D) / (1/2* 10 * ( 10 - 1))
+print(R) # 7
+print('\n')
+
+# 8
+J = S / (0.5 * N*(N-1) - D)
+print(J)
+print('\n')
+
+# 15
+
+# 21
+"""The vectors [x1, x2], [2, 4], [6, 0], etc. represent points or positions in a 2-dimensional space. In this 
+context, they are being used to define decision boundaries for a decision tree classifier. 
+
+The expressions such as ||[x1, x2] - [2, 4]||1 < 2, ||[x1, x2] - [6, 0]||2 < 3, etc., define hyperplanes or boundaries in the feature space that split the space into different regions. Each region corresponds to a different class or output of the decision tree.
+
+The shapes represented by these expressions are geometric regions in the 2D space:
+
+||[x1, x2] - [2, 4]||1 < 2 creates a diamond shape centered at [2, 4] with sides of length 4 (along the axes).
+||[x1, x2] - [6, 0]||2 < 3 creates a circle centered at [6, 0] with a radius of 3.
+||[x1, x2] - [4, 2]||2 < 2 creates a circle centered at [4, 2] with a radius of 2.
+
+Each condition in the decision tree corresponds to one of these shapes, and the structure of the decision tree determines how these shapes are nested or arranged relative to each other to form the decision boundaries.
+
+A decision tree is a flowchart-like structure in which each internal node represents a "test" on an attribute, each branch represents the outcome of the test, and each leaf node represents a class label (decision made after computing all attributes). The paths from the root to leaf represent classification rules.
+
+In your problem, you are given a decision tree with three nodes: A, B, and C. Each node is represented by a norm or distance from a given point [x1, x2] to a specified point in a 2-dimensional plane.
+
+The decision at each node is based on whether this distance is less than a certain threshold. For example, the decision rule at node A in option A is whether the distance from [x1, x2] to [2, 4] is less than 2.
+
+# To find out which option correctly represents the decision tree, you would need to apply these rules to your dataset and see which one correctly classifies your data.
+
+Let's consider the rule set in option A:
+
+Node A: Check if the distance from [x1, x2] to [2, 4] is less than 2. If it is, move to the next rule. If not, the instance is classified according to the 'False' branch of the tree.
+Node B: Check if the distance from [x1, x2] to [6, 0] is less than 3. If it is, move to the next rule. If not, the instance is classified according to the 'False' branch of the tree.
+Node C: Check if the distance from [x1, x2] to [4, 2] is less than 2. If it is, the instance is classified according to the 'True' branch of the tree. If not, the instance is classified according to the 'False' branch of the tree.
+"""
+k1 = 3
+k2 = 5
+s = 8
+
+min = k1 * (k2 * s + 1)  * 20
+print(min)
+print('\n')
