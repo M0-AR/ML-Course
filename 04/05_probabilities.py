@@ -1,3 +1,17 @@
+import numpy as np
+
+# Given singular values
+sv = np.array([43.4, 23.39, 18.26, 9.34, 2.14])
+
+# Calculate square of singular values
+squared_sv = sv**2
+
+# Sum up squares of singular values for first four components
+cumulative_variance = squared_sv[:4].sum()
+
+# Print result
+print("Cumulative variance explained by first four principal components:", cumulative_variance)
+print()
 """
 02450ex_Fall2021_sol-1.pdf
 Question 16
