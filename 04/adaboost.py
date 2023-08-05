@@ -87,3 +87,19 @@ if __name__ == "__main__":
 
     print("New weights:", new_weights)
     print("Unique weights:", unique_weights)
+
+"""The values you see are the updated weights after running one iteration of the AdaBoost algorithm. They represent 
+the importance or influence assigned to each instance in the dataset for the next weak learner. Here's a breakdown of 
+what these values signify: 
+
+Weights equal to 0.125: These correspond to the instances that were correctly classified by the weak learner in the 
+current iteration. Since they were classified correctly, their weights were decreased (but not by a significant 
+amount, as indicated by the alpha value). 
+
+Weights equal to 0.16666667: These correspond to the instances that were incorrectly classified by the weak learner 
+in the current iteration. Their weights were increased, meaning that the next weak learner will pay more attention to 
+these instances, trying to classify them correctly. 
+
+By repeatedly updating the weights in this manner and training new weak learners, AdaBoost focuses on the instances 
+that are harder to classify. This often allows the ensemble model to achieve better performance compared to a single 
+classifier. """
