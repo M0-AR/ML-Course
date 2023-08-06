@@ -29,6 +29,10 @@ the results will be consistent. If initialized randomly, the results might vary 
 import numpy as np
 from sklearn.cluster import KMeans
 
+"""
+2016 fall Q11
+2017 fall Q8
+"""
 
 def perform_kmeans(X, n_clusters, with_initial_cluster=False, initial_cluster=None):
     """
