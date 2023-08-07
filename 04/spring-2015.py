@@ -163,3 +163,163 @@ Delta = I_A - (187/395)*I_F - (208/395)*I_M
 print(Delta)
 
 ############################################################################
+"""Question 11: With the binary matrix from table 4 interpreted as a market-basket problem (N = 9 transactions, 
+M = 6 items), we are asked to identify all itemsets with support greater than 0.4 from a given list of options. 
+
+Question 12: For the same dataset of N = 9 students considered as 6-dimensional binary vectors, we are to determine 
+the correct statement regarding the Jaccard/cosine similarity and the simple matching coefficient. 
+
+Question 13: Assuming the same interpretation of the binary matrix as a market-basket problem, we are to calculate 
+the lift of the rule {f2, f4, f6} → {f1, f5}. The lift for a rule A → B is defined as Lift(A → B) = Confidence(A → 
+B)/Support(B). """
+
+import pandas as pd
+
+data = {'f1': [1,1,1,1,1,0,1,0,0],
+        'f2': [0,1,1,1,0,0,1,0,1],
+        'f3': [1,1,0,1,1,1,1,1,0],
+        'f4': [0,1,0,0,0,1,1,1,1],
+        'f5': [1,1,1,0,0,0,1,1,0],
+        'f6': [0,0,0,1,1,1,1,1,1]}
+df = pd.DataFrame(data)
+
+# 11
+
+############################################################################
+# 18
+def relu(x):
+    return max(1/10 * x, x) if x > 0 else 1/10 * x
+
+def neural_network(x1, x2, w):
+    # Calculate neuron outputs
+    n1 = relu(x1)
+    n2 = relu(x2)
+    n3 = relu(n1 * w['w31'] + n2 * w['w32'])
+    n4 = relu(n1 * w['w41'] + n2 * w['w42'])
+    n5 = relu(n3 * w['w53'] + n4 * w['w54'])
+
+    return n5
+
+# Define weights
+weights = {'w31': 0.05, 'w41': 0, 'w32': 0.1, 'w42': -0.05, 'w53': 0.1, 'w54': -10}
+
+# Define inputs
+x1, x2 = 0.5, 1
+
+# Run the neural network
+output = neural_network(x1, x2, weights)
+print(f'The output is: {output:.4f}')
+
+
+# 21
+import numpy as np
+
+
+def class_probability(x, w1, w2, w3):
+    # Compute intermediate values
+    y1, y2, y3 = np.dot(w1, x), np.dot(w2, x), np.dot(w3, x)
+
+    # Compute per-class probabilities
+    exps = np.exp([y1, y2, y3])
+    probabilities = exps / np.sum(exps)
+
+    # Return the class with the maximum probability
+    return np.argmax(probabilities)
+
+
+# Define data point
+x = np.array([-1, 0])
+
+# Define weights
+weights = {
+    'A': np.array([[1, 0], [0, 1], [0.3, 0.3]]),
+    'B': np.array([[-1, 0], [0, -1], [0.8, 0.8]]),
+    'C': np.array([[-1, -1], [1, 1], [0.3, 0.3]]),
+    'D': np.array([[1, 0], [0, 1], [-0.8, -0.8]]),
+}
+
+# Compute class for each set of weights
+for name, ws in weights.items():
+    print(f'Setting {name}: Class {class_probability(x, ws[0], ws[1], ws[2]) + 1}')
+############################################################################
+# 23
+"""The question is about the K-means clustering algorithm applied to a 1-dimensional dataset. The dataset contains 8 
+observations: {1, 3, 4, 6, 7, 8, 13, 15}. We are asked to choose from four options which one corresponds to a 
+converged state of the K-means algorithm using Euclidean distances. 
+
+To solve this problem, you can implement the K-means algorithm in Python and then check which of the given options is 
+the result of the algorithm. """
+from sklearn.cluster import KMeans
+import numpy as np
+
+def perform_kmeans_clustering(data, n_clusters):
+    # reshape data for sklearn compatibility
+    data = np.array(data).reshape(-1, 1)
+
+    # create and fit the model
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(data)
+
+    # get labels
+    labels = kmeans.labels_
+
+    # generate clusters based on labels
+    clusters = [[] for _ in range(n_clusters)]
+    for point, label in zip(data, labels):
+        clusters[label].append(point[0])
+
+    return clusters
+
+data = [1, 3, 4, 6, 7, 8, 13, 15]
+
+# set number of clusters to be equal to the number of clusters in the options
+n_clusters_options = [3, 4, 3, 4]
+
+for i, n_clusters in enumerate(n_clusters_options):
+    print(f'Option {chr(65 + i)}: {perform_kmeans_clustering(data, n_clusters)}')
+############################################################################
+# 26
+"""The question is about the AdaBoost algorithm, an ensemble learning method that creates a strong classifier from 
+multiple weak classifiers. The algorithm assigns weights to the training samples and adjusts these weights in each 
+iteration based on the performance of the weak classifier. The classifier focuses more on the incorrectly classified 
+instances due to these weights. 
+
+In this scenario, the weights are initially equal for each instance in the first iteration, and they are updated 
+based on the error of the classifier. The question assumes AdaBoost is applied for k=1 round of boosting and asks for 
+the resulting value for the weights. 
+
+The provided solution shows that weights remain equal after the first iteration, since the classifier has an error 
+rate of 0.5, which does not change the weights in the AdaBoost algorithm. """
+import numpy as np
+
+
+# Function to calculate AdaBoost weights
+def calculate_weights(y_true, y_pred):
+    N = len(y_true)
+
+    # Initial weights
+    w = np.ones(N) / N
+
+    # Classifier error
+    epsilon = np.sum(w[y_true != y_pred])
+
+    # Classifier weight
+    alpha = 0.5 * np.log((1 - epsilon) / epsilon)
+
+    # Update weights
+    w[y_true == y_pred] *= np.exp(-alpha)
+    w[y_true != y_pred] *= np.exp(alpha)
+
+    # Normalize weights
+    w /= np.sum(w)
+
+    return w
+
+
+# Test data
+y_true = np.array([1, 1, 0, 0])
+y_pred = np.array([1, 0, 1, 0])
+
+# Calculate weights
+weights = calculate_weights(y_true, y_pred)
+print(weights)
+############################################################################
