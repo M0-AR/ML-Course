@@ -49,3 +49,35 @@ w2 = 0.8
 prob_c1 = probability_of_class_c1(o3_o1_distance, o3_o4_distance, w1, w2)
 print(f"Probability of o3 being in class C1: {prob_c1:.4f}")
 
+
+# 20
+def compute_assignment_probability(p_values, component_index):
+    """
+    Compute the assignment probability of an observation to a given Gaussian component.
+
+    Parameters:
+    - p_values (list): List of probabilities of the observation under each Gaussian component.
+    - component_index (int): Index of the Gaussian component (0-indexed) for which to compute assignment probability.
+
+    Returns:
+    - float: The assignment probability to the specified Gaussian component.
+    """
+
+    # Calculate the numerator (probability under the specified component)
+    numerator = p_values[component_index]
+
+    # Calculate the denominator (sum of probabilities under all components)
+    denominator = sum(p_values)
+
+    # Return the assignment probability
+    return numerator / denominator
+
+
+# Example usage
+p_values = [0.05, 0.25, 0]  # Probabilities for observation under each Gaussian component
+component_index = 0  # 0-indexed component number
+
+prob = compute_assignment_probability(p_values, component_index)
+print(f"The assignment probability to component {component_index + 1} is: {prob:.2f}")
+
+
