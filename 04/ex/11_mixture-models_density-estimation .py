@@ -80,4 +80,58 @@ component_index = 0  # 0-indexed component number
 prob = compute_assignment_probability(p_values, component_index)
 print(f"The assignment probability to component {component_index + 1} is: {prob:.2f}")
 
+# 22 - dec 2020
+import math
+
+
+def normal_density(x, mean, std_dev):
+    """
+    Compute the density of x under a normal distribution with specified mean and standard deviation.
+
+    Parameters:
+    - x (float): The observation.
+    - mean (float): Mean of the Gaussian distribution.
+    - std_dev (float): Standard deviation of the Gaussian distribution.
+
+    Returns:
+    - float: The density of x under the specified Gaussian distribution.
+    """
+    exponent = math.exp(-((x - mean) ** 2 / (2 * std_dev ** 2)))
+    return (1 / (std_dev * math.sqrt(2 * math.pi))) * exponent
+
+
+def compute_assignment_probability(x, weights, means, std_devs, component_index):
+    """
+    Compute the posterior probability of assignment of an observation to a given Gaussian component in a GMM.
+
+    Parameters:
+    - x (float): The observation.
+    - weights (list): List of mixture weights for each Gaussian component.
+    - means (list): List of means for each Gaussian component.
+    - std_devs (list): List of standard deviations for each Gaussian component.
+    - component_index (int): Index of the Gaussian component (0-indexed) for which to compute assignment probability.
+
+    Returns:
+    - float: The posterior probability of assignment to the specified Gaussian component.
+    """
+
+    # Compute the numerator (probability under the specified component multiplied by its weight)
+    numerator = normal_density(x, means[component_index], std_devs[component_index]) * weights[component_index]
+
+    # Compute the denominator (sum of probabilities under all components multiplied by their weights)
+    denominator = sum([normal_density(x, m, s) * w for m, s, w in zip(means, std_devs, weights)])
+
+    # Return the assignment probability
+    return numerator / denominator
+
+
+# Example usage
+weights = [0.13, 0.55, 0.32]
+means = [18.347, 14.997, 18.421]
+std_devs = [1.2193, 0.986, 1.1354]
+x = 15.38
+component_index = 1  # For k=2 (0-indexed)
+
+prob = compute_assignment_probability(x, weights, means, std_devs, component_index)
+print(f"The posterior probability of assignment to component {component_index + 1} is: {prob:.3f}")
 
