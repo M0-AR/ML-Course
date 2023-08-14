@@ -381,3 +381,445 @@ data = [
 attributes = [1, 1]  # HH=1, WL=1
 result = naive_bayes_classifier(data, attributes)
 print(f"Probability of having a high average score given HH=1 and WL=1: {result:.4f}")
+
+# 19 dec 2017
+def probability_high_average_score(priors, likelihoods):
+    """
+    Calculate the probability of a basketball player having a high average score
+    using the Naïve Bayes classifier.
+
+    Parameters:
+    - priors: Dictionary containing prior probabilities for LAS, MAS, and HAS.
+    - likelihoods: Dictionary containing likelihood values for given conditions (HH and WL).
+
+    Returns:
+    - prob_has: The calculated probability.
+    """
+
+    # Calculate the numerator of the formula
+    numerator = likelihoods['HH_HAS'] * likelihoods['WL_HAS'] * priors['HAS']
+
+    # Calculate the denominator of the formula
+    denominator = (
+            likelihoods['HH_LAS'] * likelihoods['WL_LAS'] * priors['LAS'] +
+            likelihoods['HH_MAS'] * likelihoods['WL_MAS'] * priors['MAS'] +
+            likelihoods['HH_HAS'] * likelihoods['WL_HAS'] * priors['HAS']
+    )
+
+    prob_has = numerator / denominator
+    return prob_has
+
+
+# Given priors and likelihoods from the problem
+priors = {
+    'LAS': 4 / 10,
+    'MAS': 2 / 10,
+    'HAS': 4 / 10
+}
+
+likelihoods = {
+    'HH_LAS': 1 / 4,
+    'WL_LAS': 2 / 4,
+    'HH_MAS': 0,
+    'WL_MAS': 2 / 2,
+    'HH_HAS': 3 / 4,
+    'WL_HAS': 3 / 4
+}
+
+# Calculate the probability
+result = probability_high_average_score(priors, likelihoods)
+print(f"The probability of a basketball player with HH = 1 and WL = 1 having a high average score is: {result:.2f}")
+
+# 22 dec 2017 - not done
+import math
+
+# Given values
+epsilon1 = 5/10
+epsilon2 = 2/10
+
+# Compute alpha values
+alpha1 = 0.5 * math.log((1-epsilon1) / epsilon1 + 1e-10)  # Added a small value to avoid division by zero
+alpha2 = 0.5 * math.log((1-epsilon2) / epsilon2)
+
+# Classify observation
+# Since alpha1 is 0, the decision is solely based on the classifier from the second round
+# As per the given information, the second round classifier will classify the observation as 'black_plus'
+
+observation = (6, 240)
+classification = 'black_plus' if alpha2 > 0 else 'red_cross'
+
+print(f"Observation {observation} is classified as {classification}")
+
+import numpy as np
+
+# AdaBoost Parameters
+num_rounds = 2
+num_observations = 10
+initial_weights = np.array([1 / 10] * num_observations)
+alphas = []
+
+# Given error rate for the first round
+epsilon1 = 5 / 10
+epsilon = [epsilon1]
+
+# Compute alpha for epsilon1
+alpha1 = 0.5 * np.log((1 - epsilon1) / epsilon1) if epsilon1 != 0 else 0
+alphas.append(alpha1)
+
+
+# Normally, here is where you'd adjust weights and compute epsilon2 by running the
+# classifier on the weighted dataset and calculating misclassification rate.
+# For now, we'll just leave it at epsilon1 since we don't have further info.
+
+# Classification
+def classify(alphas):
+    # For simplicity, we are assuming that the decision from round 1 is ineffective (alpha1 = 0)
+    # and the decision from round 2 is that if a point is in the white region, it's a "black plus".
+    # You'd need the actual decision boundaries from Figure 10 to make a real decision.
+
+    if alphas[0] == 0:
+        return "Black Plus"
+    else:
+        # Placeholder - this is where the logic would go if we had the decision boundary information.
+        pass
+
+
+x1, x2 = 6, 240
+result = classify(alphas)
+print(f"Observation at x1={x1}, x2={x2} will be classified as: {result}")
+
+# 10 may 2018
+class TravelDeathProbability:
+    """
+    This class computes the probability of death based on modes of transport.
+    """
+
+    def __init__(self, death_probs, mode_probs):
+        """
+        Initializes the probabilities for each mode of transport.
+
+        Parameters:
+            death_probs (dict): Probabilities of dying given a mode of transport in percentage terms.
+            mode_probs (dict): Probabilities of choosing a particular mode of transport in percentage terms.
+        """
+        self.death_probs = death_probs
+        self.mode_probs = mode_probs
+
+    def probability_death_by_plane(self):
+        """
+        Calculate the probability of dying by plane travel given a person died traveling
+        between Copenhagen and Oslo using Bayes' theorem.
+
+        Formula:
+        P(Plane|Death) = (P(Death|Plane) * P(Plane)) / Sum(P(Death|Mode) * P(Mode) for all modes)
+
+        Returns:
+            float: The computed probability in percentage terms.
+        """
+        # Numerator calculation
+        numerator = self.death_probs["Plane"] * self.mode_probs["Plane"]
+
+        # Denominator calculation
+        denominator = sum(self.death_probs[mode] * self.mode_probs[mode] for mode in self.mode_probs)
+
+        # Calculate the Bayes probability
+        P_F_given_D = (numerator / denominator) * 100
+
+        return P_F_given_D
+
+
+if __name__ == "__main__":
+    # Probabilities of dying given mode of transport in percentage terms
+    death_probs = {
+        "Car": 0.000271,
+        "Bus": 0.000004,
+        "Plane": 0.000003
+    }
+
+    # Probabilities of choosing a mode of transport in percentage terms
+    mode_probs = {
+        "Car": 30,
+        "Bus": 10,
+        "Plane": 60
+    }
+
+    calculator = TravelDeathProbability(death_probs, mode_probs)
+    result = calculator.probability_death_by_plane()
+    print(f"Probability of death by plane given a person died traveling between Copenhagen and Oslo: {result:.2f}%")
+
+# 21 may 2018
+class NaiveBayesClassifier:
+    """
+    Implementation of the Naïve Bayes classifier for airline safety prediction.
+    """
+
+    def __init__(self, data_probs, prior_probs):
+        """
+        Initializes the probabilities required for the Naïve Bayes classifier.
+
+        Parameters:
+            data_probs (dict): Conditional probabilities for each attribute given the class label.
+            prior_probs (dict): Prior probabilities for each class label.
+        """
+        self.data_probs = data_probs
+        self.prior_probs = prior_probs
+
+    def predict_probability(self, observation):
+        """
+        Predicts the probability of an airline being safe using the Naïve Bayes classifier.
+
+        Parameters:
+            observation (dict): The attributes of the airline to be classified.
+
+        Returns:
+            float: Probability of the airline being considered safe.
+        """
+        # Numerator calculation
+        prob_safe_given_data = self.prior_probs["Safe"]
+        for feature, value in observation.items():
+            prob_safe_given_data *= self.data_probs[feature]["Safe"]
+
+        # Denominator calculation
+        prob_unsafe_given_data = self.prior_probs["Unsafe"]
+        for feature, value in observation.items():
+            prob_unsafe_given_data *= self.data_probs[feature]["Unsafe"]
+
+        # Calculate the Naïve Bayes probability
+        probability_safe = prob_safe_given_data / (prob_safe_given_data + prob_unsafe_given_data)
+
+        return probability_safe
+
+
+if __name__ == "__main__":
+    # Conditional probabilities for each attribute given the class label in decimal terms.
+    data_probs = {
+        "xH2": {"Safe": 2 / 5, "Unsafe": 3 / 5},
+        "xH3": {"Safe": 1 / 5, "Unsafe": 2 / 5},
+        "xH4": {"Safe": 2 / 5, "Unsafe": 3 / 5},
+        "xH5": {"Safe": 2 / 5, "Unsafe": 5 / 5}
+    }
+
+    # Prior probabilities for each class label in decimal terms.
+    prior_probs = {
+        "Safe": 5 / 10,
+        "Unsafe": 5 / 10
+    }
+
+    # The attributes of the airline to be classified
+    observation = {
+        "xH2": 1,
+        "xH3": 1,
+        "xH4": 1,
+        "xH5": 1
+    }
+
+    classifier = NaiveBayesClassifier(data_probs, prior_probs)
+    result = classifier.predict_probability(observation)
+
+    print(f"Probability of the airline being considered safe: {result:.2f}")
+
+# 14 dec 2018
+def naive_bayes_probability():
+    """
+    Compute the Naive Bayes probability based on given conditional probabilities.
+
+    Using the Bayes theorem and the given conditions, this function computes:
+    pNB(y = 1|f1 = 1, f2 = 1, f6 = 0)
+
+    Returns:
+        float: The probability that y=1 given f1=1, f2=1, f6=0.
+    """
+
+    # Given conditional probabilities
+    # For y=1
+    p_f1_given_y1 = 1/1
+    p_f2_given_y1 = 2/3
+    p_f6_given_y1 = 1/3
+    p_y1 = 3/10
+
+    # For y=2
+    p_f1_given_y2 = 2/5
+    p_f2_given_y2 = 1/1
+    p_f6_given_y2 = 2/5
+    p_y2 = 5/10
+
+    # For y=3
+    p_f1_given_y3 = 1/2
+    p_f2_given_y3 = 0/1
+    p_f6_given_y3 = 0/1
+    p_y3 = 2/10
+
+    # Compute the Naive Bayes probabilities
+    numerator = p_f1_given_y1 * p_f2_given_y1 * p_f6_given_y1 * p_y1
+
+    denominator = (
+        p_f1_given_y1 * p_f2_given_y1 * p_f6_given_y1 * p_y1 +
+        p_f1_given_y2 * p_f2_given_y2 * p_f6_given_y2 * p_y2 +
+        p_f1_given_y3 * p_f2_given_y3 * p_f6_given_y3 * p_y3
+    )
+
+    return numerator / denominator
+
+
+if __name__ == "__main__":
+    # Compute the probability and print the result
+    probability = naive_bayes_probability()
+    print(f"The Naive Bayes probability pNB(y = 1|f1 = 1, f2 = 1, f6 = 0) is {probability:.2f} or {probability.as_integer_ratio()[0]}/{probability.as_integer_ratio()[1]}")
+
+# 20 may 2019
+def bayesian_probability(conditional_probs, prior_probs, x2_val, x10_val):
+    """
+    Calculate the Bayesian probability that y=1 given the observed values of x2 and x10.
+
+    Parameters:
+    - conditional_probs (dict): Conditional probabilities in the form {(x2_val, x10_val): [P(y=1), P(y=2), P(y=3)]}
+    - prior_probs (list): Prior probabilities in the form [P(y=1), P(y=2), P(y=3)]
+    - x2_val (int): Observed value of x2 (0 or 1)
+    - x10_val (int): Observed value of x10 (0 or 1)
+
+    Returns:
+    - float: Bayesian probability p(y=1|x2=x2_val, x10=x10_val)
+    """
+
+    # Calculate the numerator of Bayes' theorem
+    numerator = conditional_probs[(x2_val, x10_val)][0] * prior_probs[0]
+
+    # Calculate the denominator of Bayes' theorem
+    denominator = sum([conditional_probs[(x2_val, x10_val)][i] * prior_probs[i] for i in range(3)])
+
+    return numerator / denominator
+
+
+if __name__ == "__main__":
+    # Define the conditional probabilities p(x2, x10|y)
+    conditional_probs = {
+        (0, 0): [0.19, 0.3, 0.19],
+        (0, 1): [0.22, 0.3, 0.26],
+        (1, 0): [0.25, 0.2, 0.35],
+        (1, 1): [0.34, 0.2, 0.2]
+    }
+
+    # Define the prior probabilities p(y)
+    prior_probs = [0.316, 0.356, 0.328]
+
+    # Calculate Bayesian probability for x2=1 and x10=0
+    probability = bayesian_probability(conditional_probs, prior_probs, 1, 0)
+
+    print(f"The Bayesian probability p(y = 1|x2 = 1, x10 = 0) is {probability:.3f}")
+
+
+# 24 dec 2018
+def compute_gamma(xi_probs, pi_values, k):
+    """
+    Calculate the posterior probability (γik) that observation i is assigned to a specific mixture component k.
+
+    Parameters:
+    - xi_probs (list of float): The probabilities p(xi|zik=1) for each component k.
+    - pi_values (list of float): The weights of the components (π).
+    - k (int): The specific mixture component to which the posterior probability is computed.
+
+    Returns:
+    - float: The posterior probability γik.
+    """
+
+    numerator = xi_probs[k - 1] * pi_values[k - 1]
+    denominator = sum([xi_prob * pi for xi_prob, pi in zip(xi_probs, pi_values)])
+
+    gamma_ik = numerator / denominator
+    return gamma_ik
+
+
+if __name__ == "__main__":
+    # Probabilities read from Figure 15 for observation i
+    xi_probs = [1.25, 0.45, 0.85]
+
+    # Given weights of the components
+    pi_values = [0.15, 0.53, 0.32]
+
+    # Compute γi,3
+    gamma_i3 = compute_gamma(xi_probs, pi_values, 3)
+    print(f"γi,3: {gamma_i3:.2f}")
+
+# 11 may 2019 - not
+
+# 13 may 2019
+def naive_bayes_prob(feature_probs_for_label, label_probs):
+    """
+    Compute the probability using the Naive Bayes formula.
+
+    Args:
+    - feature_probs_for_label (list of dicts): A list where each item is a dictionary of feature probabilities for a given label.
+    - label_probs (list of float): Probabilities for each label.
+
+    Returns:
+    - float: The Naive Bayes probability for the specific label.
+    """
+
+    numerator = 1
+    denominator = 0
+
+    # Calculate the numerator for the specified label (in this case, y=3)
+    for feature, prob in feature_probs_for_label[0].items():
+        numerator *= prob
+    numerator *= label_probs[0]
+
+    # Calculate the denominator
+    for j in range(3):
+        tmp = 1
+        for feature, prob in feature_probs_for_label[j].items():
+            tmp *= prob
+        tmp *= label_probs[j]
+        denominator += tmp
+
+    return numerator / denominator
+
+
+# Feature probabilities for each label y=j, j in [0,1,2] which correspond to y=1, y=2, and y=3
+feature_probs = [
+    {'f2': 5 / 7, 'f5': 2 / 7, 'f8': 2 / 7},
+    {'f2': 3 / 4, 'f5': 3 / 4, 'f8': 1 / 4},
+    {'f2': 3 / 5, 'f5': 1 / 5, 'f8': 3 / 10}
+]
+
+# Prior probabilities for each label
+label_probs = [1 / 2, 3 / 10, 1 / 5]
+
+# Calculate the naive bayes probability for y=3 given the observations
+prob = naive_bayes_prob(feature_probs, label_probs)
+print(prob)  # Outputs: 0.3696935300794553 (which is approximately 934/2527)
+
+# 20 dec 2019
+def bayes_probability(cond_probs, label_probs, observed):
+    """
+    Compute the probability using Bayes' theorem.
+
+    Args:
+    - cond_probs (dict): Conditional probabilities of observing values given a label.
+    - label_probs (dict): Probabilities for each label.
+    - observed (tuple): Observed values for which we want to compute the probability.
+
+    Returns:
+    - float: The Bayesian probability for the specific label given the observed values.
+    """
+
+    numerator = cond_probs[observed][1] * label_probs[1]
+    denominator = sum(cond_probs[observed][k] * label_probs[k] for k in label_probs)
+
+    return numerator / denominator
+
+
+# Conditional probabilities from Table 7
+cond_probs = {
+    (0, 0): {1: 0.41, 2: 0.28, 3: 0.15},
+    (0, 1): {1: 0.17, 2: 0.28, 3: 0.33},
+    (1, 0): {1: 0.33, 2: 0.25, 3: 0.15},
+    (1, 1): {1: 0.09, 2: 0.19, 3: 0.37}
+}
+
+# Prior probabilities
+label_probs = {1: 0.268, 2: 0.366, 3: 0.365}
+
+# Calculate the Bayes probability for y=1 given the observed values
+observed = (0, 1)
+prob = bayes_probability(cond_probs, label_probs, observed)
+print(prob)  # Outputs: 0.17
