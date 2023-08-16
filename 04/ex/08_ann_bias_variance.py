@@ -258,16 +258,21 @@ w2_0 = 0.3799e-6
 w2_1 = -0.3440e-6
 w2_2 = 0.0429e-6
 
+w1_1 = np.array([-0.8, -0.3, 0.2])
+w1_2 = np.array([0.3, -0.3, 0.5])
+w2_0 = 1
+w2_1 = -0.8
+w2_2 = 0.6
 # Compute the outputs for the given input points
-point1 = [0, 3]
+point1 = [-2, -2]
 output1 = ann_predict(point1, w1_1, w1_2, w2_0, w2_1, w2_2)
 
-point2 = [24, 0]
+point2 = [2, 2]
 output2 = ann_predict(point2, w1_1, w1_2, w2_0, w2_1, w2_2)
 
 print(f"Output for x5 = {point1[0]}, x6 = {point1[1]}: {output1:.7e}")
 print(f"Output for x5 = {point2[0]}, x6 = {point2[1]}: {output2:.7e}")
-
+print()
 # 9 may 2018
 def calculate_total_models(H, outer_folds, inner_folds, initializations):
     """
