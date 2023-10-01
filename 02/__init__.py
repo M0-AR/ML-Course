@@ -19,8 +19,7 @@ most elementary model, namely linear regression.
 you hope to accomplish by the regression. Mention your feature transformation
 choices such as one-of-K coding. Since we will use regularization momentarily,
 apply a feature transformation to your data matrix X such that each column
-has mean 0 and standard deviation 13.
-"""
+has mean 0 and standard deviation 1.
 """
 import numpy as np
 import pandas as pd
@@ -30,42 +29,83 @@ from Tools.toolbox_02450.statistics import correlated_ttest, mcnemar
 import numpy as np
 import pandas as pd
 import sklearn.linear_model as lm
-from matplotlib.pyplot import figure, plot, xlabel, ylabel, legend, show
+from sklearn.model_selection import train_test_split
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 
 # Load csv file with data
 filename = 'saheart_1_withheader.csv'
 data = pd.read_csv(filename)
 
-# Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
-y = data['obesity'].values
-X = data[['adiposity']].values
+# Extract 'adiposity' (target variable) and ['obesity', 'age'] (predictor variables)
+"""
+In this regression analysis, we aim to predict 'adiposity' based on 'obesity' and 'age'.
+The 'adiposity' variable represents the amount of adipose tissue and is our dependent variable,
+whereas 'obesity' and 'age' are our independent variables used to predict 'adiposity'. The purpose
+of this regression is to understand how well 'obesity' and 'age' can predict 'adiposity' and to
+identify the relationship between these variables.
 
-# Apply feature scaling to the 'adiposity' column (mean 0 and standard deviation 1)
+We utilize feature scaling to ensure each predictor variable has a mean of 0 and a standard deviation of 1.
+This standardization process is crucial, especially when regularization will be applied in subsequent analyses
+since it ensures that each feature contributes equally to the regression model and avoids a feature with larger
+scale dominating the prediction.
+"""
+y = data['adiposity'].values
+X = data[['obesity', 'age']].values
+
+# Apply feature scaling to the predictor variables (mean 0 and standard deviation 1)
 X_scaled = (X - X.mean(axis=0)) / X.std(axis=0)
 
-print('From Exercise 2.1.1')
-
+# Splitting the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
 
 # Fit Linear Regression model
-Km = 1  # no of terms for regression model
-Xm = np.power(X_scaled, range(1, Km+1))
+"""
+We implement a basic linear regression model with the training data (X_train and y_train).
+No polynomial or interaction terms are introduced (Km=1), maintaining a straightforward linear relationship
+between predictor variables and the dependent variable.
+"""
+Km = 1  # No of terms for regression model
 model = lm.LinearRegression()
-model = model.fit(Xm, y)
+model = model.fit(X_train, y_train)
 
 # Predict values
-y_est = model.predict(X_scaled)
+y_est = model.predict(X_test)
+
+# Calculate R squared value
+"""
+R squared (R^2) value represents the proportion of variance in the dependent variable that
+is predictable from the independent variables. It provides a measure of how well observed 
+outcomes are replicated by the model, based on the proportion of total variation of outcomes
+explained by the model.
+"""
+print('R squared value:', model.score(X_test, y_test))
+
+# Weights of the regression model
+"""
+The intercept and coefficients derived from the regression model reveal how the dependent variable
+'adiposity' changes with a one-unit change in 'obesity' and 'age', respectively, while holding the other
+variable constant. These values are vital in understanding the impact of each predictor on 'adiposity'.
+"""
+print('Intercept: ', model.intercept_)
+print('Coefficients: ', model.coef_)
 
 # Plot original data and the model output
-f = figure()
-plot(X_scaled, y, '.')
-plot(X_scaled, y_est, 'r.')
-xlabel('Adiposity (scaled)'); ylabel('Obesity')
-legend(['Training data', 'Regression fit (model) K={0}'.format(Km)])
-
-show()
-
-print('From Exercise 5.2.3')
 """
+Visualizing the true vs. predicted values allows for an initial qualitative assessment of the model's performance.
+A perfect model would have all points lying on a 45-degree line (indicating true equals predicted).
+Although we've plotted against only one variable (Obesity) for simplicity, it's essential to note that 'Age' is also a
+predictor in the model.
+"""
+plt.scatter(X_test[:, 0], y_test, marker='.', label='True')  # Test data
+plt.scatter(X_test[:, 0], y_est, color='r', marker='.', label='Predicted')  # Predicted data
+plt.xlabel('Obesity and Age (scaled)')
+plt.ylabel('Adiposity')
+plt.legend()
+plt.title('Adiposity vs. Obesity with Age (as a predictor)')
+plt.show()
+
 """
 2. Introduce a regularization parameter λ as discussed in chapter 14 of the lecture
 notes, and estimate the generalization error for different values of λ. Specifi-
@@ -74,7 +114,6 @@ ization error first drop and then increases), and for each value use K = 10 fold
 cross-validation (algorithm 5) to estimate the generalization error.
 Include a figure of the estimated generalization error as a function of λ in the
 report and briefly discuss the result.
-"""
 """
 import numpy as np
 import pandas as pd
@@ -264,7 +303,6 @@ plt.show()
 
 print('From Exercise 8.1.2')
 
-"""
 """
 3. Explain how a new data observation is predicted according to the linear model
 with the lowest generalization error as estimated in the previous question. I.e.,
