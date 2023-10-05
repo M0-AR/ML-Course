@@ -122,17 +122,17 @@ from sklearn.model_selection import KFold
 from Tools.toolbox_02450 import rlr_validate
 import sklearn.linear_model as lm
 
-# Load csv file with data
-filename = 'saheart_1_withheader.csv'
-data = pd.read_csv(filename)
-
-# Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
-y = data['obesity'].values
-X = data[['adiposity']].values
+# # Load csv file with data
+# filename = 'saheart_1_withheader.csv'
+# data = pd.read_csv(filename)
+#
+# # Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
+# y = data['obesity'].values
+# X = data[['adiposity']].values
 
 # Add offset attribute
 X = np.concatenate((np.ones((X.shape[0],1)),X),1)
-attributeNames = ['Offset', 'Adiposity']
+attributeNames = ['Offset', 'obesity', 'age']
 M = X.shape[1]
 
 ## Crossvalidation
@@ -230,7 +230,6 @@ for train_index, test_index in CV.split(X, y):
 
     k += 1
 
-show()
 # Display results
 print('Linear regression without feature selection:')
 print('- Training error: {0}'.format(Error_train.mean()))
@@ -249,6 +248,7 @@ print('Weights in last fold:')
 for m in range(M):
     print('{:>15} {:>15}'.format(attributeNames[m], np.round(w_rlr[m, -1], 2)))
 
+show()
 print('From Exercise 8.1.1')
 
 
@@ -259,16 +259,19 @@ from sklearn.linear_model import Ridge
 from sklearn.model_selection import cross_val_score, KFold
 from sklearn.metrics import mean_squared_error
 
-# Load csv file with data
-filename = 'saheart_1_withheader.csv'
-data = pd.read_csv(filename)
+# # Load csv file with data
+# filename = 'saheart_1_withheader.csv'
+# data = pd.read_csv(filename)
+#
+# # Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
+# y = data['obesity'].values
+# X = data[['adiposity']].values
 
-# Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
-y = data['obesity'].values
-X = data[['adiposity']].values
+y = data['adiposity'].values
+X = data[['obesity', 'age']].values
 
 # Standardize the input
-X_adiposity = (X - np.mean(X)) / np.std(X)
+X_scaled = (X - np.mean(X)) / np.std(X)
 
 # Set up cross-validation
 K = 10
@@ -281,13 +284,17 @@ mse_values = np.zeros(len(lambda_interval))
 # Perform cross-validation for each λ
 for i, λ in enumerate(lambda_interval):
     ridge = Ridge(alpha=λ)
-    mse = -cross_val_score(ridge, X_adiposity, y, cv=kfold, scoring='neg_mean_squared_error').mean()
+    mse = -cross_val_score(ridge, X_scaled, y, cv=kfold, scoring='neg_mean_squared_error').mean()
     mse_values[i] = mse
 
 # Find the optimal λ
 opt_lambda_idx = np.argmin(mse_values)
 opt_lambda = lambda_interval[opt_lambda_idx]
 min_error = mse_values[opt_lambda_idx]
+
+print(f"Optimal Lambda Index: {opt_lambda_idx}")
+print(f"Optimal Lambda Value: {opt_lambda}")
+print(f"Minimum Error (MSE) with Optimal Lambda: {min_error}")
 
 # Plot generalization error as a function of λ
 plt.figure(figsize=(8, 8))
