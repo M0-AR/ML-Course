@@ -515,6 +515,7 @@ from sklearn import model_selection
 from sklearn.linear_model import LinearRegression, Ridge
 from Tools.toolbox_02450 import train_neural_net, visualize_decision_boundary, draw_neural_net, rlr_validate
 import torch
+from sklearn.metrics import mean_squared_error
 
 # Load csv file with data
 filename = 'saheart_1_withheader.csv'
@@ -528,60 +529,53 @@ X = data[['adiposity']].values
 y = data['adiposity'].values[:, np.newaxis]
 X = data[['obesity', 'age']].values
 
-
 # K1 and K2 fold CrossValidation
 K1 = 10
 K2 = 10
 CV_outer = model_selection.KFold(K1, shuffle=True)
 CV_inner = model_selection.KFold(K2, shuffle=True)
 
-# Loss function
+# Loss function for ANN
 loss_fn = torch.nn.BCELoss()
 
 # Range of values for h and λ
 hidden_units_range = [1, 2, 5, 10, 20]
 lambdas = np.logspace(-5, 2, 10)
 
-# Two-level cross-validation
+# Initialize lists to store errors and best parameters
 errors = []
 best_params = []
 
+# Outer cross-validation loop
 for k1, (train_index_outer, test_index_outer) in enumerate(CV_outer.split(X, y)):
     X_train_outer = X[train_index_outer]
     y_train_outer = y[train_index_outer]
     X_test_outer = X[test_index_outer]
     y_test_outer = y[test_index_outer]
 
-    # Baseline model
-    baseline_model = LinearRegression(fit_intercept=True)
-    baseline_model.fit(X_train_outer, y_train_outer)
-    y_baseline_pred = baseline_model.predict(X_test_outer)
-    baseline_error = np.mean((y_test_outer - y_baseline_pred) ** 2)
+    # Linear Regression and ANN model validation error storage
+    val_errors_ann = []
+    val_errors_linreg = []
 
-    # ANN model
-    val_errors = []
+    # Inner cross-validation loop for ANN model
     for h in hidden_units_range:
-        inner_errors = []
+        inner_errors_ann = []
         for k2, (train_index_inner, test_index_inner) in enumerate(CV_inner.split(X_train_outer, y_train_outer)):
             X_train_inner = X[train_index_inner]
             y_train_inner = y[train_index_inner]
             X_test_inner = X[test_index_inner]
             y_test_inner = y[test_index_inner]
-            internal_cross_validation = 10
 
-            opt_val_err, opt_lambda, mean_w_vs_lambda, train_err_vs_lambda, test_err_vs_lambda = rlr_validate(
-                X_train_outer, y_train_outer, lambdas, internal_cross_validation)
-
-            inner_errors.append(opt_val_err)
-
+            # Define the ANN model structure
             model = lambda: torch.nn.Sequential(
-                torch.nn.Linear(1, h),
+                torch.nn.Linear(X_train_inner.shape[1], h),
                 torch.nn.Tanh(),
                 torch.nn.Linear(h, 1),
                 torch.nn.Sigmoid()
             )
 
             # Train the ANN model
+            # Assumed external function, details not provided
             net, _, _ = train_neural_net(model,
                                          loss_fn,
                                          X=torch.Tensor(X_train_inner),
@@ -589,53 +583,84 @@ for k1, (train_index_outer, test_index_outer) in enumerate(CV_outer.split(X, y))
                                          n_replicates=1,
                                          max_iter=10)
 
-            # Predict and evaluate
-            y_pred_inner = net(torch.Tensor(X_test_inner))
-            error_inner = np.mean((y_test_inner - y_pred_inner.data.numpy().squeeze()) ** 2)
-            inner_errors.append(error_inner)
+            # Evaluate ANN model on the inner test set and store the error
+            y_pred_inner_ann = net(torch.Tensor(X_test_inner))
+            error_inner_ann = mean_squared_error(y_test_inner, y_pred_inner_ann.data.numpy().squeeze())
 
-        val_errors.append(np.mean(inner_errors))
+            # Store error for this inner fold
+            inner_errors_ann.append(error_inner_ann)
 
-    # Select the best model
-    best_model_idx = np.argmin(val_errors)
-    best_h = hidden_units_range[best_model_idx // len(lambdas)]
-    best_lambda = lambdas[best_model_idx % len(lambdas)]
+        # Store average validation error for this 'h'
+        val_errors_ann.append(np.mean(inner_errors_ann))
 
-    model = lambda: torch.nn.Sequential(
-        torch.nn.Linear(1, best_h),
+    # Inner cross-validation loop for Linear Regression model
+    for lambda_ in lambdas:
+        inner_errors_linreg = []
+        for k2, (train_index_inner, test_index_inner) in enumerate(CV_inner.split(X_train_outer, y_train_outer)):
+            X_train_inner = X[train_index_inner]
+            y_train_inner = y[train_index_inner]
+            X_test_inner = X[test_index_inner]
+            y_test_inner = y[test_index_inner]
+
+            # Define, train, and evaluate the Linear Regression model
+            # Train Linear Regression model with regularization (Ridge Regression)
+            linreg_model = Ridge(alpha=lambda_).fit(X_train_inner, y_train_inner)
+
+            # Evaluate Linear Regression model on the inner test set and store the error
+            y_pred_inner_linreg = linreg_model.predict(X_test_inner)
+            error_inner_linreg = mean_squared_error(y_test_inner, y_pred_inner_linreg)
+
+            # Store error for this inner fold
+            inner_errors_linreg.append(error_inner_linreg)
+
+        # Store average validation error for this 'lambda_'
+        val_errors_linreg.append(np.mean(inner_errors_linreg))
+
+    # Determine the best hyperparameters for ANN and Linear Regression model based on validation errors
+    best_h = hidden_units_range[np.argmin(val_errors_ann)]
+    best_lambda = lambdas[np.argmin(val_errors_linreg)]
+
+    # Train models with best parameters on the entire outer training set and evaluate on the outer test set
+    # Define and train the best ANN model using outer training data
+    best_ann_model = lambda: torch.nn.Sequential(
+        torch.nn.Linear(X_train_outer.shape[1], best_h),
         torch.nn.Tanh(),
         torch.nn.Linear(best_h, 1),
         torch.nn.Sigmoid()
     )
-
-    # Train the best model on the outer training data
-    net, _, _ = train_neural_net(model,
+    net, _, _ = train_neural_net(best_ann_model,
                                  loss_fn,
                                  X=torch.Tensor(X_train_outer),
                                  y=torch.Tensor(y_train_outer),
                                  n_replicates=1,
-                                 max_iter=100)
+                                 max_iter=10)
 
-    # Evaluate the best model on the outer test data
-    y_pred_outer = net(torch.Tensor(X_test_outer))
-    best_error = np.mean((y_test_outer - y_pred_outer.data.numpy().squeeze()) ** 2)
+    # Train the best Linear Regression model using outer training data
+    best_linreg_model = Ridge(alpha=best_lambda).fit(X_train_outer, y_train_outer)
+
+    # Evaluate the best ANN and Linear Regression models on the outer test data
+    y_pred_outer_ann = net(torch.Tensor(X_test_outer))
+    error_outer_ann = mean_squared_error(y_test_outer, y_pred_outer_ann.data.numpy().squeeze())
+
+    y_pred_outer_linreg = best_linreg_model.predict(X_test_outer)
+    error_outer_linreg = mean_squared_error(y_test_outer, y_pred_outer_linreg)
 
     # Store the errors and best parameters
-    errors.append((baseline_error, best_error))
+    errors.append((error_outer_linreg, error_outer_ann))
     best_params.append((best_h, best_lambda))
 
-    print(f'Fold {k1 + 1}/{K1}: Baseline error = {baseline_error:.4f}, Best ANN error = {best_error:.4f}, Best h = {best_h}, Best lambda = {best_lambda:.5f}')
+    print(
+        f'Fold {k1 + 1}/{K1}: LinReg error = {error_outer_linreg:.4f}, ANN error = {error_outer_ann:.4f}, Best h = {best_h}, Best lambda = {best_lambda:.5f}')
 
-# Calculate average errors
+# Calculate and print the average test error over all outer folds for both models
 average_errors = np.mean(errors, axis=0)
-print(f'Average baseline error = {average_errors[0]:.4f}, Average best ANN error = {average_errors[1]:.4f}')
+print(f'Average LinReg error = {average_errors[0]:.4f}, Average ANN error = {average_errors[1]:.4f}')
 
-# Create a table with the results
+# Create and display a table with the results
 results_table = pd.DataFrame(best_params, columns=["Best h", "Best lambda"])
-results_table["Baseline Error"] = [e[0] for e in errors]
-results_table["Best ANN Error"] = [e[1] for e in errors]
+results_table["LinReg Error"] = [e[0] for e in errors]
+results_table["ANN Error"] = [e[1] for e in errors]
 
-# Display the table
 print(results_table)
 
 print('Exercises 8.1.1, 8.1.2 and 8.2.2.')
@@ -693,7 +718,7 @@ What recommendations would you make based on what you’ve learned?
 """
 11.4.1 -> 7_3_1 
 """
-"""
+# """
 import numpy as np
 import pandas as pd
 from sklearn import model_selection
@@ -708,6 +733,11 @@ data = pd.read_csv(filename)
 # Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
 y = data['obesity'].values
 X = data[['adiposity']].values
+
+
+y = data['adiposity'].values[:, np.newaxis]
+X = data[['obesity', 'age']].values
+
 
 # Define the number of outer and inner folds
 K1 = 10
@@ -794,6 +824,7 @@ for (outer_train_index, outer_test_index) in CV1.split(X, y):
     r_ann_vs_baseline.append(ann_outer_error - baseline_outer_error)
     r_lr_vs_baseline.append(lr_outer_error - baseline_outer_error)
 
+
 # Perform statistical evaluation using the correlated t-test (setup II)
 alpha = 0.05
 rho = 1 / K1
@@ -817,7 +848,7 @@ print(f"p-value: {p_lr_vs_baseline}\n")
 
 print('Exercises 7.2.1 and 7.3.1.')
 
-"""
+# """
 """
 ANN vs Linear Regression
 Confidence interval: (618.9158995001742, 1065.1464151787093)
