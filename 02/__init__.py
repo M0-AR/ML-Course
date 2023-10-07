@@ -21,294 +21,294 @@ choices such as one-of-K coding. Since we will use regularization momentarily,
 apply a feature transformation to your data matrix X such that each column
 has mean 0 and standard deviation 1.
 """
-import numpy as np
-import pandas as pd
-
-from Tools.toolbox_02450.statistics import correlated_ttest, mcnemar
-
-import numpy as np
-import pandas as pd
-import sklearn.linear_model as lm
-from sklearn.model_selection import train_test_split
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
-
-# Load csv file with data
-filename = 'saheart_1_withheader.csv'
-data = pd.read_csv(filename)
-
-# Extract 'adiposity' (target variable) and ['obesity', 'age'] (predictor variables)
-"""
-In this regression analysis, we aim to predict 'adiposity' based on 'obesity' and 'age'.
-The 'adiposity' variable represents the amount of adipose tissue and is our dependent variable,
-whereas 'obesity' and 'age' are our independent variables used to predict 'adiposity'. The purpose
-of this regression is to understand how well 'obesity' and 'age' can predict 'adiposity' and to
-identify the relationship between these variables.
-
-We utilize feature scaling to ensure each predictor variable has a mean of 0 and a standard deviation of 1.
-This standardization process is crucial, especially when regularization will be applied in subsequent analyses
-since it ensures that each feature contributes equally to the regression model and avoids a feature with larger
-scale dominating the prediction.
-"""
-y = data['adiposity'].values
-X = data[['obesity', 'age']].values
-
-# Apply feature scaling to the predictor variables (mean 0 and standard deviation 1)
-X_scaled = (X - X.mean(axis=0)) / X.std(axis=0)
-
-# Splitting the data into training and testing sets
-X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
-
-# Fit Linear Regression model
-"""
-We implement a basic linear regression model with the training data (X_train and y_train).
-No polynomial or interaction terms are introduced (Km=1), maintaining a straightforward linear relationship
-between predictor variables and the dependent variable.
-"""
-Km = 1  # No of terms for regression model
-model = lm.LinearRegression()
-model = model.fit(X_train, y_train)
-
-# Predict values
-y_est = model.predict(X_test)
-
-# Calculate R squared value
-"""
-R squared (R^2) value represents the proportion of variance in the dependent variable that
-is predictable from the independent variables. It provides a measure of how well observed 
-outcomes are replicated by the model, based on the proportion of total variation of outcomes
-explained by the model.
-"""
-print('R squared value:', model.score(X_test, y_test))
-
-# Weights of the regression model
-"""
-The intercept and coefficients derived from the regression model reveal how the dependent variable
-'adiposity' changes with a one-unit change in 'obesity' and 'age', respectively, while holding the other
-variable constant. These values are vital in understanding the impact of each predictor on 'adiposity'.
-"""
-print('Intercept: ', model.intercept_)
-print('Coefficients: ', model.coef_)
-
-# Plot original data and the model output
-"""
-Visualizing the true vs. predicted values allows for an initial qualitative assessment of the model's performance.
-A perfect model would have all points lying on a 45-degree line (indicating true equals predicted).
-Although we've plotted against only one variable (Obesity) for simplicity, it's essential to note that 'Age' is also a
-predictor in the model.
-"""
-plt.scatter(X_test[:, 0], y_test, marker='.', label='True')  # Test data
-plt.scatter(X_test[:, 0], y_est, color='r', marker='.', label='Predicted')  # Predicted data
-plt.xlabel('Obesity and Age (scaled)')
-plt.ylabel('Adiposity')
-plt.legend()
-plt.title('Adiposity vs. Obesity with Age (as a predictor)')
-plt.show()
-
-"""
-2. Introduce a regularization parameter λ as discussed in chapter 14 of the lecture
-notes, and estimate the generalization error for different values of λ. Specifi-
-cally, choose a reasonable range of values of λ (ideally one where the general-
-ization error first drop and then increases), and for each value use K = 10 fold
-cross-validation (algorithm 5) to estimate the generalization error.
-Include a figure of the estimated generalization error as a function of λ in the
-report and briefly discuss the result.
-"""
-import numpy as np
-import pandas as pd
-from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, title, subplot, show, grid)
-from sklearn.model_selection import KFold
-from Tools.toolbox_02450 import rlr_validate
-import sklearn.linear_model as lm
-
+# import numpy as np
+# import pandas as pd
+#
+# from Tools.toolbox_02450.statistics import correlated_ttest, mcnemar
+#
+# import numpy as np
+# import pandas as pd
+# import sklearn.linear_model as lm
+# from sklearn.model_selection import train_test_split
+# import matplotlib
+# matplotlib.use('TkAgg')
+# import matplotlib.pyplot as plt
+#
 # # Load csv file with data
 # filename = 'saheart_1_withheader.csv'
 # data = pd.read_csv(filename)
 #
-# # Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
-# y = data['obesity'].values
-# X = data[['adiposity']].values
-
-# Add offset attribute
-X = np.concatenate((np.ones((X.shape[0],1)),X),1)
-attributeNames = ['Offset', 'obesity', 'age']
-M = X.shape[1]
-
-## Crossvalidation
-# Create crossvalidation partition for evaluation
-K = 10
-CV = KFold(K, shuffle=True)
-
-# Values of lambda
-lambdas = np.power(10.,range(-5,9))
-
-# Initialize variables
-Error_train = np.empty((K,1))
-Error_test = np.empty((K,1))
-Error_train_rlr = np.empty((K,1))
-Error_test_rlr = np.empty((K,1))
-Error_train_nofeatures = np.empty((K,1))
-Error_test_nofeatures = np.empty((K,1))
-w_rlr = np.empty((M,K))
-mu = np.empty((K, M-1))
-sigma = np.empty((K, M-1))
-w_noreg = np.empty((M,K))
-
-k = 0
-for train_index, test_index in CV.split(X, y):
-
-    # extract training and test set for current CV fold
-    X_train = X[train_index]
-    y_train = y[train_index]
-    X_test = X[test_index]
-    y_test = y[test_index]
-    internal_cross_validation = 10
-
-    opt_val_err, opt_lambda, mean_w_vs_lambda, train_err_vs_lambda, test_err_vs_lambda = rlr_validate(X_train, y_train,
-                                                                                                      lambdas,
-                                                                                                      internal_cross_validation)
-
-    # Standardize outer fold based on training set, and save the mean and standard
-    # deviations since they're part of the model (they would be needed for
-    # making new predictions) - for brevity we won't always store these in the scripts
-    mu[k, :] = np.mean(X_train[:, 1:], 0)
-    sigma[k, :] = np.std(X_train[:, 1:], 0)
-
-    X_train[:, 1:] = (X_train[:, 1:] - mu[k, :]) / sigma[k, :]
-    X_test[:, 1:] = (X_test[:, 1:] - mu[k, :]) / sigma[k, :]
-
-    Xty = X_train.T @ y_train
-    XtX = X_train.T @ X_train
-
-    # Compute mean squared error without using the input data at all
-    Error_train_nofeatures[k] = np.square(y_train - y_train.mean()).sum(axis=0) / y_train.shape[0]
-    Error_test_nofeatures[k] = np.square(y_test - y_test.mean()).sum(axis=0) / y_test.shape[0]
-
-    # Estimate weights for the optimal value of lambda, on entire training set
-    lambdaI = opt_lambda * np.eye(M)
-    lambdaI[0, 0] = 0  # Do no regularize the bias term
-    w_rlr[:, k] = np.linalg.solve(XtX + lambdaI, Xty).squeeze()
-    # Compute mean squared error with regularization with optimal lambda
-    Error_train_rlr[k] = np.square(y_train - X_train @ w_rlr[:, k]).sum(axis=0) / y_train.shape[0]
-    Error_test_rlr[k] = np.square(y_test - X_test @ w_rlr[:, k]).sum(axis=0) / y_test.shape[0]
-
-    # Estimate weights for unregularized linear regression, on entire training set
-    w_noreg[:, k] = np.linalg.solve(XtX, Xty).squeeze()
-    # Compute mean squared error without regularization
-    Error_train[k] = np.square(y_train - X_train @ w_noreg[:, k]).sum(axis=0) / y_train.shape[0]
-    Error_test[k] = np.square(y_test - X_test @ w_noreg[:, k]).sum(axis=0) / y_test.shape[0]
-    # OR ALTERNATIVELY: you can use sklearn.linear_model module for linear regression:
-    # m = lm.LinearRegression().fit(X_train, y_train)
-    # Error_train[k] = np.square(y_train-m.predict(X_train)).sum()/y_train.shape[0]
-    # Error_test[k] = np.square(y_test-m.predict(X_test)).sum()/y_test.shape[0]
-
-    # Display the results for the last cross-validation fold
-    if k == K - 1:
-        figure(k, figsize=(12, 8))
-        subplot(1, 2, 1)
-        semilogx(lambdas, mean_w_vs_lambda.T[:, 1:], '.-')  # Don't plot the bias term
-        xlabel('Regularization factor')
-        ylabel('Mean Coefficient Values')
-        grid()
-        # You can choose to display the legend, but it's omitted for a cleaner
-        # plot, since there are many attributes
-        # legend(attributeNames[1:], loc='best')
-
-        subplot(1, 2, 2)
-        title('Optimal lambda: 1e{0}'.format(np.log10(opt_lambda)))
-        loglog(lambdas, train_err_vs_lambda.T, 'b.-', lambdas, test_err_vs_lambda.T, 'r.-')
-        xlabel('Regularization factor')
-        ylabel('Squared error (crossvalidation)')
-        legend(['Train error', 'Validation error'])
-        grid()
-
-    # To inspect the used indices, use these print statements
-    # print('Cross validation fold {0}/{1}:'.format(k+1,K))
-    # print('Train indices: {0}'.format(train_index))
-    # print('Test indices: {0}\n'.format(test_index))
-
-    k += 1
-
-# Display results
-print('Linear regression without feature selection:')
-print('- Training error: {0}'.format(Error_train.mean()))
-print('- Test error:     {0}'.format(Error_test.mean()))
-print('- R^2 train:     {0}'.format((Error_train_nofeatures.sum() - Error_train.sum()) / Error_train_nofeatures.sum()))
-print('- R^2 test:     {0}\n'.format((Error_test_nofeatures.sum() - Error_test.sum()) / Error_test_nofeatures.sum()))
-print('Regularized linear regression:')
-print('- Training error: {0}'.format(Error_train_rlr.mean()))
-print('- Test error:     {0}'.format(Error_test_rlr.mean()))
-print('- R^2 train:     {0}'.format(
-    (Error_train_nofeatures.sum() - Error_train_rlr.sum()) / Error_train_nofeatures.sum()))
-print(
-    '- R^2 test:     {0}\n'.format((Error_test_nofeatures.sum() - Error_test_rlr.sum()) / Error_test_nofeatures.sum()))
-
-print('Weights in last fold:')
-for m in range(M):
-    print('{:>15} {:>15}'.format(attributeNames[m], np.round(w_rlr[m, -1], 2)))
-
-show()
-print('From Exercise 8.1.1')
-
-
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.linear_model import Ridge
-from sklearn.model_selection import cross_val_score, KFold
-from sklearn.metrics import mean_squared_error
-
-# # Load csv file with data
-# filename = 'saheart_1_withheader.csv'
-# data = pd.read_csv(filename)
+# # Extract 'adiposity' (target variable) and ['obesity', 'age'] (predictor variables)
+# """
+# In this regression analysis, we aim to predict 'adiposity' based on 'obesity' and 'age'.
+# The 'adiposity' variable represents the amount of adipose tissue and is our dependent variable,
+# whereas 'obesity' and 'age' are our independent variables used to predict 'adiposity'. The purpose
+# of this regression is to understand how well 'obesity' and 'age' can predict 'adiposity' and to
+# identify the relationship between these variables.
 #
-# # Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
-# y = data['obesity'].values
-# X = data[['adiposity']].values
-
-y = data['adiposity'].values
-X = data[['obesity', 'age']].values
-
-# Standardize the input
-X_scaled = (X - np.mean(X)) / np.std(X)
-
-# Set up cross-validation
-K = 10
-kfold = KFold(n_splits=K)
-
-# Introduce a regularization parameter λ
-lambda_interval = np.logspace(-8, 2, 50)
-mse_values = np.zeros(len(lambda_interval))
-
-# Perform cross-validation for each λ
-for i, λ in enumerate(lambda_interval):
-    ridge = Ridge(alpha=λ)
-    mse = -cross_val_score(ridge, X_scaled, y, cv=kfold, scoring='neg_mean_squared_error').mean()
-    mse_values[i] = mse
-
-# Find the optimal λ
-opt_lambda_idx = np.argmin(mse_values)
-opt_lambda = lambda_interval[opt_lambda_idx]
-min_error = mse_values[opt_lambda_idx]
-
-print(f"Optimal Lambda Index: {opt_lambda_idx}")
-print(f"Optimal Lambda Value: {opt_lambda}")
-print(f"Minimum Error (MSE) with Optimal Lambda: {min_error}")
-
-# Plot generalization error as a function of λ
-plt.figure(figsize=(8, 8))
-plt.semilogx(lambda_interval, mse_values)
-plt.semilogx(opt_lambda, min_error, 'o')
-plt.text(1e-8, min_error + 0.1, f"Minimum MSE: {min_error:.2f} at λ = {opt_lambda:.2e}")
-plt.xlabel('Regularization strength, λ')
-plt.ylabel('Mean squared error')
-plt.title('Generalization error as a function of λ')
-plt.legend(['MSE', 'Optimal λ'], loc='upper right')
-plt.grid()
-plt.show()
-
-print('From Exercise 8.1.2')
+# We utilize feature scaling to ensure each predictor variable has a mean of 0 and a standard deviation of 1.
+# This standardization process is crucial, especially when regularization will be applied in subsequent analyses
+# since it ensures that each feature contributes equally to the regression model and avoids a feature with larger
+# scale dominating the prediction.
+# """
+# y = data['adiposity'].values
+# X = data[['obesity', 'age']].values
+#
+# # Apply feature scaling to the predictor variables (mean 0 and standard deviation 1)
+# X_scaled = (X - X.mean(axis=0)) / X.std(axis=0)
+#
+# # Splitting the data into training and testing sets
+# X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+#
+# # Fit Linear Regression model
+# """
+# We implement a basic linear regression model with the training data (X_train and y_train).
+# No polynomial or interaction terms are introduced (Km=1), maintaining a straightforward linear relationship
+# between predictor variables and the dependent variable.
+# """
+# Km = 1  # No of terms for regression model
+# model = lm.LinearRegression()
+# model = model.fit(X_train, y_train)
+#
+# # Predict values
+# y_est = model.predict(X_test)
+#
+# # Calculate R squared value
+# """
+# R squared (R^2) value represents the proportion of variance in the dependent variable that
+# is predictable from the independent variables. It provides a measure of how well observed
+# outcomes are replicated by the model, based on the proportion of total variation of outcomes
+# explained by the model.
+# """
+# print('R squared value:', model.score(X_test, y_test))
+#
+# # Weights of the regression model
+# """
+# The intercept and coefficients derived from the regression model reveal how the dependent variable
+# 'adiposity' changes with a one-unit change in 'obesity' and 'age', respectively, while holding the other
+# variable constant. These values are vital in understanding the impact of each predictor on 'adiposity'.
+# """
+# print('Intercept: ', model.intercept_)
+# print('Coefficients: ', model.coef_)
+#
+# # Plot original data and the model output
+# """
+# Visualizing the true vs. predicted values allows for an initial qualitative assessment of the model's performance.
+# A perfect model would have all points lying on a 45-degree line (indicating true equals predicted).
+# Although we've plotted against only one variable (Obesity) for simplicity, it's essential to note that 'Age' is also a
+# predictor in the model.
+# """
+# plt.scatter(X_test[:, 0], y_test, marker='.', label='True')  # Test data
+# plt.scatter(X_test[:, 0], y_est, color='r', marker='.', label='Predicted')  # Predicted data
+# plt.xlabel('Obesity and Age (scaled)')
+# plt.ylabel('Adiposity')
+# plt.legend()
+# plt.title('Adiposity vs. Obesity with Age (as a predictor)')
+# plt.show()
+#
+# """
+# 2. Introduce a regularization parameter λ as discussed in chapter 14 of the lecture
+# notes, and estimate the generalization error for different values of λ. Specifi-
+# cally, choose a reasonable range of values of λ (ideally one where the general-
+# ization error first drop and then increases), and for each value use K = 10 fold
+# cross-validation (algorithm 5) to estimate the generalization error.
+# Include a figure of the estimated generalization error as a function of λ in the
+# report and briefly discuss the result.
+# """
+# import numpy as np
+# import pandas as pd
+# from matplotlib.pylab import (figure, semilogx, loglog, xlabel, ylabel, legend, title, subplot, show, grid)
+# from sklearn.model_selection import KFold
+# from Tools.toolbox_02450 import rlr_validate
+# import sklearn.linear_model as lm
+#
+# # # Load csv file with data
+# # filename = 'saheart_1_withheader.csv'
+# # data = pd.read_csv(filename)
+# #
+# # # Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
+# # y = data['obesity'].values
+# # X = data[['adiposity']].values
+#
+# # Add offset attribute
+# X = np.concatenate((np.ones((X.shape[0],1)),X),1)
+# attributeNames = ['Offset', 'obesity', 'age']
+# M = X.shape[1]
+#
+# ## Crossvalidation
+# # Create crossvalidation partition for evaluation
+# K = 10
+# CV = KFold(K, shuffle=True)
+#
+# # Values of lambda
+# lambdas = np.power(10.,range(-5,9))
+#
+# # Initialize variables
+# Error_train = np.empty((K,1))
+# Error_test = np.empty((K,1))
+# Error_train_rlr = np.empty((K,1))
+# Error_test_rlr = np.empty((K,1))
+# Error_train_nofeatures = np.empty((K,1))
+# Error_test_nofeatures = np.empty((K,1))
+# w_rlr = np.empty((M,K))
+# mu = np.empty((K, M-1))
+# sigma = np.empty((K, M-1))
+# w_noreg = np.empty((M,K))
+#
+# k = 0
+# for train_index, test_index in CV.split(X, y):
+#
+#     # extract training and test set for current CV fold
+#     X_train = X[train_index]
+#     y_train = y[train_index]
+#     X_test = X[test_index]
+#     y_test = y[test_index]
+#     internal_cross_validation = 10
+#
+#     opt_val_err, opt_lambda, mean_w_vs_lambda, train_err_vs_lambda, test_err_vs_lambda = rlr_validate(X_train, y_train,
+#                                                                                                       lambdas,
+#                                                                                                       internal_cross_validation)
+#
+#     # Standardize outer fold based on training set, and save the mean and standard
+#     # deviations since they're part of the model (they would be needed for
+#     # making new predictions) - for brevity we won't always store these in the scripts
+#     mu[k, :] = np.mean(X_train[:, 1:], 0)
+#     sigma[k, :] = np.std(X_train[:, 1:], 0)
+#
+#     X_train[:, 1:] = (X_train[:, 1:] - mu[k, :]) / sigma[k, :]
+#     X_test[:, 1:] = (X_test[:, 1:] - mu[k, :]) / sigma[k, :]
+#
+#     Xty = X_train.T @ y_train
+#     XtX = X_train.T @ X_train
+#
+#     # Compute mean squared error without using the input data at all
+#     Error_train_nofeatures[k] = np.square(y_train - y_train.mean()).sum(axis=0) / y_train.shape[0]
+#     Error_test_nofeatures[k] = np.square(y_test - y_test.mean()).sum(axis=0) / y_test.shape[0]
+#
+#     # Estimate weights for the optimal value of lambda, on entire training set
+#     lambdaI = opt_lambda * np.eye(M)
+#     lambdaI[0, 0] = 0  # Do no regularize the bias term
+#     w_rlr[:, k] = np.linalg.solve(XtX + lambdaI, Xty).squeeze()
+#     # Compute mean squared error with regularization with optimal lambda
+#     Error_train_rlr[k] = np.square(y_train - X_train @ w_rlr[:, k]).sum(axis=0) / y_train.shape[0]
+#     Error_test_rlr[k] = np.square(y_test - X_test @ w_rlr[:, k]).sum(axis=0) / y_test.shape[0]
+#
+#     # Estimate weights for unregularized linear regression, on entire training set
+#     w_noreg[:, k] = np.linalg.solve(XtX, Xty).squeeze()
+#     # Compute mean squared error without regularization
+#     Error_train[k] = np.square(y_train - X_train @ w_noreg[:, k]).sum(axis=0) / y_train.shape[0]
+#     Error_test[k] = np.square(y_test - X_test @ w_noreg[:, k]).sum(axis=0) / y_test.shape[0]
+#     # OR ALTERNATIVELY: you can use sklearn.linear_model module for linear regression:
+#     # m = lm.LinearRegression().fit(X_train, y_train)
+#     # Error_train[k] = np.square(y_train-m.predict(X_train)).sum()/y_train.shape[0]
+#     # Error_test[k] = np.square(y_test-m.predict(X_test)).sum()/y_test.shape[0]
+#
+#     # Display the results for the last cross-validation fold
+#     if k == K - 1:
+#         figure(k, figsize=(12, 8))
+#         subplot(1, 2, 1)
+#         semilogx(lambdas, mean_w_vs_lambda.T[:, 1:], '.-')  # Don't plot the bias term
+#         xlabel('Regularization factor')
+#         ylabel('Mean Coefficient Values')
+#         grid()
+#         # You can choose to display the legend, but it's omitted for a cleaner
+#         # plot, since there are many attributes
+#         # legend(attributeNames[1:], loc='best')
+#
+#         subplot(1, 2, 2)
+#         title('Optimal lambda: 1e{0}'.format(np.log10(opt_lambda)))
+#         loglog(lambdas, train_err_vs_lambda.T, 'b.-', lambdas, test_err_vs_lambda.T, 'r.-')
+#         xlabel('Regularization factor')
+#         ylabel('Squared error (crossvalidation)')
+#         legend(['Train error', 'Validation error'])
+#         grid()
+#
+#     # To inspect the used indices, use these print statements
+#     # print('Cross validation fold {0}/{1}:'.format(k+1,K))
+#     # print('Train indices: {0}'.format(train_index))
+#     # print('Test indices: {0}\n'.format(test_index))
+#
+#     k += 1
+#
+# # Display results
+# print('Linear regression without feature selection:')
+# print('- Training error: {0}'.format(Error_train.mean()))
+# print('- Test error:     {0}'.format(Error_test.mean()))
+# print('- R^2 train:     {0}'.format((Error_train_nofeatures.sum() - Error_train.sum()) / Error_train_nofeatures.sum()))
+# print('- R^2 test:     {0}\n'.format((Error_test_nofeatures.sum() - Error_test.sum()) / Error_test_nofeatures.sum()))
+# print('Regularized linear regression:')
+# print('- Training error: {0}'.format(Error_train_rlr.mean()))
+# print('- Test error:     {0}'.format(Error_test_rlr.mean()))
+# print('- R^2 train:     {0}'.format(
+#     (Error_train_nofeatures.sum() - Error_train_rlr.sum()) / Error_train_nofeatures.sum()))
+# print(
+#     '- R^2 test:     {0}\n'.format((Error_test_nofeatures.sum() - Error_test_rlr.sum()) / Error_test_nofeatures.sum()))
+#
+# print('Weights in last fold:')
+# for m in range(M):
+#     print('{:>15} {:>15}'.format(attributeNames[m], np.round(w_rlr[m, -1], 2)))
+#
+# show()
+# print('From Exercise 8.1.1')
+#
+#
+# import numpy as np
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# from sklearn.linear_model import Ridge
+# from sklearn.model_selection import cross_val_score, KFold
+# from sklearn.metrics import mean_squared_error
+#
+# # # Load csv file with data
+# # filename = 'saheart_1_withheader.csv'
+# # data = pd.read_csv(filename)
+# #
+# # # Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
+# # y = data['obesity'].values
+# # X = data[['adiposity']].values
+#
+# y = data['adiposity'].values
+# X = data[['obesity', 'age']].values
+#
+# # Standardize the input
+# X_scaled = (X - np.mean(X)) / np.std(X)
+#
+# # Set up cross-validation
+# K = 10
+# kfold = KFold(n_splits=K)
+#
+# # Introduce a regularization parameter λ
+# lambda_interval = np.logspace(-8, 2, 50)
+# mse_values = np.zeros(len(lambda_interval))
+#
+# # Perform cross-validation for each λ
+# for i, λ in enumerate(lambda_interval):
+#     ridge = Ridge(alpha=λ)
+#     mse = -cross_val_score(ridge, X_scaled, y, cv=kfold, scoring='neg_mean_squared_error').mean()
+#     mse_values[i] = mse
+#
+# # Find the optimal λ
+# opt_lambda_idx = np.argmin(mse_values)
+# opt_lambda = lambda_interval[opt_lambda_idx]
+# min_error = mse_values[opt_lambda_idx]
+#
+# print(f"Optimal Lambda Index: {opt_lambda_idx}")
+# print(f"Optimal Lambda Value: {opt_lambda}")
+# print(f"Minimum Error (MSE) with Optimal Lambda: {min_error}")
+#
+# # Plot generalization error as a function of λ
+# plt.figure(figsize=(8, 8))
+# plt.semilogx(lambda_interval, mse_values)
+# plt.semilogx(opt_lambda, min_error, 'o')
+# plt.text(1e-8, min_error + 0.1, f"Minimum MSE: {min_error:.2f} at λ = {opt_lambda:.2e}")
+# plt.xlabel('Regularization strength, λ')
+# plt.ylabel('Mean squared error')
+# plt.title('Generalization error as a function of λ')
+# plt.legend(['MSE', 'Optimal λ'], loc='upper right')
+# plt.grid()
+# plt.show()
+#
+# print('From Exercise 8.1.2')
 
 """
 3. Explain how a new data observation is predicted according to the linear model
@@ -341,15 +341,20 @@ from sklearn import model_selection
 from sklearn.linear_model import LinearRegression, Ridge
 from Tools.toolbox_02450 import train_neural_net, visualize_decision_boundary, draw_neural_net, rlr_validate
 import torch
+from sklearn.metrics import mean_squared_error
 
 # Load csv file with data
 filename = 'saheart_1_withheader.csv'
 data = pd.read_csv(filename)
 
-# Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
-y = data['obesity'].values
-y = data['obesity'].values[:, np.newaxis]
-X = data[['adiposity']].values
+# # Extract 'obesity' (target variable) and 'adiposity' (predictor variable)
+# y = data['obesity'].values[:, np.newaxis]
+# X = data[['adiposity']].values
+
+
+y = data['adiposity'].values[:, np.newaxis]
+X = data[['obesity', 'age']].values
+
 
 # K1 and K2 fold CrossValidation
 K1 = 10
@@ -365,95 +370,121 @@ hidden_units_range = [1, 2, 5, 10, 20]
 lambdas = np.logspace(-5, 2, 10)
 
 # Two-level cross-validation
-errors = []
+errors = []  # To store the errors for each fold
 
+# Outer cross-validation loop
+# Used for evaluating the generalization error of the model
 for k1, (train_index_outer, test_index_outer) in enumerate(CV_outer.split(X, y)):
+    # Splitting the data into training and test sets for outer fold
     X_train_outer = X[train_index_outer]
     y_train_outer = y[train_index_outer]
     X_test_outer = X[test_index_outer]
     y_test_outer = y[test_index_outer]
 
-    # Baseline model
-    baseline_model = LinearRegression(fit_intercept=True)
-    baseline_model.fit(X_train_outer, y_train_outer)
-    y_baseline_pred = baseline_model.predict(X_test_outer)
-    baseline_error = np.mean((y_test_outer - y_baseline_pred) ** 2)
+    val_errors_ann = []  # Store validation errors for ANN model across different hyperparameters
+    val_errors_linreg = []  # Store validation errors for Linear Regression model across different lambda
 
-    # ANN model
-    val_errors = []
+    # Iterating through potential hidden layer sizes for ANN
     for h in hidden_units_range:
-        for lambda_ in lambdas:
-            inner_errors = []
+        inner_errors_ann = []  # Store inner loop errors for ANN model
 
-            for k2, (train_index_inner, test_index_inner) in enumerate(CV_inner.split(X_train_outer, y_train_outer)):
-                X_train_inner = X[train_index_inner]
-                y_train_inner = y[train_index_inner]
-                X_test_inner = X[test_index_inner]
-                y_test_inner = y[test_index_inner]
-                internal_cross_validation = 10
+        # Inner cross-validation loop for ANN model
+        # Used for selecting the hyperparameters of the model
+        for k2, (train_index_inner, test_index_inner) in enumerate(CV_inner.split(X_train_outer, y_train_outer)):
+            # Splitting the data into training and test sets for inner fold
+            X_train_inner = X[train_index_inner]
+            y_train_inner = y[train_index_inner]
+            X_test_inner = X[test_index_inner]
+            y_test_inner = y[test_index_inner]
 
-                opt_val_err, opt_lambda, mean_w_vs_lambda, train_err_vs_lambda, test_err_vs_lambda = rlr_validate(
-                    X_train_outer, y_train_outer, lambda_, internal_cross_validation)
+            # Define the ANN model structure
+            model = lambda: torch.nn.Sequential(
+                torch.nn.Linear(X_train_inner.shape[1], h),
+                torch.nn.Tanh(),
+                torch.nn.Linear(h, 1),
+                torch.nn.Sigmoid()
+            )
 
-                inner_errors.append(opt_val_err)
+            # Train the ANN model
+            # Assumed external function, details not provided
+            net, _, _ = train_neural_net(model,
+                                         loss_fn,
+                                         X=torch.Tensor(X_train_inner),
+                                         y=torch.Tensor(y_train_inner),
+                                         n_replicates=1,
+                                         max_iter=10)
 
-                model = lambda: torch.nn.Sequential(
-                    torch.nn.Linear(1, h),
-                    torch.nn.Tanh(),
-                    torch.nn.Linear(h, 1),
-                    torch.nn.Sigmoid()
-                )
+            # Evaluate ANN model on the inner test set and store the error
+            y_pred_inner_ann = net(torch.Tensor(X_test_inner))
+            error_inner_ann = mean_squared_error(y_test_inner, y_pred_inner_ann.data.numpy().squeeze())
+            inner_errors_ann.append(error_inner_ann)
 
-                # Train the ANN model
-                net, _, _ = train_neural_net(model,
-                                             loss_fn,
-                                             X=torch.Tensor(X_train_inner),
-                                             y=torch.Tensor(y_train_inner),
-                                             n_replicates=1,
-                                             max_iter=10)
+        # Calculate and store the average error across all inner folds for a specific ANN model
+        val_errors_ann.append(np.mean(inner_errors_ann))
 
-                # Predict and evaluate
-                y_pred_inner = net(torch.Tensor(X_test_inner))
-                error_inner = np.mean((y_test_inner - y_pred_inner.data.numpy().squeeze()) ** 2)
-                inner_errors.append(error_inner)
+    # Iterating through potential lambda values for Linear Regression
+    for lambda_ in lambdas:
+        inner_errors_linreg = []  # Store inner loop errors for Linear Regression model
 
-            val_errors.append(np.mean(inner_errors))
+        # Inner cross-validation loop for Linear Regression model
+        for k2, (train_index_inner, test_index_inner) in enumerate(CV_inner.split(X_train_outer, y_train_outer)):
+            # Splitting the data into training and test sets for inner fold
+            X_train_inner = X[train_index_inner]
+            y_train_inner = y[train_index_inner]
+            X_test_inner = X[test_index_inner]
+            y_test_inner = y[test_index_inner]
 
-    # Select the best model
-    best_model_idx = np.argmin(val_errors)
-    best_h = hidden_units_range[best_model_idx // len(lambdas)]
-    best_lambda = lambdas[best_model_idx % len(lambdas)]
+            # Train Linear Regression model with regularization (Ridge Regression)
+            linreg_model = Ridge(alpha=lambda_).fit(X_train_inner, y_train_inner)
 
-    model = lambda: torch.nn.Sequential(
-        torch.nn.Linear(1, best_h),
+            # Evaluate Linear Regression model on the inner test set and store the error
+            y_pred_inner_linreg = linreg_model.predict(X_test_inner)
+            error_inner_linreg = mean_squared_error(y_test_inner, y_pred_inner_linreg)
+            inner_errors_linreg.append(error_inner_linreg)
+
+        # Calculate and store the average error across all inner folds for a specific lambda
+        val_errors_linreg.append(np.mean(inner_errors_linreg))
+
+    # Determine the best hyperparameters for ANN and Linear Regression model based on validation errors
+    best_h = hidden_units_range[np.argmin(val_errors_ann)]
+    best_lambda = lambdas[np.argmin(val_errors_linreg)]
+
+    # Define and train the best ANN model using outer training data
+    best_ann_model = lambda: torch.nn.Sequential(
+        torch.nn.Linear(X_train_outer.shape[1], best_h),
         torch.nn.Tanh(),
         torch.nn.Linear(best_h, 1),
         torch.nn.Sigmoid()
     )
-
-    # Train the best model on the outer training data
-    net, _, _ = train_neural_net(model,
+    net, _, _ = train_neural_net(best_ann_model,
                                  loss_fn,
                                  X=torch.Tensor(X_train_outer),
                                  y=torch.Tensor(y_train_outer),
                                  n_replicates=1,
                                  max_iter=10)
 
-    # Evaluate the best model on the outer test data
-    y_pred_outer = net(torch.Tensor(X_test_outer))
-    best_error = np.mean((y_test_outer - y_pred_outer.data.numpy().squeeze()) ** 2)
+    # Train the best Linear Regression model using outer training data
+    best_linreg_model = Ridge(alpha=best_lambda).fit(X_train_outer, y_train_outer)
 
-    # Store the errors
-    errors.append((baseline_error, best_error))
+    # Evaluate the best ANN and Linear Regression models on the outer test data
+    y_pred_outer_ann = net(torch.Tensor(X_test_outer))
+    error_outer_ann = mean_squared_error(y_test_outer, y_pred_outer_ann.data.numpy().squeeze())
 
-    print(f'Fold {k1 + 1}/{K1}: Baseline error = {baseline_error:.4f}, Best ANN error = {best_error:.4f}, Best h = {best_h}, Best lambda = {best_lambda:.5f}')
+    y_pred_outer_linreg = best_linreg_model.predict(X_test_outer)
+    error_outer_linreg = mean_squared_error(y_test_outer, y_pred_outer_linreg)
 
-# Calculate average errors
+    # Store the errors for each model and print the results of each outer fold
+    errors.append((error_outer_linreg, error_outer_ann))
+
+    print(
+        f'Fold {k1 + 1}/{K1}: LinReg error = {error_outer_linreg:.4f}, ANN error = {error_outer_ann:.4f}, Best h = {best_h}, Best lambda = {best_lambda:.5f}')
+
+# Calculate and print the average test error over all outer folds for both models
 average_errors = np.mean(errors, axis=0)
-print(f'Average baseline error = {average_errors[0]:.4f}, Average best ANN error = {average_errors[1]:.4f}')
+print(f'Average LinReg error = {average_errors[0]:.4f}, Average ANN error = {average_errors[1]:.4f}')
 
-# Fold 10/10: Baseline error = 24.5179, Best ANN error = 734.8468, Best h = 2, Best lambda = 0.00215
-# Average baseline error = 8.7021, Average best ANN error = 672.5282
+# Fold 10/10: LinReg error = 16.5851, ANN error = 715.2919, Best h = 20, Best lambda = 0.07743
+# Average LinReg error = 18.8231, Average ANN error = 684.751
 
 print('Exercises 8.1.1, 8.1.2 and 8.2.2.')
 """
@@ -493,6 +524,10 @@ data = pd.read_csv(filename)
 y = data['obesity'].values
 y = y[:, np.newaxis]
 X = data[['adiposity']].values
+
+y = data['adiposity'].values[:, np.newaxis]
+X = data[['obesity', 'age']].values
+
 
 # K1 and K2 fold CrossValidation
 K1 = 10
