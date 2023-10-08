@@ -747,11 +747,21 @@ K2 = 10
 CV1 = model_selection.KFold(n_splits=K1, shuffle=True)
 
 # Initialize the results lists
+outer_results = []
+
+# Initialize the results lists
 r_ann_vs_lr = []
 r_ann_vs_baseline = []
 r_lr_vs_baseline = []
 
-best_net = None
+# best_net = None
+
+# Assume the following lists of hyperparameter values to try
+h_values = [5, 10, 15]  # Example values, you should determine suitable ranges
+lambda_values = [0.001, 0.01, 0.1]  # Example values, you should determine suitable ranges
+
+h_values = [1, 2, 5, 10, 20]
+lambdas_values = np.logspace(-5, 2, 10)
 
 # Outer loop
 for (outer_train_index, outer_test_index) in CV1.split(X, y):
@@ -771,29 +781,41 @@ for (outer_train_index, outer_test_index) in CV1.split(X, y):
         X_train_inner, y_train_inner = X_train_outer[inner_train_index], y_train_outer[inner_train_index]
         X_test_inner, y_test_inner = X_train_outer[inner_test_index], y_train_outer[inner_test_index]
 
+        # Initialize some variables for best network and best error
+        best_net = None
+        best_h = None
+        best_lambda = None
+        best_inner_error = float('inf')  # Start with the worst possible error
 
+        # Initialize the loss function
         loss_fn = torch.nn.MSELoss()
-        # Train the ANN
-        hidden_units = 10
 
-        model = lambda: torch.nn.Sequential(
-            torch.nn.Linear(1, hidden_units),
-            torch.nn.ReLU(),
-            torch.nn.Linear(hidden_units, 1),
-            torch.nn.Sigmoid()
-        )
-        # Update this line to pass the model and loss_fn as arguments
-        best_net, _, _ = train_neural_net(model,
-                         loss_fn,
-                         X=torch.Tensor(X_train_inner),
-                         y=torch.Tensor(y_train_inner),
-                         n_replicates=1,
-                         max_iter=100)
+        for h in h_values:
+            for lambda_val in lambda_values:
+                model = lambda: torch.nn.Sequential(
+                    torch.nn.Linear(X_train_inner.shape[1], h),
+                    torch.nn.ReLU(),
+                    torch.nn.Linear(h, 1),
+                    torch.nn.Sigmoid()
+                )
+                # Adjust train_neural_net() as per your use case
+                net, final_loss, _ = train_neural_net(model,
+                                                      loss_fn,
+                                                      X=torch.Tensor(X_train_inner),
+                                                      y=torch.Tensor(y_train_inner),
+                                                      n_replicates=3,
+                                                      max_iter=10000)
 
-        # Calculate the ANN error
+                # Update best_net, best_h, and best_lambda if this net is the best so far
+                if final_loss < best_inner_error:
+                    best_inner_error = final_loss
+                    best_net = net
+                    best_h = h
+                    best_lambda = lambda_val
+
+        # Evaluate the best ANN model with the chosen hyperparameters
         y_pred_inner = best_net[0](torch.Tensor(X_test_inner)).detach().numpy()
         ann_error = np.mean((y_pred_inner - y_test_inner.reshape(-1, 1)) ** 2)
-
         ann_errors.append(ann_error)
 
         # Train the linear regression model
@@ -819,11 +841,18 @@ for (outer_train_index, outer_test_index) in CV1.split(X, y):
     lr_outer_error = np.mean((lr_model.predict(X_test_outer) - y_test_outer) ** 2)
     baseline_outer_error = np.mean((np.mean(y_train_outer) - y_test_outer) ** 2)
 
+    # Append outer results including optimal parameters and error metrics
+    outer_results.append([best_h, ann_outer_error, best_lambda, lr_outer_error, baseline_outer_error])
+
     # Append the differences in performance to the results lists
     r_ann_vs_lr.append(ann_outer_error - lr_outer_error)
     r_ann_vs_baseline.append(ann_outer_error - baseline_outer_error)
     r_lr_vs_baseline.append(lr_outer_error - baseline_outer_error)
 
+# Convert outer loop results to DataFrame and display
+columns = ['h*', 'Etest_ANN', 'lambda*', 'Etest_LR', 'Etest_Baseline']
+results_df = pd.DataFrame(outer_results, columns=columns)
+print(results_df)
 
 # Perform statistical evaluation using the correlated t-test (setup II)
 alpha = 0.05
@@ -851,14 +880,16 @@ print('Exercises 7.2.1 and 7.3.1.')
 # """
 """
 ANN vs Linear Regression
-Confidence interval: (618.9158995001742, 1065.1464151787093)
-p-value: 1.3120354154448714e-05
+Confidence interval: (454.98197179604176, 2753.2283504257143)
+p-value: 0.011590567901438392
+
 ANN vs Baseline
-Confidence interval: (610.6730468456259, 1055.0686004229283)
-p-value: 1.386470926010315e-05
+Confidence interval: (415.54144231581336, 2708.057234926092)
+p-value: 0.013092627347285644
+
 Linear Regression vs Baseline
-Confidence interval: (-11.939874404930247, -6.380793005399369)
-p-value: 3.870749042494397e-0
+Confidence interval: (-52.45748606965758, -32.15415891019292)
+p-value: 5.8331400256525024e-06
 """
 
 """
