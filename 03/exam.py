@@ -583,6 +583,7 @@ import numpy as np
 
 # Singular values from matrix S
 singular_values = np.array([13.5, 7.6, 6.5, 5.8, 3.5, 2.0])
+singular_values = np.array([20.62, 13.51, 13.14, 10.94, 7.6, 3.74])
 
 # Calculate the total variance
 total_variance = np.sum(singular_values ** 2)
